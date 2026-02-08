@@ -1,4 +1,5 @@
 import type { Route } from "./+types/index";
+import { requireUserId } from "~/features/auth/application/auth-session.server";
 import { getInstance } from "~/features/localization/i18next-middleware.server";
 import { todosAction } from "~/features/todos/application/todos-action.server";
 import { TodosPageComponent } from "~/features/todos/application/todos-page";
@@ -10,6 +11,7 @@ import {
 import { retrieveAllTodosFromDatabase } from "~/features/todos/infrastructure/todos-model.server";
 
 export async function loader({ context, request }: Route.LoaderArgs) {
+  await requireUserId(request);
   const i18n = getInstance(context);
   const allTodos = await retrieveAllTodosFromDatabase();
   const filter = parseTodoFilter(

@@ -20,3 +20,13 @@ export async function saveUserToDatabase(user: Prisma.UserCreateInput) {
 export async function retrieveUserFromDatabaseById(id: User["id"]) {
   return prisma.user.findUnique({ where: { id } });
 }
+
+/**
+ * Retrieves a user by their email address.
+ *
+ * @param email The email of the user.
+ * @returns The user or null.
+ */
+export async function retrieveUserFromDatabaseByEmail(email: User["email"]) {
+  return prisma.user.findUnique({ where: { email } });
+}

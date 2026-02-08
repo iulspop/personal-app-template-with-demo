@@ -14,6 +14,7 @@ import {
 import type { Route } from "./+types/root";
 import "./app.css";
 
+import { authMiddleware } from "./features/auth/application/auth-middleware.server";
 import {
   getLocale,
   i18nextMiddleware,
@@ -33,7 +34,7 @@ export const links: Route.LinksFunction = () => [
   },
 ];
 
-export const middleware = [i18nextMiddleware];
+export const middleware = [i18nextMiddleware, authMiddleware];
 
 export async function loader({ context }: Route.LoaderArgs) {
   const locale = getLocale(context);

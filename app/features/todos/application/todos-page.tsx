@@ -34,9 +34,19 @@ export function TodosPageComponent({
 
   return (
     <main className="mx-auto max-w-2xl px-4 py-8">
-      <h1 className="mb-8 text-3xl font-bold text-gray-900 dark:text-gray-100">
-        {t("pageTitle")}
-      </h1>
+      <div className="mb-8 flex items-center justify-between">
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100">
+          {t("pageTitle")}
+        </h1>
+        <Form action="/logout" method="post">
+          <button
+            className="rounded-lg border border-gray-300 px-3 py-1 text-sm text-gray-600 hover:bg-gray-100 dark:border-gray-600 dark:text-gray-400 dark:hover:bg-gray-800"
+            type="submit"
+          >
+            {t("translation:logout", { defaultValue: "Log out" })}
+          </button>
+        </Form>
+      </div>
 
       <Form className="mb-8 space-y-4" method="post">
         <div>

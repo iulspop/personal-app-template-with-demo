@@ -1,7 +1,14 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 
+import { deleteAllTodos, loginAsTestUser } from "../auth-utils";
+
 test.describe("todos page", () => {
+  test.beforeEach(async ({ page }) => {
+    await deleteAllTodos();
+    await loginAsTestUser(page);
+  });
+
   test("given: the todos page, should: display the page title", async ({
     page,
   }) => {

@@ -11,10 +11,7 @@ import {
 export const createTodoSchema = z.object({
   description: z.string().trim().default(""),
   intent: z.literal(CREATE_TODO_INTENT),
-  title: z
-    .string()
-    .trim()
-    .min(1, { message: "todos:validation.titleRequired" }),
+  title: z.string().trim().default(""),
 });
 
 export const toggleTodoSchema = z.object({
@@ -35,10 +32,7 @@ export const editTodoSchema = z.object({
   description: z.string().trim().default(""),
   id: z.string().min(1),
   intent: z.literal(EDIT_TODO_INTENT),
-  title: z
-    .string()
-    .trim()
-    .min(1, { message: "todos:validation.titleRequired" }),
+  title: z.string().trim().default(""),
 });
 
 export const todoActionSchema = z.discriminatedUnion("intent", [

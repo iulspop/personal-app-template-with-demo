@@ -31,8 +31,10 @@ describe("saveTodoToDatabase()", () => {
 
 describe("retrieveAllTodosFromDatabase()", () => {
   test("given: multiple todos, should: return all todos newest first", async () => {
-    await saveTodoToDatabase({ title: "First" });
-    await saveTodoToDatabase({ title: "Second" });
+    const earlier = new Date("2024-01-01T00:00:00Z");
+    const later = new Date("2024-01-02T00:00:00Z");
+    await saveTodoToDatabase({ createdAt: earlier, title: "First" });
+    await saveTodoToDatabase({ createdAt: later, title: "Second" });
 
     const todos = await retrieveAllTodosFromDatabase();
 

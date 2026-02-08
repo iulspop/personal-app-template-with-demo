@@ -23,6 +23,7 @@ export default defineConfig({
       {
         extends: true,
         test: {
+          fileParallelism: false,
           include: ["app/**/*.spec.ts"],
           name: "integration-tests",
           setupFiles: ["app/test/setup-server-test-environment.ts"],

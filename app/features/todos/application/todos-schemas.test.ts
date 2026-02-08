@@ -35,13 +35,14 @@ describe("todoActionSchema", () => {
     expect(result.data).toMatchObject({ description: "" });
   });
 
-  test("given: createTodo with empty title, should: fail", () => {
+  test("given: createTodo with empty title, should: default to empty string", () => {
     const result = todoActionSchema.safeParse({
       intent: CREATE_TODO_INTENT,
       title: "",
     });
 
-    expect(result.success).toBe(false);
+    expect(result.success).toBe(true);
+    expect(result.data).toMatchObject({ title: "" });
   });
 
   test("given: valid toggleTodo data, should: parse successfully", () => {
@@ -120,14 +121,15 @@ describe("todoActionSchema", () => {
     });
   });
 
-  test("given: editTodo with empty title, should: fail", () => {
+  test("given: editTodo with empty title, should: default to empty string", () => {
     const result = todoActionSchema.safeParse({
       id: "abc123",
       intent: EDIT_TODO_INTENT,
       title: "",
     });
 
-    expect(result.success).toBe(false);
+    expect(result.success).toBe(true);
+    expect(result.data).toMatchObject({ title: "" });
   });
 
   test("given: editTodo with empty id, should: fail", () => {
