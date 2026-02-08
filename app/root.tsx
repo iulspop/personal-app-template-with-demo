@@ -20,6 +20,8 @@ import {
   i18nextMiddleware,
   localeCookie,
 } from "./features/localization/i18next-middleware.server";
+import { useNonce } from "./utils/nonce-provider";
+import { securityMiddleware } from "./utils/security-middleware.server";
 
 export const links: Route.LinksFunction = () => [
   { href: "https://fonts.googleapis.com", rel: "preconnect" },
@@ -34,12 +36,16 @@ export const links: Route.LinksFunction = () => [
   },
 ];
 
-export const middleware = [i18nextMiddleware, authMiddleware];
+export const middleware = [
+  securityMiddleware,
+  i18nextMiddleware,
+  authMiddleware,
+];
 
 export async function loader({ context }: Route.LoaderArgs) {
   const locale = getLocale(context);
   return data(
-    { locale },
+    { allowIndexing: process.env.ALLOW_INDEXING !== "false", locale },
     {
       headers: {
         "Set-Cookie": await localeCookie.serialize(locale),
@@ -51,19 +57,23 @@ export async function loader({ context }: Route.LoaderArgs) {
 export function Layout({ children }: { children: React.ReactNode }) {
   const rootData = useRouteLoaderData<typeof loader>("root");
   const { i18n } = useTranslation();
+  const nonce = useNonce();
 
   return (
     <html dir={i18n.dir()} lang={rootData?.locale ?? "en"}>
       <head>
         <meta charSet="utf-8" />
         <meta content="width=device-width, initial-scale=1" name="viewport" />
+        {!rootData?.allowIndexing && (
+          <meta content="noindex, nofollow" name="robots" />
+        )}
         <Meta />
         <Links />
       </head>
       <body>
         {children}
-        <ScrollRestoration />
-        <Scripts />
+        <ScrollRestoration nonce={nonce} />
+        <Scripts nonce={nonce} />
       </body>
     </html>
   );
