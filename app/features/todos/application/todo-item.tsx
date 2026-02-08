@@ -1,12 +1,20 @@
-import { Form } from "react-router";
+import { useEffect, useState } from "react";
+import { Form, useFetcher } from "react-router";
 
 import type { Todo } from "../../../../generated/prisma/client";
 import {
   DELETE_TODO_INTENT,
   TOGGLE_TODO_INTENT,
 } from "../domain/todos-constants";
+import { TodoItemEditComponent } from "./todo-item-edit";
 
-export function TodoItemComponent({ todo }: { todo: Todo }) {
+export function TodoItemDisplayComponent({
+  onEdit,
+  todo,
+}: {
+  onEdit: () => void;
+  todo: Todo;
+}) {
   return (
     <li className="flex items-center gap-3 rounded-lg border border-gray-200 p-4 dark:border-gray-700">
       <Form method="post">
@@ -58,6 +66,28 @@ export function TodoItemComponent({ todo }: { todo: Todo }) {
         )}
       </div>
 
+      <button
+        aria-label={`Edit ${todo.title}`}
+        className="text-gray-500 hover:text-blue-600 dark:text-gray-400 dark:hover:text-blue-400"
+        onClick={onEdit}
+        type="button"
+      >
+        <svg
+          aria-hidden="true"
+          className="size-4"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+          />
+        </svg>
+      </button>
+
       <Form method="post">
         <input name="id" type="hidden" value={todo.id} />
         <button
@@ -84,5 +114,30 @@ export function TodoItemComponent({ todo }: { todo: Todo }) {
         </button>
       </Form>
     </li>
+  );
+}
+
+export function TodoItemComponent({ todo }: { todo: Todo }) {
+  const [isEditing, setIsEditing] = useState(false);
+  const fetcher = useFetcher();
+
+  useEffect(() => {
+    if (fetcher.state === "idle" && fetcher.data) {
+      setIsEditing(false);
+    }
+  }, [fetcher.state, fetcher.data]);
+
+  if (isEditing) {
+    return (
+      <TodoItemEditComponent
+        fetcher={fetcher}
+        onCancel={() => setIsEditing(false)}
+        todo={todo}
+      />
+    );
+  }
+
+  return (
+    <TodoItemDisplayComponent onEdit={() => setIsEditing(true)} todo={todo} />
   );
 }

@@ -56,3 +56,13 @@ export async function updateTodoInDatabaseById({
 export async function deleteTodoFromDatabaseById(id: Todo["id"]) {
   return prisma.todo.delete({ where: { id } });
 }
+
+/**
+ * Deletes completed todos by their IDs.
+ *
+ * @param ids - The IDs of the completed todos to delete.
+ * @returns The count of deleted todos.
+ */
+export async function deleteCompletedTodosFromDatabaseByIds(ids: string[]) {
+  return prisma.todo.deleteMany({ where: { id: { in: ids } } });
+}

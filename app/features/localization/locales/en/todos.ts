@@ -1,13 +1,25 @@
 export default {
   activeCount: "{{count}} active",
   addTodo: "Add todo",
+  cancel: "Cancel",
+  clearCompleted: "Clear completed",
   completedCount: "{{count}} completed",
   delete: "Delete",
   description: "Description (optional)",
+  edit: "Edit",
+  emptyFiltered: {
+    active: "No active todos",
+    completed: "No completed todos",
+  },
   emptyState: "No todos yet. Add one above!",
+  filter: { active: "Active", all: "All", completed: "Completed" },
+  filterLabel: "Filter todos",
   pageTitle: "Todos",
+  save: "Save",
   titlePlaceholder: "What needs to be done?",
   validation: {
+    descriptionTooLong: "Description must be 1000 characters or less",
     titleRequired: "Title is required",
+    titleTooLong: "Title must be 200 characters or less",
   },
 };

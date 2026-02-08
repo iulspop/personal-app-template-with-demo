@@ -2,13 +2,35 @@ import { useTranslation } from "react-i18next";
 import { Form } from "react-router";
 
 import type { Todo } from "../../../../generated/prisma/client";
-import { CREATE_TODO_INTENT } from "../domain/todos-constants";
-import { countByStatus } from "../domain/todos-domain";
+import {
+  CLEAR_COMPLETED_INTENT,
+  CREATE_TODO_INTENT,
+} from "../domain/todos-constants";
+import type { TodoFilter } from "../domain/todos-domain";
+import {
+  isTodoValidationError,
+  validationErrorToI18nKey,
+} from "../domain/todos-domain";
+import { FilterTabsComponent } from "./filter-tabs";
 import { TodoItemComponent } from "./todo-item";
 
-export function TodosPageComponent({ todos }: { todos: Todo[] }) {
+type TodosPageActionData =
+  | { error: string; success: false }
+  | { error: null; success: true }
+  | undefined;
+
+export function TodosPageComponent({
+  actionData,
+  counts,
+  filter,
+  todos,
+}: {
+  actionData?: TodosPageActionData;
+  counts: { active: number; completed: number; total: number };
+  filter: TodoFilter;
+  todos: Todo[];
+}) {
   const { t } = useTranslation("todos");
-  const counts = countByStatus(todos);
 
   return (
     <main className="mx-auto max-w-2xl px-4 py-8">
@@ -41,26 +63,52 @@ export function TodosPageComponent({ todos }: { todos: Todo[] }) {
         >
           {t("addTodo")}
         </button>
+        {actionData?.success === false &&
+          isTodoValidationError(actionData.error) && (
+            <p className="text-sm text-red-600 dark:text-red-400" role="alert">
+              {t(validationErrorToI18nKey(actionData.error))}
+            </p>
+          )}
       </Form>
 
-      {todos.length === 0 ? (
+      <FilterTabsComponent currentFilter={filter} />
+
+      {counts.total === 0 ? (
         <p className="text-center text-gray-500 dark:text-gray-400">
           {t("emptyState")}
         </p>
+      ) : todos.length === 0 ? (
+        <p className="text-center text-gray-500 dark:text-gray-400">
+          {t(
+            `emptyFiltered.${filter}` as
+              | "emptyFiltered.active"
+              | "emptyFiltered.completed",
+          )}
+        </p>
       ) : (
-        <>
-          <ul className="space-y-2">
-            {todos.map((todo) => (
-              <TodoItemComponent key={todo.id} todo={todo} />
-            ))}
-          </ul>
-
-          <footer className="mt-6 flex justify-between text-sm text-gray-500 dark:text-gray-400">
-            <span>{t("activeCount", { count: counts.active })}</span>
-            <span>{t("completedCount", { count: counts.completed })}</span>
-          </footer>
-        </>
+        <ul className="space-y-2">
+          {todos.map((todo) => (
+            <TodoItemComponent key={todo.id} todo={todo} />
+          ))}
+        </ul>
       )}
+
+      <footer className="mt-6 flex items-center justify-between text-sm text-gray-500 dark:text-gray-400">
+        <span>{t("activeCount", { count: counts.active })}</span>
+        {counts.completed > 0 && (
+          <Form method="post">
+            <button
+              className="text-red-600 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300"
+              name="intent"
+              type="submit"
+              value={CLEAR_COMPLETED_INTENT}
+            >
+              {t("clearCompleted")}
+            </button>
+          </Form>
+        )}
+        <span>{t("completedCount", { count: counts.completed })}</span>
+      </footer>
     </main>
   );
 }

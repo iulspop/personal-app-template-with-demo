@@ -3,11 +3,15 @@ import { describe, expect, test } from "vitest";
 import type { Todo } from "./todos-domain";
 import {
   countByStatus,
+  extractCompletedIds,
   filterTodos,
+  parseTodoFilter,
   toggleCompleted,
   validateNewTodo,
   validateTodoDescription,
   validateTodoTitle,
+  validateTodoUpdate,
+  validationErrorToI18nKey,
 } from "./todos-domain";
 
 const createTodo = (overrides: Partial<Todo> = {}): Todo => ({
@@ -97,6 +101,26 @@ describe("validateNewTodo()", () => {
   });
 });
 
+describe("validationErrorToI18nKey()", () => {
+  test("given: TITLE_EMPTY, should: return validation.titleRequired", () => {
+    expect(validationErrorToI18nKey("TITLE_EMPTY")).toBe(
+      "validation.titleRequired",
+    );
+  });
+
+  test("given: TITLE_TOO_LONG, should: return validation.titleTooLong", () => {
+    expect(validationErrorToI18nKey("TITLE_TOO_LONG")).toBe(
+      "validation.titleTooLong",
+    );
+  });
+
+  test("given: DESCRIPTION_TOO_LONG, should: return validation.descriptionTooLong", () => {
+    expect(validationErrorToI18nKey("DESCRIPTION_TOO_LONG")).toBe(
+      "validation.descriptionTooLong",
+    );
+  });
+});
+
 describe("toggleCompleted()", () => {
   test("given: false, should: return true", () => {
     expect(toggleCompleted(false)).toBe(true);
@@ -104,6 +128,28 @@ describe("toggleCompleted()", () => {
 
   test("given: true, should: return false", () => {
     expect(toggleCompleted(true)).toBe(false);
+  });
+});
+
+describe("parseTodoFilter()", () => {
+  test("given: 'active', should: return 'active'", () => {
+    expect(parseTodoFilter("active")).toBe("active");
+  });
+
+  test("given: 'completed', should: return 'completed'", () => {
+    expect(parseTodoFilter("completed")).toBe("completed");
+  });
+
+  test("given: 'all', should: return 'all'", () => {
+    expect(parseTodoFilter("all")).toBe("all");
+  });
+
+  test("given: null, should: return 'all'", () => {
+    expect(parseTodoFilter(null)).toBe("all");
+  });
+
+  test("given: 'invalid', should: return 'all'", () => {
+    expect(parseTodoFilter("invalid")).toBe("all");
   });
 });
 
@@ -153,6 +199,77 @@ describe("countByStatus()", () => {
       active: 0,
       completed: 0,
       total: 0,
+    });
+  });
+});
+
+describe("extractCompletedIds()", () => {
+  test("given: a mixed list, should: return only completed IDs", () => {
+    const todos: Todo[] = [
+      createTodo({ completed: false, id: "1" }),
+      createTodo({ completed: true, id: "2" }),
+      createTodo({ completed: true, id: "3" }),
+    ];
+
+    expect(extractCompletedIds(todos)).toEqual(["2", "3"]);
+  });
+
+  test("given: no completed todos, should: return empty array", () => {
+    const todos: Todo[] = [
+      createTodo({ completed: false, id: "1" }),
+      createTodo({ completed: false, id: "2" }),
+    ];
+
+    expect(extractCompletedIds(todos)).toEqual([]);
+  });
+
+  test("given: all completed todos, should: return all IDs", () => {
+    const todos: Todo[] = [
+      createTodo({ completed: true, id: "1" }),
+      createTodo({ completed: true, id: "2" }),
+    ];
+
+    expect(extractCompletedIds(todos)).toEqual(["1", "2"]);
+  });
+});
+
+describe("validateTodoUpdate()", () => {
+  test("given: valid title and description, should: return trimmed values", () => {
+    const result = validateTodoUpdate({
+      description: "  Updated details  ",
+      title: "  Updated title  ",
+    });
+
+    expect(result).toEqual({
+      data: { description: "Updated details", title: "Updated title" },
+      success: true,
+    });
+  });
+
+  test("given: empty title, should: return TITLE_EMPTY error", () => {
+    const result = validateTodoUpdate({ description: "Details", title: "   " });
+
+    expect(result).toEqual({ error: "TITLE_EMPTY", success: false });
+  });
+
+  test("given: title exceeding max length, should: return TITLE_TOO_LONG error", () => {
+    const result = validateTodoUpdate({
+      description: "",
+      title: "a".repeat(201),
+    });
+
+    expect(result).toEqual({ error: "TITLE_TOO_LONG", success: false });
+  });
+
+  test("given: description exceeding max length, should: return DESCRIPTION_TOO_LONG error", () => {
+    const result = validateTodoUpdate({
+      description: "a".repeat(1001),
+      title: "Valid",
+    });
+
+    expect(result).toEqual({
+      error: "DESCRIPTION_TOO_LONG",
+      success: false,
     });
   });
 });

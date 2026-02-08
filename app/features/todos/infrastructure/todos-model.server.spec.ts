@@ -1,6 +1,7 @@
 import { afterEach, describe, expect, test } from "vitest";
 
 import {
+  deleteCompletedTodosFromDatabaseByIds,
   deleteTodoFromDatabaseById,
   retrieveAllTodosFromDatabase,
   retrieveTodoFromDatabaseById,
@@ -92,5 +93,39 @@ describe("deleteTodoFromDatabaseById()", () => {
 
     const found = await retrieveTodoFromDatabaseById(created.id);
     expect(found).toBeNull();
+  });
+});
+
+describe("deleteCompletedTodosFromDatabaseByIds()", () => {
+  test("given: matching IDs, should: delete those todos", async () => {
+    const todo1 = await saveTodoToDatabase({
+      completed: true,
+      title: "Done 1",
+    });
+    const todo2 = await saveTodoToDatabase({
+      completed: true,
+      title: "Done 2",
+    });
+    await saveTodoToDatabase({ completed: false, title: "Active" });
+
+    const result = await deleteCompletedTodosFromDatabaseByIds([
+      todo1.id,
+      todo2.id,
+    ]);
+
+    expect(result.count).toBe(2);
+    const remaining = await retrieveAllTodosFromDatabase();
+    expect(remaining).toHaveLength(1);
+    expect(remaining[0]?.title).toBe("Active");
+  });
+
+  test("given: empty array, should: delete nothing", async () => {
+    await saveTodoToDatabase({ title: "Keep me" });
+
+    const result = await deleteCompletedTodosFromDatabaseByIds([]);
+
+    expect(result.count).toBe(0);
+    const remaining = await retrieveAllTodosFromDatabase();
+    expect(remaining).toHaveLength(1);
   });
 });

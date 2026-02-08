@@ -85,9 +85,35 @@ export const validateNewTodo = ({
 };
 
 /**
+ * Maps a domain validation error code to its i18n translation key.
+ */
+const validationErrorI18nKeys = {
+  DESCRIPTION_TOO_LONG: "validation.descriptionTooLong",
+  TITLE_EMPTY: "validation.titleRequired",
+  TITLE_TOO_LONG: "validation.titleTooLong",
+} as const;
+
+export const validationErrorToI18nKey = (
+  error: TodoValidationError,
+): (typeof validationErrorI18nKeys)[TodoValidationError] =>
+  validationErrorI18nKeys[error];
+
+export const isTodoValidationError = (
+  value: string,
+): value is TodoValidationError => value in validationErrorI18nKeys;
+
+/**
  * Flips the completed status of a todo.
  */
 export const toggleCompleted = (completed: boolean): boolean => !completed;
+
+/**
+ * Parses a string into a valid TodoFilter, defaulting to "all".
+ */
+export const parseTodoFilter = (value: string | null): TodoFilter =>
+  (["all", "active", "completed"] as TodoFilter[]).includes(value as TodoFilter)
+    ? (value as TodoFilter)
+    : "all";
 
 /**
  * Filters todos by their completion status.
@@ -116,3 +142,14 @@ export const countByStatus = (
     total: todos.length,
   };
 };
+
+/**
+ * Extracts the IDs of all completed todos.
+ */
+export const extractCompletedIds = (todos: Todo[]): string[] =>
+  todos.filter((t) => t.completed).map((t) => t.id);
+
+/**
+ * Validates a todo update. Same rules as new todo validation.
+ */
+export const validateTodoUpdate = validateNewTodo;
