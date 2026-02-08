@@ -1,7 +1,7 @@
-import { render, screen } from "@testing-library/react";
 import { expect, test } from "vitest";
 
 import { Welcome } from "./welcome";
+import { render, screen } from "~/test/react-test-utils";
 
 test("renders resource links", () => {
   render(<Welcome />);

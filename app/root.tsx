@@ -1,14 +1,24 @@
+import { useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import {
+  data,
   isRouteErrorResponse,
   Links,
   Meta,
   Outlet,
   Scripts,
   ScrollRestoration,
+  useRouteLoaderData,
 } from "react-router";
 
 import type { Route } from "./+types/root";
 import "./app.css";
+
+import {
+  getLocale,
+  i18nextMiddleware,
+  localeCookie,
+} from "./features/localization/i18next-middleware.server";
 
 export const links: Route.LinksFunction = () => [
   { href: "https://fonts.googleapis.com", rel: "preconnect" },
@@ -23,9 +33,26 @@ export const links: Route.LinksFunction = () => [
   },
 ];
 
+export const middleware = [i18nextMiddleware];
+
+export async function loader({ context }: Route.LoaderArgs) {
+  const locale = getLocale(context);
+  return data(
+    { locale },
+    {
+      headers: {
+        "Set-Cookie": await localeCookie.serialize(locale),
+      },
+    },
+  );
+}
+
 export function Layout({ children }: { children: React.ReactNode }) {
+  const rootData = useRouteLoaderData<typeof loader>("root");
+  const { i18n } = useTranslation();
+
   return (
-    <html lang="en">
+    <html dir={i18n.dir()} lang={rootData?.locale ?? "en"}>
       <head>
         <meta charSet="utf-8" />
         <meta content="width=device-width, initial-scale=1" name="viewport" />
@@ -41,20 +68,33 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
-export default function App() {
+export default function App({ loaderData: { locale } }: Route.ComponentProps) {
+  const { i18n } = useTranslation();
+
+  useEffect(() => {
+    if (i18n.language !== locale) {
+      i18n.changeLanguage(locale);
+    }
+  }, [i18n, locale]);
+
   return <Outlet />;
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
-  let message = "Oops!";
-  let details = "An unexpected error occurred.";
+  const { t } = useTranslation();
+
+  let message = t("errorBoundary.oops");
+  let details = t("errorBoundary.details");
   let stack: string | undefined;
 
   if (isRouteErrorResponse(error)) {
-    message = error.status === 404 ? "404" : "Error";
+    message =
+      error.status === 404
+        ? t("errorBoundary.status404")
+        : t("errorBoundary.statusError");
     details =
       error.status === 404
-        ? "The requested page could not be found."
+        ? t("errorBoundary.notFound")
         : error.statusText || details;
   } else if (import.meta.env.DEV && error && error instanceof Error) {
     details = error.message;
