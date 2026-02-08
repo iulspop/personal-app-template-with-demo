@@ -6,10 +6,7 @@ import {
   DELETE_TODO_INTENT,
   TOGGLE_TODO_INTENT,
 } from "../domain/todos-constants";
-import {
-  validateTodoDescription,
-  validateTodoTitle,
-} from "../domain/todos-domain";
+import { validateNewTodo } from "../domain/todos-domain";
 import {
   deleteTodoFromDatabaseById,
   retrieveTodoFromDatabaseById,
@@ -21,8 +18,7 @@ import type { Route } from ".react-router/types/app/routes/+types/index";
 
 export const todosAction = async ({ request }: Route.ActionArgs) => {
   const formData = await request.formData();
-  const rawData = Object.fromEntries(formData);
-  const parsed = todoActionSchema.safeParse(rawData);
+  const parsed = todoActionSchema.safeParse(Object.fromEntries(formData));
 
   if (!parsed.success)
     return data(
@@ -32,25 +28,14 @@ export const todosAction = async ({ request }: Route.ActionArgs) => {
 
   return match(parsed.data)
     .with({ intent: CREATE_TODO_INTENT }, async ({ description, title }) => {
-      const titleResult = validateTodoTitle(title);
-      if (!titleResult.success)
+      const result = validateNewTodo({ description, title });
+      if (!result.success)
         return data(
-          { error: titleResult.error, success: false as const },
+          { error: result.error, success: false as const },
           { status: 400 },
         );
 
-      const descriptionResult = validateTodoDescription(description);
-      if (!descriptionResult.success)
-        return data(
-          { error: descriptionResult.error, success: false as const },
-          { status: 400 },
-        );
-
-      await saveTodoToDatabase({
-        description: descriptionResult.data,
-        title: titleResult.data,
-      });
-
+      await saveTodoToDatabase(result.data);
       return data({ error: null, success: true as const });
     })
     .with({ intent: TOGGLE_TODO_INTENT }, async ({ id }) => {

@@ -5,6 +5,7 @@ import {
   countByStatus,
   filterTodos,
   toggleCompleted,
+  validateNewTodo,
   validateTodoDescription,
   validateTodoTitle,
 } from "./todos-domain";
@@ -61,6 +62,38 @@ describe("validateTodoDescription()", () => {
     const result = validateTodoDescription("");
 
     expect(result).toEqual({ data: "", success: true });
+  });
+});
+
+describe("validateNewTodo()", () => {
+  test("given: valid title and description, should: return trimmed values", () => {
+    const result = validateNewTodo({
+      description: "  Some details  ",
+      title: "  Buy groceries  ",
+    });
+
+    expect(result).toEqual({
+      data: { description: "Some details", title: "Buy groceries" },
+      success: true,
+    });
+  });
+
+  test("given: an empty title, should: return TITLE_EMPTY error", () => {
+    const result = validateNewTodo({ description: "Details", title: "   " });
+
+    expect(result).toEqual({ error: "TITLE_EMPTY", success: false });
+  });
+
+  test("given: a description exceeding max length, should: return DESCRIPTION_TOO_LONG error", () => {
+    const result = validateNewTodo({
+      description: "a".repeat(1001),
+      title: "Valid",
+    });
+
+    expect(result).toEqual({
+      error: "DESCRIPTION_TOO_LONG",
+      success: false,
+    });
   });
 });
 

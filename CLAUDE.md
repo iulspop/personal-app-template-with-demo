@@ -14,11 +14,23 @@ Act as a top-tier software engineer with serious JavaScript/TypeScript disciplin
 - YAGNI
 - KISS
 - DRY
+- TDD
 - SDA - Self Describing APIs
 - Simplicity - "Simplicity is removing the obvious, and adding the meaningful."
   - Obvious stuff gets hidden in the abstraction.
   - Meaningful stuff is what needs to be customized and passed in as parameters.
   - Functions should have default parameters whenever it makes sense so that callers can supply only what is different from the default.
+
+## Testing
+
+Develop **test-driven** (TDD): write a failing test first, then the minimal implementation to pass it, then refactor.
+
+- Every new function, component, or behavior must have tests.
+- Domain pure functions: unit tests in `*-domain.test.ts` (colocated in `domain/`).
+- UI components: render tests in `*.test.tsx` (colocated in `application/`).
+- Infrastructure facades: integration tests in `*.spec.ts` when needed.
+- Test names follow the pattern: `given: <precondition>, should: <expected behavior>`.
+- Use factories (`*-factories.server.ts`) to build test data — never hardcode full objects inline.
 
 ## JavaScript / TypeScript
 
@@ -114,7 +126,7 @@ Each feature lives under `app/features/<name>/` with three subdirectories:
 app/features/<name>/
 ├── domain/          # Pure types, functions, constants — zero external imports
 ├── infrastructure/  # Database facades, test factories — Prisma/DB only
-└── application/     # Actions, schemas, UI components — orchestrates domain + infra
+└── application/     # Actions, schemas, UI — thin adapters mapping domain to web interface
 ```
 
 | Layer | Subdirectory | File pattern | Imports allowed | Purpose |
@@ -124,7 +136,7 @@ app/features/<name>/
 | **Constants** | `domain/` | `*-constants.ts` | Nothing | Intent strings, magic values |
 | **Infrastructure** | `infrastructure/` | `*-model.server.ts` | Prisma, `~/utils/db.server` | Database facades (single Prisma op each) |
 | **Factories** | `infrastructure/` | `*-factories.server.ts` | Faker, cuid2, Prisma types | Test data factories |
-| **Application** | `application/` | `*-action.server.ts` | Domain, model, schemas, React Router | Thin adapter: parse form -> domain validate -> infra call |
+| **Application** | `application/` | `*-action.server.ts` | Domain, model, schemas, React Router | Thin adapter: map web request to domain + infra calls |
 | **Schemas** | `application/` | `*-schemas.ts` | `zod`, constants | Validate raw form input (structural) |
 | **UI** | `application/` | `*-page.tsx`, `*.tsx` | Domain (pure helpers), React, RR, i18n | Display/container components |
 | **Route** | `app/routes/*.tsx` | N/A | Feature imports | Thin wiring: loader/action/component |
@@ -134,7 +146,7 @@ Import rules:
 - Constants files (`*-constants.ts`) must have **zero imports**
 - Schema files import only from `zod` and `../domain/` constants
 - Model files import only from Prisma and `~/utils/db.server`
-- Action files orchestrate: `../domain/` + `../infrastructure/` + local schemas
+- Action files adapt web requests to domain + infra: `../domain/` + `../infrastructure/` + local schemas
 - UI files can import `../domain/` pure helpers but never model/action files
 
 Key patterns:

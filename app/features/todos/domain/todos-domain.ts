@@ -60,6 +60,30 @@ export const validateTodoDescription = (
   return { data: trimmed, success: true };
 };
 
+export type ValidatedNewTodo = { description: string; title: string };
+
+/**
+ * Validates a new todo's title and description together.
+ */
+export const validateNewTodo = ({
+  description,
+  title,
+}: {
+  description: string;
+  title: string;
+}): Result<ValidatedNewTodo, TodoValidationError> => {
+  const titleResult = validateTodoTitle(title);
+  if (!titleResult.success) return titleResult;
+
+  const descriptionResult = validateTodoDescription(description);
+  if (!descriptionResult.success) return descriptionResult;
+
+  return {
+    data: { description: descriptionResult.data, title: titleResult.data },
+    success: true,
+  };
+};
+
 /**
  * Flips the completed status of a todo.
  */
