@@ -24,6 +24,13 @@
     "vite-tsconfig-paths": "^5.1.4"
   },
   "name": "personal-app-template-sqlite-fly-io",
+  "packageManager": "pnpm@10.28.2",
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "lefthook"
+    ]
+  },
   "private": true,
   "scripts": {
     "build": "react-router build",
