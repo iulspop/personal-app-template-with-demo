@@ -129,31 +129,37 @@ app/features/<name>/
 └── application/     # Actions, schemas, UI — thin adapters mapping domain to web interface
 ```
 
-| Layer | Subdirectory | File pattern | Imports allowed | Purpose |
-|-------|-------------|-------------|-----------------|---------|
-| **Domain** | `domain/` | `*-domain.ts` | Zero external imports. Pure TS only | Types + pure functions + result types |
-| **Domain tests** | `domain/` | `*-domain.test.ts` | Vitest + domain file | Unit tests for pure functions |
-| **Constants** | `domain/` | `*-constants.ts` | Nothing | Intent strings, magic values |
-| **Infrastructure** | `infrastructure/` | `*-model.server.ts` | Prisma, `~/utils/db.server` | Database facades (single Prisma op each) |
-| **Factories** | `infrastructure/` | `*-factories.server.ts` | Faker, cuid2, Prisma types | Test data factories |
-| **Application** | `application/` | `*-action.server.ts` | Domain, model, schemas, React Router | Thin adapter: map web request to domain + infra calls |
-| **Schemas** | `application/` | `*-schemas.ts` | `zod`, constants | Validate raw form input (structural) |
-| **UI** | `application/` | `*-page.tsx`, `*.tsx` | Domain (pure helpers), React, RR, i18n | Display/container components |
-| **Route** | `app/routes/*.tsx` | N/A | Feature imports | Thin wiring: loader/action/component |
+ArchitectureLayers {
+  Domain (`domain/`):
+    - `*-domain.ts` — Types + pure functions + result types. Zero external imports, pure TS only.
+    - `*-domain.test.ts` — Unit tests for pure functions. Imports: Vitest + domain file.
+    - `*-constants.ts` — Intent strings, magic values. Zero imports.
+  Infrastructure (`infrastructure/`):
+    - `*-model.server.ts` — Database facades (single Prisma op each). Imports: Prisma, `~/utils/db.server`.
+    - `*-factories.server.ts` — Test data factories. Imports: Faker, cuid2, Prisma types.
+  Application (`application/`):
+    - `*-action.server.ts` — Thin adapter: map web request to domain + infra calls. Imports: domain, model, schemas, React Router.
+    - `*-schemas.ts` — Validate raw form input (structural). Imports: `zod`, constants.
+    - `*-page.tsx`, `*.tsx` — Display/container components. Imports: domain (pure helpers), React, RR, i18n.
+  Routes (`app/routes/*.tsx`):
+    - Thin wiring: loader/action/component. Imports: feature modules.
+}
 
-Import rules:
-- Domain files (`*-domain.ts`) must have **zero imports**
-- Constants files (`*-constants.ts`) must have **zero imports**
-- Schema files import only from `zod` and `../domain/` constants
-- Model files import only from Prisma and `~/utils/db.server`
-- Action files adapt web requests to domain + infra: `../domain/` + `../infrastructure/` + local schemas
-- UI files can import `../domain/` pure helpers but never model/action files
+ImportRules {
+  Domain files (`*-domain.ts`) must have zero imports.
+  Constants files (`*-constants.ts`) must have zero imports.
+  Schema files import only from `zod` and `../domain/` constants.
+  Model files import only from Prisma and `~/utils/db.server`.
+  Action files adapt web requests to domain + infra: `../domain/` + `../infrastructure/` + local schemas.
+  UI files can import `../domain/` pure helpers but never model/action files.
+}
 
-Key patterns:
-- One generic `Result<T, E>` replaces per-operation result types
-- SDA function params replace Command objects
-- `ts-pattern` exhaustive matching in action handlers
-- See `app/features/todos/` for a complete reference implementation
+KeyPatterns {
+  One generic `Result<T, E>` replaces per-operation result types.
+  SDA function params replace Command objects.
+  `ts-pattern` exhaustive matching in action handlers.
+  See `app/features/todos/` for a complete reference implementation.
+}
 
 ## Facade Functions
 
