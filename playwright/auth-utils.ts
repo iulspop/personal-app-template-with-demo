@@ -1,3 +1,5 @@
+import "dotenv/config";
+
 import { generateTOTP } from "@epic-web/totp";
 import type { Page } from "@playwright/test";
 import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
@@ -110,7 +112,7 @@ export async function loginAsTestUser(
         name: "__session",
         path: "/",
         sameSite: "lax",
-        secrets: [process.env.SESSION_SECRET ?? "super-duper-s3cret"],
+        secrets: [process.env.SESSION_SECRET ?? "default-secret"],
         secure: false,
       },
     });

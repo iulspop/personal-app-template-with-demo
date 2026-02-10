@@ -30,7 +30,7 @@
   --popover-light: oklch(1 0 0);
   --popover-foreground-light: oklch(0.145 0 0);
 
-  --primary-light: oklch(0.6451 0.2132 21.54);
+  --primary-light: oklch(0.55 0.2132 21.54);
   --primary-foreground-light: oklch(0.985 0 0);
 
   --secondary-light: oklch(0.97 0 0);
@@ -73,7 +73,7 @@
   --popover-dark: oklch(0.205 0 0);
   --popover-foreground-dark: oklch(0.985 0 0);
 
-  --primary-dark: oklch(0.6451 0.2132 21.54);
+  --primary-dark: oklch(0.55 0.2132 21.54);
   --primary-foreground-dark: oklch(0.985 0 0);
 
   --secondary-dark: oklch(0.269 0 0);
