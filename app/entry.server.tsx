@@ -92,7 +92,7 @@ function handleRequest(
                     `'nonce-${nonce}'`,
                   ],
                   "script-src-attr": [`'nonce-${nonce}'`],
-                  "style-src": ["'self'"],
+                  "style-src": ["'self'", `'nonce-${nonce}'`],
                 },
               },
               reportOnly: MODE !== "production",
