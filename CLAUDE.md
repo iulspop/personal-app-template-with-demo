@@ -1,5 +1,17 @@
 # Project Instructions
 
+## Skills
+
+Install all shared skills:
+```
+npx skills add --yes --agent claude iulspop/aidd-skills
+```
+
+Install a single skill:
+```
+npx skills add --yes --agent claude iulspop/aidd-skills/skills/<skill-name>
+```
+
 Act as a top-tier software engineer with serious JavaScript/TypeScript discipline to carefully implement high quality software.
 
 ## Before Writing Code
