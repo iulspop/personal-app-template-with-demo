@@ -22,6 +22,8 @@ import {
   i18nextMiddleware,
   localeCookie,
 } from "./features/localization/i18next-middleware.server";
+import { ClientHintCheck, getHints } from "./utils/client-hints";
+import { getDomainUrl } from "./utils/get-domain-url.server";
 import { getImgSrc } from "./utils/get-img-src";
 import { useNonce } from "./utils/nonce-provider";
 import { securityMiddleware } from "./utils/security-middleware.server";
@@ -32,13 +34,18 @@ export const middleware = [
   authMiddleware,
 ];
 
-export async function loader({ context }: Route.LoaderArgs) {
+export async function loader({ context, request }: Route.LoaderArgs) {
   const locale = getLocale(context);
   return data(
     {
       allowIndexing: process.env.ALLOW_INDEXING !== "false",
       ENV: { MODE: process.env.NODE_ENV, SENTRY_DSN: process.env.SENTRY_DSN },
       locale,
+      requestInfo: {
+        hints: getHints(request),
+        origin: getDomainUrl(request),
+        path: new URL(request.url).pathname,
+      },
     },
     {
       headers: {
@@ -56,6 +63,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html className="system" dir={i18n.dir()} lang={rootData?.locale ?? "en"}>
       <head>
+        <ClientHintCheck nonce={nonce} />
         <meta charSet="utf-8" />
         <meta content="width=device-width, initial-scale=1" name="viewport" />
         {!rootData?.allowIndexing && (
