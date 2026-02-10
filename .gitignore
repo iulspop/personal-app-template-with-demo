@@ -17,6 +17,7 @@ prisma/*.db-journal
 /blob-report/
 /test-results/
 app/test/mocks/fixtures/
+tests/fixtures/openimg/
 
 # Image optimization cache
 /data/images/
