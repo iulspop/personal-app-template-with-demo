@@ -170,7 +170,7 @@ KeyPatterns {
   One generic `Result<T, E>` replaces per-operation result types.
   SDA function params replace Command objects.
   `ts-pattern` exhaustive matching in action handlers.
-  See `app/features/todos/` for a complete reference implementation.
+  TODO: add a complete reference implementation in `app/features/`.
 }
 
 ## Facade Functions
