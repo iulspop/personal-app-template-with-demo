@@ -32,4 +32,10 @@ COPY --from=build-env /app/generated ./generated
 COPY public ./public
 COPY prisma ./prisma
 COPY prisma.config.ts ./
-CMD ["sh", "-c", "pnpm prisma migrate deploy && pnpm start"]
+CMD ["sh", "-c", "\
+  LAST=$(cat /data/.last-deploy 2>/dev/null || echo ''); \
+  if [ \"$FLY_IMAGE_REF\" != \"$LAST\" ]; then \
+    node ./node_modules/prisma/build/index.js migrate deploy && \
+    echo \"$FLY_IMAGE_REF\" > /data/.last-deploy; \
+  fi && \
+  NODE_OPTIONS='--import ./instrument.server.mjs' node ./node_modules/@react-router/serve/bin.js ./build/server/index.js"]

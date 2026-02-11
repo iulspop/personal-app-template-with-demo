@@ -4,6 +4,7 @@ swap_size_mb = 512
 
 [env]
   DATABASE_URL = "file:/data/sqlite.db"
+  HOST = "0.0.0.0"
   NODE_ENV = "production"
 
 [mounts]
@@ -11,7 +12,7 @@ swap_size_mb = 512
   destination = "/data"
 
 [[http_service.checks]]
-  grace_period = "10s"
+  grace_period = "60s"
   interval = "15s"
   method = "GET"
   path = "/healthcheck"
