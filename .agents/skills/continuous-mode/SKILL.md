@@ -21,10 +21,11 @@ ContinuousMode {
     }
 
     Assess {
-      Compare current state against the vision.
-      What's broken? What's missing? What's partial? What's built but drifted from the vision?
+      **Check Figma designs first.** Use the Figma MCP tools to review the current designs — search for components, take screenshots, and compare what's designed vs what's built. The designs are the source of truth for UI work.
+      Compare current state against the vision and the Figma designs.
+      What's broken? What's missing? What's partial? What's built but drifted from the vision or designs?
       What has weak test coverage? What violates CLAUDE.md conventions?
-      What's ugly, slow, or confusing?
+      What's ugly, slow, or confusing? What doesn't match the Figma designs?
     }
 
     Prioritize {
