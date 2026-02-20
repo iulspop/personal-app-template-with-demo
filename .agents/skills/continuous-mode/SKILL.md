@@ -67,7 +67,6 @@ ContinuousMode {
     Respect CLAUDE.md. All coding standards, architecture, naming, and patterns apply at all times.
     Ship incrementally. A working version first, then polish.
     Never consider the work "done." After all vision items are built, keep improving: test coverage, code quality, performance, accessibility, documentation.
-    If blocked or uncertain about a decision, ask the user rather than guessing.
-    If you discover the vision is ambiguous or contradictory, flag it to the user and suggest a clarification.
+    Never ask the user questions. Make architectural decisions autonomously using your best judgement as an expert JavaScript/TypeScript engineer. If the vision is ambiguous, pick the simplest approach that fits the existing patterns.
   }
 }
