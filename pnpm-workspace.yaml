@@ -1,0 +1,9 @@
+allowBuilds:
+  '@prisma/engines': true
+  '@sentry/cli': true
+  better-sqlite3: true
+  esbuild: true
+  lefthook: true
+  msw: true
+  prisma: true
+  sharp: true

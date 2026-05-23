@@ -8,14 +8,13 @@ import resources from "~/features/localization/locales";
 
 await i18next.use(initReactI18next).init({
   defaultNS: "translation",
-  initImmediate: false,
+  initAsync: false,
   interpolation: { escapeValue: false },
   lng: "en",
   react: {
     useSuspense: false,
   },
   resources,
-  showSupportNotice: false,
 });
 
 function AllTheProviders({ children }: { children: ReactNode }) {
@@ -28,5 +27,6 @@ const customRender = (
 ) => render(ui, { wrapper: AllTheProviders, ...options });
 
 export * from "@testing-library/react";
-export { customRender as render };
 export { default as userEvent } from "@testing-library/user-event";
+
+export { customRender as render };

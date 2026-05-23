@@ -21,7 +21,6 @@ export const [i18nextMiddleware, getLocale, getInstance] =
     i18next: {
       interpolation: { escapeValue: false },
       resources,
-      showSupportNotice: false,
     },
     plugins: [initReactI18next],
   });

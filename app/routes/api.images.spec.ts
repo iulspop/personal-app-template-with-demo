@@ -14,8 +14,9 @@ describe("api/images loader", () => {
     const response = await loader({
       context: {} as never,
       params: {},
+      pattern: "/api/images",
       request,
-      unstable_pattern: "/api/images",
+      url: new URL(request.url),
     }).catch((e: Response) => e);
 
     expect(response).toBeInstanceOf(Response);
@@ -28,8 +29,9 @@ describe("api/images loader", () => {
     const response = await loader({
       context: {} as never,
       params: {},
+      pattern: "/api/images",
       request,
-      unstable_pattern: "/api/images",
+      url: new URL(request.url),
     });
 
     expect(response).toBeInstanceOf(Response);

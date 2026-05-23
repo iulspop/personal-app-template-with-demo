@@ -23,7 +23,6 @@ async function hydrate() {
       detection: { caches: [], order: ["htmlTag"] },
       fallbackLng: "en",
       interpolation: { escapeValue: false },
-      showSupportNotice: false,
     });
 
   startTransition(() => {
