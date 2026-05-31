@@ -1,6 +1,5 @@
 import { startRegistration } from "@simplewebauthn/browser"
 import { useEffect, useState } from "react"
-import { useTranslation } from "react-i18next"
 import { Form } from "react-router"
 
 import type { Todo } from "../../../../generated/prisma/client"
@@ -11,7 +10,7 @@ import {
 import type { TodoFilter } from "../domain/todos-domain"
 import {
   isTodoValidationError,
-  validationErrorToI18nKey,
+  validationErrorToMessage,
 } from "../domain/todos-domain"
 import { FilterTabsComponent } from "./filter-tabs"
 import { TodoItemComponent } from "./todo-item"
@@ -50,7 +49,6 @@ export function TodosPageComponent({
   resendEmailVerificationCooldownSeconds?: number
   todos: Todo[]
 }) {
-  const { t } = useTranslation("todos")
   const [passkeySetupState, setPasskeySetupState] = useState<
     "idle" | "saving" | "saved" | "error"
   >("idle")
@@ -109,10 +107,10 @@ export function TodosPageComponent({
   return (
     <main className={s.page}>
       <div className={s.header}>
-        <h1 className={s.title}>{t("pageTitle")}</h1>
+        <h1 className={s.title}>Todos</h1>
         <Form action="/logout" method="post">
           <Button size="sm" type="submit" variant="outline">
-            {t("translation:logout", { defaultValue: "Log out" })}
+            Log out
           </Button>
         </Form>
       </div>
@@ -170,23 +168,27 @@ export function TodosPageComponent({
 
       <Form className={s.form} method="post">
         <div>
-          <Input name="title" placeholder={t("titlePlaceholder")} type="text" />
+          <Input
+            name="title"
+            placeholder="What needs to be done?"
+            type="text"
+          />
         </div>
         <div>
           <Textarea
             name="description"
-            placeholder={t("description")}
+            placeholder="Description (optional)"
             rows={2}
           />
         </div>
         <Button name="intent" type="submit" value={CREATE_TODO_INTENT}>
-          {t("addTodo")}
+          Add todo
         </Button>
         {actionData?.success === false &&
           actionData.error &&
           isTodoValidationError(actionData.error) && (
             <FieldError>
-              {t(validationErrorToI18nKey(actionData.error))}
+              {validationErrorToMessage(actionData.error)}
             </FieldError>
           )}
       </Form>
@@ -194,14 +196,10 @@ export function TodosPageComponent({
       <FilterTabsComponent currentFilter={filter} />
 
       {counts.total === 0 ? (
-        <p className={s.emptyState}>{t("emptyState")}</p>
+        <p className={s.emptyState}>No todos yet. Add one above!</p>
       ) : todos.length === 0 ? (
         <p className={s.emptyState}>
-          {t(
-            `emptyFiltered.${filter}` as
-              | "emptyFiltered.active"
-              | "emptyFiltered.completed",
-          )}
+          {filter === "active" ? "No active todos" : "No completed todos"}
         </p>
       ) : (
         <ul className={s.list}>
@@ -212,7 +210,7 @@ export function TodosPageComponent({
       )}
 
       <footer className={s.footer}>
-        <span>{t("activeCount", { count: counts.active })}</span>
+        <span>{counts.active} active</span>
         {counts.completed > 0 && (
           <Form method="post">
             <Button
@@ -222,11 +220,11 @@ export function TodosPageComponent({
               value={CLEAR_COMPLETED_INTENT}
               variant="link"
             >
-              {t("clearCompleted")}
+              Clear completed
             </Button>
           </Form>
         )}
-        <span>{t("completedCount", { count: counts.completed })}</span>
+        <span>{counts.completed} completed</span>
       </footer>
     </main>
   )

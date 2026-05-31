@@ -48,10 +48,6 @@ vi.mock("~/features/auth/infrastructure/passkeys-model.server", () => ({
   retrievePasskeysFromDatabaseByUserId: vi.fn(() => []),
 }))
 
-vi.mock("~/features/localization/i18next-middleware.server", () => ({
-  getInstance: vi.fn(() => ({ t: () => "Todos" })),
-}))
-
 vi.mock("~/features/users/infrastructure/users-model.server", () => ({
   retrieveUserFromDatabaseById: vi.fn(() => ({
     createdAt: new Date("2026-05-31T00:00:00.000Z"),

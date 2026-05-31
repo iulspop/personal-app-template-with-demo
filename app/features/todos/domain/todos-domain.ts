@@ -85,22 +85,22 @@ export const validateNewTodo = ({
 }
 
 /**
- * Maps a domain validation error code to its i18n translation key.
+ * Maps a domain validation error code to a user-facing message.
  */
-const validationErrorI18nKeys = {
-  DESCRIPTION_TOO_LONG: "validation.descriptionTooLong",
-  TITLE_EMPTY: "validation.titleRequired",
-  TITLE_TOO_LONG: "validation.titleTooLong",
+const validationErrorMessages = {
+  DESCRIPTION_TOO_LONG: "Description must be 1000 characters or less",
+  TITLE_EMPTY: "Title is required",
+  TITLE_TOO_LONG: "Title must be 200 characters or less",
 } as const
 
-export const validationErrorToI18nKey = (
+export const validationErrorToMessage = (
   error: TodoValidationError,
-): (typeof validationErrorI18nKeys)[TodoValidationError] =>
-  validationErrorI18nKeys[error]
+): (typeof validationErrorMessages)[TodoValidationError] =>
+  validationErrorMessages[error]
 
 export const isTodoValidationError = (
   value: string,
-): value is TodoValidationError => value in validationErrorI18nKeys
+): value is TodoValidationError => value in validationErrorMessages
 
 /**
  * Flips the completed status of a todo.

@@ -25,7 +25,6 @@ npx create-react-router@latest --template iulspop/personal-app-template-with-dem
 - Todo CRUD as a reference feature implementation
 - Content Security Policy with per-request nonces
 - Healthcheck endpoint (`/healthcheck`)
-- Internationalization with [i18next](https://www.i18next.com/) + [remix-i18next](https://github.com/sergiodxa/remix-i18next)
 - Dark mode (OS `prefers-color-scheme`)
 - Accessibility testing with [Axe](https://www.npmjs.com/package/@axe-core/playwright)
 - CI/CD with GitHub Actions + auto-deploy to [Fly.io](https://fly.io/)

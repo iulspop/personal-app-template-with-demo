@@ -1,7 +1,6 @@
 /** biome-ignore-all lint/a11y/useSemanticElements: Field groups intentionally avoid fieldset semantics. */
 
 import { useMemo } from "react"
-import { useTranslation } from "react-i18next"
 
 import * as s from "./field.css"
 import { Label } from "~/components/ui/label"
@@ -141,8 +140,6 @@ function FieldError({
 }: React.ComponentProps<"div"> & {
   errors?: Array<{ message?: string } | undefined> | string[]
 }) {
-  const { t } = useTranslation() as { t: (key: string) => string }
-
   const content = useMemo(() => {
     if (children) {
       return children
@@ -153,23 +150,21 @@ function FieldError({
     }
 
     if (errors?.length === 1) {
-      return typeof errors[0] === "string"
-        ? t(errors[0])
-        : t(errors[0]?.message ?? "")
+      return typeof errors[0] === "string" ? errors[0] : errors[0]?.message
     }
 
     return (
       <ul className={s.fieldErrorList}>
         {errors.map((error) =>
           typeof error === "string" ? (
-            <li key={error}>{t(error)}</li>
+            <li key={error}>{error}</li>
           ) : error?.message ? (
-            <li key={error.message}>{t(error.message)}</li>
+            <li key={error.message}>{error.message}</li>
           ) : null,
         )}
       </ul>
     )
-  }, [children, errors, t])
+  }, [children, errors])
 
   if (!content) {
     return null

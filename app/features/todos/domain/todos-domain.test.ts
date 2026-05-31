@@ -11,7 +11,7 @@ import {
   validateTodoDescription,
   validateTodoTitle,
   validateTodoUpdate,
-  validationErrorToI18nKey,
+  validationErrorToMessage,
 } from "./todos-domain"
 
 const createTodo = (overrides: Partial<Todo> = {}): Todo => ({
@@ -101,22 +101,20 @@ describe("validateNewTodo()", () => {
   })
 })
 
-describe("validationErrorToI18nKey()", () => {
-  test("given: TITLE_EMPTY, should: return validation.titleRequired", () => {
-    expect(validationErrorToI18nKey("TITLE_EMPTY")).toBe(
-      "validation.titleRequired",
+describe("validationErrorToMessage()", () => {
+  test("given: TITLE_EMPTY, should: return title required message", () => {
+    expect(validationErrorToMessage("TITLE_EMPTY")).toBe("Title is required")
+  })
+
+  test("given: TITLE_TOO_LONG, should: return title length message", () => {
+    expect(validationErrorToMessage("TITLE_TOO_LONG")).toBe(
+      "Title must be 200 characters or less",
     )
   })
 
-  test("given: TITLE_TOO_LONG, should: return validation.titleTooLong", () => {
-    expect(validationErrorToI18nKey("TITLE_TOO_LONG")).toBe(
-      "validation.titleTooLong",
-    )
-  })
-
-  test("given: DESCRIPTION_TOO_LONG, should: return validation.descriptionTooLong", () => {
-    expect(validationErrorToI18nKey("DESCRIPTION_TOO_LONG")).toBe(
-      "validation.descriptionTooLong",
+  test("given: DESCRIPTION_TOO_LONG, should: return description length message", () => {
+    expect(validationErrorToMessage("DESCRIPTION_TOO_LONG")).toBe(
+      "Description must be 1000 characters or less",
     )
   })
 })

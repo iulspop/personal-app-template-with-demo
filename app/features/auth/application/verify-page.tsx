@@ -1,4 +1,3 @@
-import { useTranslation } from "react-i18next"
 import { Form } from "react-router"
 
 import { VERIFY_CODE_INTENT } from "../domain/auth-constants"
@@ -12,6 +11,14 @@ type VerifyPageActionData =
   | { error: null; success: true }
   | undefined
 
+const validationMessages: Record<string, string> = {
+  codeExpired: "Code expired. Please request a new one.",
+  codeRequired: "Please enter your verification code.",
+  emailInvalid: "Please enter a valid email address.",
+  emailRequired: "Email is required.",
+  invalidCode: "Invalid code. Please try again.",
+}
+
 export function VerifyPageComponent({
   actionData,
   target,
@@ -21,13 +28,12 @@ export function VerifyPageComponent({
   target: string
   type: string
 }) {
-  const { t } = useTranslation("auth", { keyPrefix: "verify" })
-  const { t: tValidation } = useTranslation("auth")
-
   return (
     <main className={s.page}>
-      <h1 className={s.title}>{t("title")}</h1>
-      <p className={s.description}>{t("description", { email: target })}</p>
+      <h1 className={s.title}>Check your email</h1>
+      <p className={s.description}>
+        We sent a 6-digit code to {target}. Enter it below.
+      </p>
 
       <Form className={s.form} method="post">
         <input name="type" type="hidden" value={type} />
@@ -48,11 +54,11 @@ export function VerifyPageComponent({
           type="submit"
           value={VERIFY_CODE_INTENT}
         >
-          {t("submit")}
+          Verify
         </Button>
         {actionData?.success === false && (
           <FieldError>
-            {tValidation(`validation.${actionData.error}` as never)}
+            {validationMessages[actionData.error] ?? actionData.error}
           </FieldError>
         )}
       </Form>

@@ -19,7 +19,6 @@ import {
   retrieveVerificationFromDatabaseByTypeAndTarget,
   saveVerificationToDatabase,
 } from "~/features/auth/infrastructure/verifications-model.server"
-import { getInstance } from "~/features/localization/i18next-middleware.server"
 import { todosAction } from "~/features/todos/application/todos-action.server"
 import { TodosPageComponent } from "~/features/todos/application/todos-page"
 import {
@@ -51,9 +50,8 @@ const calculateRemainingResendCooldownSeconds = ({
   )
 }
 
-export async function loader({ context, request }: Route.LoaderArgs) {
+export async function loader({ request }: Route.LoaderArgs) {
   const userId = await requireUserId(request)
-  const i18n = getInstance(context)
   const [allTodos, passkeys, user] = await Promise.all([
     retrieveAllTodosFromDatabase(),
     retrievePasskeysFromDatabaseByUserId(userId),
@@ -74,7 +72,7 @@ export async function loader({ context, request }: Route.LoaderArgs) {
     filter,
     hasPasskeys: passkeys.length > 0,
     isEmailVerified: Boolean(user?.emailVerifiedAt),
-    pageTitle: i18n.t("todos:pageTitle"),
+    pageTitle: "Todos",
     resendEmailVerificationCooldownSeconds: existingVerification
       ? calculateRemainingResendCooldownSeconds(existingVerification)
       : 0,

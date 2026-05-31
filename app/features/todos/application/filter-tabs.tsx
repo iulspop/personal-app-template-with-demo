@@ -1,4 +1,3 @@
-import { useTranslation } from "react-i18next"
 import { Link } from "react-router"
 
 import type { TodoFilter } from "../domain/todos-domain"
@@ -7,15 +6,19 @@ import { cx } from "~/utils/class-name"
 
 const filters: TodoFilter[] = ["all", "active", "completed"]
 
+const filterLabels: Record<TodoFilter, string> = {
+  active: "Active",
+  all: "All",
+  completed: "Completed",
+}
+
 export function FilterTabsComponent({
   currentFilter,
 }: {
   currentFilter: TodoFilter
 }) {
-  const { t } = useTranslation("todos")
-
   return (
-    <nav aria-label={t("filterLabel")} className={s.nav}>
+    <nav aria-label="Filter todos" className={s.nav}>
       {filters.map((filter) => (
         <Link
           aria-current={filter === currentFilter ? "page" : undefined}
@@ -23,7 +26,7 @@ export function FilterTabsComponent({
           key={filter}
           to={`/?filter=${filter}`}
         >
-          {t(`filter.${filter}`)}
+          {filterLabels[filter]}
         </Link>
       ))}
     </nav>

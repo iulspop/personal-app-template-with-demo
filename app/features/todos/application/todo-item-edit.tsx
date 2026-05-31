@@ -1,4 +1,3 @@
-import { useTranslation } from "react-i18next"
 import type { FetcherWithComponents } from "react-router"
 
 import type { Todo } from "../../../../generated/prisma/client"
@@ -17,8 +16,6 @@ export function TodoItemEditComponent({
   onCancel: () => void
   todo: Todo
 }) {
-  const { t } = useTranslation("todos")
-
   return (
     <li className={s.item}>
       <fetcher.Form className={s.form} method="post">
@@ -28,7 +25,7 @@ export function TodoItemEditComponent({
         <Textarea defaultValue={todo.description} name="description" rows={2} />
         <div className={s.actions}>
           <Button size="sm" type="submit">
-            {t("save")}
+            Save
           </Button>
           <Button
             onClick={onCancel}
@@ -36,7 +33,7 @@ export function TodoItemEditComponent({
             type="button"
             variant="secondary"
           >
-            {t("cancel")}
+            Cancel
           </Button>
         </div>
       </fetcher.Form>

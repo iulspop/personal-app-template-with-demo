@@ -158,11 +158,6 @@ TypeConstraints {
   When using server/database return types: Awaited<ReturnType<typeof serverFunction>>, wrap with NonNullable<> if guaranteed to exist.
 }
 
-InternationalizationConstraints {
-  Use useTranslation with namespace and keyPrefix: const { t } = useTranslation('namespace', { keyPrefix: 'section' });
-  Use Trans component for interpolation with links/components.
-}
-
 ## Hexagonal Feature-Slice Architecture
 
 Each feature lives under `app/features/<name>/` with three subdirectories:

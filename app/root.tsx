@@ -1,7 +1,5 @@
 import * as Sentry from "@sentry/react-router"
 import { OpenImgContextProvider } from "openimg/react"
-import { useEffect } from "react"
-import { useTranslation } from "react-i18next"
 import {
   data,
   isRouteErrorResponse,
@@ -19,11 +17,6 @@ import "./design-system/global.css"
 
 import { ProgressBarComponent } from "./components/progress-bar"
 import { authMiddleware } from "./features/auth/application/auth-middleware.server"
-import {
-  getLocale,
-  i18nextMiddleware,
-  localeCookie,
-} from "./features/localization/i18next-middleware.server"
 import * as s from "./root.css"
 import { ClientHintCheck, getHints } from "./utils/client-hints"
 import { getDomainUrl } from "./utils/get-domain-url.server"
@@ -31,44 +24,26 @@ import { getImgSrc } from "./utils/get-img-src"
 import { useNonce } from "./utils/nonce-provider"
 import { securityMiddleware } from "./utils/security-middleware.server"
 
-export const middleware = [
-  securityMiddleware,
-  i18nextMiddleware,
-  authMiddleware,
-]
+export const middleware = [securityMiddleware, authMiddleware]
 
-export async function loader({ context, request }: Route.LoaderArgs) {
-  const locale = getLocale(context)
-  return data(
-    {
-      allowIndexing: process.env.ALLOW_INDEXING !== "false",
-      ENV: { MODE: process.env.NODE_ENV, SENTRY_DSN: process.env.SENTRY_DSN },
-      locale,
-      requestInfo: {
-        hints: getHints(request),
-        origin: getDomainUrl(request),
-        path: new URL(request.url).pathname,
-      },
+export async function loader({ request }: Route.LoaderArgs) {
+  return data({
+    allowIndexing: process.env.ALLOW_INDEXING !== "false",
+    ENV: { MODE: process.env.NODE_ENV, SENTRY_DSN: process.env.SENTRY_DSN },
+    requestInfo: {
+      hints: getHints(request),
+      origin: getDomainUrl(request),
+      path: new URL(request.url).pathname,
     },
-    {
-      headers: {
-        "Set-Cookie": await localeCookie.serialize(locale),
-      },
-    },
-  )
+  })
 }
 
 export function Layout({ children }: { children: React.ReactNode }) {
   const rootData = useRouteLoaderData<typeof loader>("root")
-  const { i18n } = useTranslation()
   const nonce = useNonce()
 
   return (
-    <html
-      className={lightThemeClass}
-      dir={i18n.dir()}
-      lang={rootData?.locale ?? "en"}
-    >
+    <html className={lightThemeClass} dir="ltr" lang="en">
       <head>
         <ClientHintCheck nonce={nonce} />
         <meta charSet="utf-8" />
@@ -101,15 +76,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
   )
 }
 
-export default function App({ loaderData: { locale } }: Route.ComponentProps) {
-  const { i18n } = useTranslation()
-
-  useEffect(() => {
-    if (i18n.language !== locale) {
-      i18n.changeLanguage(locale)
-    }
-  }, [i18n, locale])
-
+export default function App() {
   return <Outlet />
 }
 
@@ -118,20 +85,15 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
     Sentry.captureException(error)
   }
 
-  const { t } = useTranslation()
-
-  let message = t("errorBoundary.oops")
-  let details = t("errorBoundary.details")
+  let message = "Oops!"
+  let details = "An unexpected error occurred."
   let stack: string | undefined
 
   if (isRouteErrorResponse(error)) {
-    message =
-      error.status === 404
-        ? t("errorBoundary.status404")
-        : t("errorBoundary.statusError")
+    message = error.status === 404 ? "404" : "Error"
     details =
       error.status === 404
-        ? t("errorBoundary.notFound")
+        ? "The requested page could not be found."
         : error.statusText || details
   } else if (import.meta.env.DEV && error && error instanceof Error) {
     details = error.message

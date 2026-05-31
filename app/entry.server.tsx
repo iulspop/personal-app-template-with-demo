@@ -6,11 +6,9 @@ import * as Sentry from "@sentry/react-router"
 import { isbot } from "isbot"
 import type { RenderToPipeableStreamOptions } from "react-dom/server"
 import { renderToPipeableStream } from "react-dom/server"
-import { I18nextProvider } from "react-i18next"
 import type { EntryContext, RouterContextProvider } from "react-router"
 import { ServerRouter } from "react-router"
 
-import { getInstance } from "./features/localization/i18next-middleware.server"
 import { NonceProvider } from "./utils/nonce-provider"
 
 export const streamTimeout = 5000
@@ -23,7 +21,7 @@ function handleRequest(
   responseStatusCode: number,
   responseHeaders: Headers,
   routerContext: EntryContext,
-  routerContextProvider: RouterContextProvider,
+  _routerContextProvider: RouterContextProvider,
 ) {
   if (request.method.toUpperCase() === "HEAD") {
     return Promise.resolve(
@@ -49,13 +47,7 @@ function handleRequest(
 
     const { pipe, abort } = renderToPipeableStream(
       <NonceProvider value={nonce}>
-        <I18nextProvider i18n={getInstance(routerContextProvider)}>
-          <ServerRouter
-            context={routerContext}
-            nonce={nonce}
-            url={request.url}
-          />
-        </I18nextProvider>
+        <ServerRouter context={routerContext} nonce={nonce} url={request.url} />
       </NonceProvider>,
       {
         nonce,
