@@ -2,7 +2,6 @@ import crypto from "node:crypto"
 import { PassThrough } from "node:stream"
 import { contentSecurity } from "@nichtsam/helmet/content"
 import { createReadableStreamFromReadable } from "@react-router/node"
-import * as Sentry from "@sentry/react-router"
 import { isbot } from "isbot"
 import type { RenderToPipeableStreamOptions } from "react-dom/server"
 import { renderToPipeableStream } from "react-dom/server"
@@ -70,7 +69,8 @@ function handleRequest(
                   "connect-src": [
                     MODE === "development" ? "ws:" : undefined,
                     "'self'",
-                    "*.ingest.sentry.io",
+                    "https://*.posthog.com",
+                    "https://*.i.posthog.com",
                   ],
                   "font-src": ["'self'"],
                   "frame-src": ["'self'"],
@@ -89,7 +89,7 @@ function handleRequest(
             crossOriginEmbedderPolicy: false,
           })
 
-          pipe(Sentry.getMetaTagTransformer(body))
+          pipe(body)
 
           resolve(
             new Response(stream, {
@@ -114,6 +114,8 @@ function handleRequest(
   })
 }
 
-export default Sentry.wrapSentryHandleRequest(handleRequest)
+export default handleRequest
 
-export const handleError = Sentry.createSentryHandleError({ logErrors: true })
+export function handleError(error: unknown) {
+  console.error(error)
+}

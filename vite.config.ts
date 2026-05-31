@@ -1,23 +1,12 @@
 import { reactRouter } from "@react-router/dev/vite"
-import { sentryReactRouter } from "@sentry/react-router"
 import { vanillaExtractPlugin } from "@vanilla-extract/vite-plugin"
 import devtoolsJson from "vite-plugin-devtools-json"
 import { defineConfig } from "vitest/config"
 
-export default defineConfig((config) => ({
+export default defineConfig({
   plugins: [
     vanillaExtractPlugin(),
     !process.env.VITEST && !process.env.STORYBOOK && reactRouter(),
-    !process.env.VITEST &&
-      !process.env.STORYBOOK &&
-      sentryReactRouter(
-        {
-          authToken: process.env.SENTRY_AUTH_TOKEN,
-          org: process.env.SENTRY_ORG,
-          project: process.env.SENTRY_PROJECT,
-        },
-        config,
-      ),
     devtoolsJson(),
   ],
   resolve: {
@@ -52,4 +41,4 @@ export default defineConfig((config) => ({
       },
     ],
   },
-}))
+})

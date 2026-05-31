@@ -1,4 +1,3 @@
-import * as Sentry from "@sentry/react-router"
 import { OpenImgContextProvider } from "openimg/react"
 import {
   data,
@@ -29,7 +28,11 @@ export const middleware = [securityMiddleware, authMiddleware]
 export async function loader({ request }: Route.LoaderArgs) {
   return data({
     allowIndexing: process.env.ALLOW_INDEXING !== "false",
-    ENV: { MODE: process.env.NODE_ENV, SENTRY_DSN: process.env.SENTRY_DSN },
+    ENV: {
+      MODE: process.env.NODE_ENV,
+      POSTHOG_API_HOST: process.env.POSTHOG_API_HOST,
+      POSTHOG_API_KEY: process.env.POSTHOG_API_KEY,
+    },
     requestInfo: {
       hints: getHints(request),
       origin: getDomainUrl(request),
@@ -81,10 +84,6 @@ export default function App() {
 }
 
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
-  if (error instanceof Error) {
-    Sentry.captureException(error)
-  }
-
   let message = "Oops!"
   let details = "An unexpected error occurred."
   let stack: string | undefined

@@ -24,6 +24,7 @@ npx create-react-router@latest --template iulspop/personal-app-template-with-dem
 - Transactional emails with [Resend](https://resend.com/) (console fallback in dev)
 - Todo CRUD as a reference feature implementation
 - Content Security Policy with per-request nonces
+- Optional product analytics and session replay with [PostHog](https://posthog.com/)
 - Healthcheck endpoint (`/healthcheck`)
 - Dark mode (OS `prefers-color-scheme`)
 - Accessibility testing with [Axe](https://www.npmjs.com/package/@axe-core/playwright)
