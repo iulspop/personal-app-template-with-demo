@@ -30,3 +30,16 @@ export async function retrieveUserFromDatabaseById(id: User["id"]) {
 export async function retrieveUserFromDatabaseByEmail(email: User["email"]) {
   return prisma.user.findUnique({ where: { email } });
 }
+
+/**
+ * Updates a user's verified email timestamp in the database.
+ *
+ * @param user The user id and verified email timestamp to update.
+ * @returns The updated user.
+ */
+export async function updateUserInDatabaseById({
+  emailVerifiedAt,
+  id,
+}: Pick<User, "emailVerifiedAt" | "id">) {
+  return prisma.user.update({ data: { emailVerifiedAt }, where: { id } });
+}

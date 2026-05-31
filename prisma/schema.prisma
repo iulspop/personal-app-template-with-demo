@@ -8,13 +8,14 @@ datasource db {
 }
 
 model User {
-  id          String       @id @default(cuid())
-  email       String       @unique
-  createdAt   DateTime     @default(now())
-  updatedAt   DateTime     @updatedAt
-  connections Connection[]
-  passkeys    Passkey[]
-  sessions    Session[]
+  id              String       @id @default(cuid())
+  email           String       @unique
+  emailVerifiedAt DateTime?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  connections     Connection[]
+  passkeys        Passkey[]
+  sessions        Session[]
 }
 
 model Todo {

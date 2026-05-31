@@ -1,11 +1,16 @@
+import { renderToString } from "react-dom/server";
 import { createRoutesStub } from "react-router";
-import { describe, expect, test } from "vitest";
+import { afterEach, describe, expect, test, vi } from "vitest";
 
 import { createPopulatedTodo } from "../infrastructure/todos-factories.server";
 import { TodosPageComponent } from "./todos-page";
 import { render, screen } from "~/test/react-test-utils";
 
 const defaultCounts = { active: 0, completed: 0, total: 0 };
+
+afterEach(() => {
+  vi.useRealTimers();
+});
 
 describe("TodosPageComponent", () => {
   test("given: no todos, should: render empty state message", () => {
@@ -94,6 +99,134 @@ describe("TodosPageComponent", () => {
     render(<RouterStub initialEntries={[path]} />);
 
     expect(screen.queryByText(/add a passkey/i)).not.toBeInTheDocument();
+  });
+
+  test("given: the user's email is unverified, should: prompt email verification", () => {
+    const path = "/";
+    const RouterStub = createRoutesStub([
+      {
+        Component: () => (
+          <TodosPageComponent
+            counts={defaultCounts}
+            filter="all"
+            isEmailVerified={false}
+            todos={[]}
+          />
+        ),
+        path,
+      },
+    ]);
+
+    render(<RouterStub initialEntries={[path]} />);
+
+    expect(screen.getByText(/verify your email/i)).toBeInTheDocument();
+    expect(
+      screen.getByText(
+        /confirm your email address to finish setting up your account/i,
+      ),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /resend verification email/i }),
+    ).toBeInTheDocument();
+  });
+
+  test("given: the user's email is verified, should: hide email verification prompt", () => {
+    const path = "/";
+    const RouterStub = createRoutesStub([
+      {
+        Component: () => (
+          <TodosPageComponent
+            counts={defaultCounts}
+            filter="all"
+            isEmailVerified={true}
+            todos={[]}
+          />
+        ),
+        path,
+      },
+    ]);
+
+    render(<RouterStub initialEntries={[path]} />);
+
+    expect(screen.queryByText(/verify your email/i)).not.toBeInTheDocument();
+  });
+
+  test("given: a verification email was resent, should: show the resend countdown", () => {
+    vi.useFakeTimers();
+    const path = "/";
+    const RouterStub = createRoutesStub([
+      {
+        Component: () => (
+          <TodosPageComponent
+            actionData={{
+              cooldownSeconds: 120,
+              error: null,
+              intent: "resendEmailVerification",
+              success: true,
+            }}
+            counts={defaultCounts}
+            filter="all"
+            isEmailVerified={false}
+            todos={[]}
+          />
+        ),
+        path,
+      },
+    ]);
+
+    render(<RouterStub initialEntries={[path]} />);
+
+    expect(screen.getByText(/verification email sent/i)).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /resend again in 2:00/i }),
+    ).toBeDisabled();
+  });
+
+  test("given: a recent verification email exists after refresh, should: server render the resend countdown", () => {
+    const path = "/";
+    const RouterStub = createRoutesStub([
+      {
+        Component: () => (
+          <TodosPageComponent
+            counts={defaultCounts}
+            filter="all"
+            isEmailVerified={false}
+            resendEmailVerificationCooldownSeconds={90}
+            todos={[]}
+          />
+        ),
+        path,
+      },
+    ]);
+
+    const html = renderToString(<RouterStub initialEntries={[path]} />);
+
+    expect(html).toContain("Resend again in 1:30");
+  });
+
+  test("given: a recent verification email exists after refresh, should: show the resend countdown", () => {
+    vi.useFakeTimers();
+    const path = "/";
+    const RouterStub = createRoutesStub([
+      {
+        Component: () => (
+          <TodosPageComponent
+            counts={defaultCounts}
+            filter="all"
+            isEmailVerified={false}
+            resendEmailVerificationCooldownSeconds={90}
+            todos={[]}
+          />
+        ),
+        path,
+      },
+    ]);
+
+    render(<RouterStub initialEntries={[path]} />);
+
+    expect(
+      screen.getByRole("button", { name: /resend again in 1:30/i }),
+    ).toBeDisabled();
   });
 
   test("given: the page, should: render the add todo form", () => {

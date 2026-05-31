@@ -4,6 +4,7 @@ import {
   retrieveUserFromDatabaseByEmail,
   retrieveUserFromDatabaseById,
   saveUserToDatabase,
+  updateUserInDatabaseById,
 } from "./users-model.server";
 import { prisma } from "~/utils/db.server";
 
@@ -16,22 +17,40 @@ afterEach(async () => {
   }
 });
 
-const createTestUser = async (data: { email: string }) => {
+const createTestUser = async (data: {
+  email: string;
+  emailVerifiedAt?: Date;
+}) => {
   const user = await saveUserToDatabase(data);
   createdUserIds.push(user.id);
   return user;
 };
 
 describe("saveUserToDatabase()", () => {
-  test("given: valid email-only user data, should: create and return the user", async () => {
+  test("given: valid email-only user data, should: create and return an unverified user", async () => {
     const result = await createTestUser({
       email: "test@example.com",
     });
 
     expect(result).toMatchObject({
       email: "test@example.com",
+      emailVerifiedAt: null,
     });
     expect(result.id).toBeDefined();
+  });
+
+  test("given: a verified email timestamp, should: create and return a verified user", async () => {
+    const emailVerifiedAt = new Date("2026-05-31T10:30:00.000Z");
+
+    const result = await createTestUser({
+      email: "verified@example.com",
+      emailVerifiedAt,
+    });
+
+    expect(result).toMatchObject({
+      email: "verified@example.com",
+      emailVerifiedAt,
+    });
   });
 });
 
@@ -50,6 +69,26 @@ describe("retrieveUserFromDatabaseById()", () => {
     const found = await retrieveUserFromDatabaseById("non-existent");
 
     expect(found).toBeNull();
+  });
+});
+
+describe("updateUserInDatabaseById()", () => {
+  test("given: an existing user, should: update the verified email timestamp", async () => {
+    const created = await createTestUser({
+      email: "verify@example.com",
+    });
+    const emailVerifiedAt = new Date("2026-05-31T10:35:00.000Z");
+
+    const result = await updateUserInDatabaseById({
+      emailVerifiedAt,
+      id: created.id,
+    });
+
+    expect(result).toMatchObject({
+      email: "verify@example.com",
+      emailVerifiedAt,
+      id: created.id,
+    });
   });
 });
 

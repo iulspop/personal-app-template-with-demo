@@ -1,8 +1,16 @@
 import { createRoutesStub } from "react-router";
-import { describe, expect, test } from "vitest";
+import { afterEach, describe, expect, test, vi } from "vitest";
 
 import { SignUpPageComponent } from "./signup-page";
 import { render, screen, userEvent } from "~/test/react-test-utils";
+
+vi.mock("@simplewebauthn/browser", () => ({
+  startRegistration: vi.fn(),
+}));
+
+afterEach(() => {
+  vi.restoreAllMocks();
+});
 
 describe("SignUpPageComponent", () => {
   test("given: the sign up page, should: render create labeled passkey and email link options", () => {
@@ -33,7 +41,7 @@ describe("SignUpPageComponent", () => {
     );
   });
 
-  test("given: clicking create with passkey, should: start passkey signup without revealing email", async () => {
+  test("given: clicking create with passkey, should: replace the button with an email form", async () => {
     const user = userEvent.setup();
     const path = "/auth/signup";
     const RouterStub = createRoutesStub([
@@ -48,9 +56,15 @@ describe("SignUpPageComponent", () => {
       screen.getByRole("button", { name: /create with passkey/i }),
     );
 
-    expect(screen.queryByLabelText(/email/i)).not.toBeInTheDocument();
+    expect(screen.getByLabelText(/email/i)).toHaveAttribute(
+      "autocomplete",
+      "email",
+    );
     expect(
-      screen.queryByRole("button", { name: /send signup link/i }),
+      screen.getByRole("button", { name: /^continue$/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.queryByRole("button", { name: /create with passkey/i }),
     ).not.toBeInTheDocument();
   });
 
@@ -79,5 +93,37 @@ describe("SignUpPageComponent", () => {
     expect(
       screen.queryByRole("button", { name: /sign up with email link/i }),
     ).not.toBeInTheDocument();
+  });
+
+  test("given: passkey signup with an existing email, should: show the server error", async () => {
+    const user = userEvent.setup();
+    vi.spyOn(globalThis, "fetch").mockResolvedValueOnce(
+      new Response(
+        JSON.stringify({
+          error: "An account already exists for this email. Log in instead.",
+        }),
+        { status: 409 },
+      ),
+    );
+    const path = "/auth/signup";
+    const RouterStub = createRoutesStub([
+      {
+        Component: () => <SignUpPageComponent />,
+        path,
+      },
+    ]);
+
+    render(<RouterStub initialEntries={[path]} />);
+    await user.click(
+      screen.getByRole("button", { name: /create with passkey/i }),
+    );
+    await user.type(screen.getByLabelText(/email/i), "user@example.com");
+    await user.click(screen.getByRole("button", { name: /^continue$/i }));
+
+    expect(
+      await screen.findByText(
+        "An account already exists for this email. Log in instead.",
+      ),
+    ).toBeInTheDocument();
   });
 });

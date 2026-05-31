@@ -19,19 +19,30 @@ export function SignUpPageComponent({
   actionData?: SignInPageActionData;
 }) {
   const [passkeySignupState, setPasskeySignupState] = useState<
-    "idle" | "saving" | "error"
+    "idle" | "email" | "saving" | "error"
   >("idle");
+  const [passkeySignupError, setPasskeySignupError] = useState(
+    "Passkey signup failed.",
+  );
   const [isMagicLinkFormVisible, setIsMagicLinkFormVisible] = useState(
     actionData?.success === false,
   );
 
-  const signupWithPasskey = async () => {
+  const signupWithPasskey = async (email: string) => {
     setPasskeySignupState("saving");
 
     try {
-      const optionsJSON = await fetch("/auth/passkey/signup").then((res) =>
-        res.json(),
+      const optionsResponse = await fetch(
+        `/auth/passkey/signup?email=${encodeURIComponent(email)}`,
       );
+      const optionsJSON = await optionsResponse.json();
+
+      if (!optionsResponse.ok) {
+        setPasskeySignupError(optionsJSON.error ?? "Passkey signup failed.");
+        setPasskeySignupState("error");
+        return;
+      }
+
       const credential = await startRegistration({ optionsJSON });
       const result = await fetch("/auth/passkey/signup", {
         body: JSON.stringify({ credential }),
@@ -40,12 +51,14 @@ export function SignUpPageComponent({
       });
 
       if (!result.ok) {
+        setPasskeySignupError("Passkey signup failed.");
         setPasskeySignupState("error");
         return;
       }
 
       window.location.assign("/");
     } catch {
+      setPasskeySignupError("Passkey signup failed.");
       setPasskeySignupState("error");
     }
   };
@@ -67,16 +80,42 @@ export function SignUpPageComponent({
       </p>
 
       <div className="space-y-4">
-        <Button
-          className="w-full"
-          disabled={passkeySignupState === "saving"}
-          onClick={() => void signupWithPasskey()}
-          type="button"
-        >
-          {passkeySignupState === "saving"
-            ? "Creating passkey…"
-            : "Create with Passkey"}
-        </Button>
+        {passkeySignupState === "email" || passkeySignupState === "saving" ? (
+          <form
+            className="space-y-3"
+            onSubmit={(event) => {
+              event.preventDefault();
+              const form = new FormData(event.currentTarget);
+              void signupWithPasskey(String(form.get("email") ?? ""));
+            }}
+          >
+            <Input
+              aria-label="Email"
+              autoComplete="email"
+              name="email"
+              placeholder="you@example.com"
+              required
+              type="email"
+            />
+            <Button
+              className="w-full"
+              disabled={passkeySignupState === "saving"}
+              type="submit"
+            >
+              {passkeySignupState === "saving"
+                ? "Creating passkey…"
+                : "Continue"}
+            </Button>
+          </form>
+        ) : (
+          <Button
+            className="w-full"
+            onClick={() => setPasskeySignupState("email")}
+            type="button"
+          >
+            Create with Passkey
+          </Button>
+        )}
 
         <div className="flex items-center gap-3 py-2 text-sm text-muted-foreground">
           <div className="h-px flex-1 bg-border" />
@@ -126,7 +165,7 @@ export function SignUpPageComponent({
           </Button>
         )}
         {passkeySignupState === "error" && (
-          <FieldError>Passkey signup failed.</FieldError>
+          <FieldError>{passkeySignupError}</FieldError>
         )}
       </div>
 

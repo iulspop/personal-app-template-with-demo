@@ -11,6 +11,7 @@ import {
 import {
   retrieveUserFromDatabaseByEmail,
   saveUserToDatabase,
+  updateUserInDatabaseById,
 } from "~/features/users/infrastructure/users-model.server";
 
 export async function loader({ request }: Route.LoaderArgs) {
@@ -46,11 +47,18 @@ export async function loader({ request }: Route.LoaderArgs) {
   const existingUser = await retrieveUserFromDatabaseByEmail(target);
 
   if (existingUser) {
+    await updateUserInDatabaseById({
+      emailVerifiedAt: new Date(),
+      id: existingUser.id,
+    });
     const setCookie = await createUserSession(existingUser.id);
     throw redirect("/", { headers: { "Set-Cookie": setCookie } });
   }
 
-  const user = await saveUserToDatabase({ email: target });
+  const user = await saveUserToDatabase({
+    email: target,
+    emailVerifiedAt: new Date(),
+  });
   const setCookie = await createUserSession(user.id);
   throw redirect("/", { headers: { "Set-Cookie": setCookie } });
 }

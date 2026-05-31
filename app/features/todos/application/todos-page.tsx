@@ -1,5 +1,5 @@
 import { startRegistration } from "@simplewebauthn/browser";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Form } from "react-router";
 
@@ -19,10 +19,17 @@ import { Button } from "~/components/ui/button";
 import { FieldError } from "~/components/ui/field";
 import { Input } from "~/components/ui/input";
 import { Textarea } from "~/components/ui/textarea";
+import { RESEND_EMAIL_VERIFICATION_INTENT } from "~/features/auth/domain/auth-constants";
 
 type TodosPageActionData =
   | { error: string; success: false }
   | { error: null; success: true }
+  | {
+      cooldownSeconds: number;
+      error: string | null;
+      intent: typeof RESEND_EMAIL_VERIFICATION_INTENT;
+      success: boolean;
+    }
   | undefined;
 
 export function TodosPageComponent({
@@ -30,18 +37,53 @@ export function TodosPageComponent({
   counts,
   filter,
   hasPasskeys = true,
+  isEmailVerified = true,
+  resendEmailVerificationCooldownSeconds = 0,
   todos,
 }: {
   actionData?: TodosPageActionData;
   counts: { active: number; completed: number; total: number };
   filter: TodoFilter;
   hasPasskeys?: boolean;
+  isEmailVerified?: boolean;
+  resendEmailVerificationCooldownSeconds?: number;
   todos: Todo[];
 }) {
   const { t } = useTranslation("todos");
   const [passkeySetupState, setPasskeySetupState] = useState<
     "idle" | "saving" | "saved" | "error"
   >("idle");
+  const [resendCooldownSeconds, setResendCooldownSeconds] = useState(
+    resendEmailVerificationCooldownSeconds,
+  );
+  const isResendAction =
+    actionData &&
+    "intent" in actionData &&
+    actionData.intent === RESEND_EMAIL_VERIFICATION_INTENT;
+  const formattedResendCooldown = `${Math.floor(resendCooldownSeconds / 60)}:${String(
+    resendCooldownSeconds % 60,
+  ).padStart(2, "0")}`;
+
+  useEffect(() => {
+    setResendCooldownSeconds(resendEmailVerificationCooldownSeconds);
+  }, [resendEmailVerificationCooldownSeconds]);
+
+  useEffect(() => {
+    if (!isResendAction) return;
+
+    setResendCooldownSeconds(actionData.cooldownSeconds);
+  }, [actionData, isResendAction]);
+
+  useEffect(() => {
+    if (resendCooldownSeconds <= 0) return;
+
+    const timeout = window.setTimeout(
+      () => setResendCooldownSeconds((seconds) => seconds - 1),
+      1000,
+    );
+
+    return () => window.clearTimeout(timeout);
+  }, [resendCooldownSeconds]);
 
   const setupPasskey = async () => {
     setPasskeySetupState("saving");
@@ -73,6 +115,36 @@ export function TodosPageComponent({
           </Button>
         </Form>
       </div>
+
+      {!isEmailVerified && (
+        <section className="mb-8 rounded-lg border border-border bg-card p-4 text-card-foreground">
+          <h2 className="font-semibold">Verify your email</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Confirm your email address to finish setting up your account.
+          </p>
+          {isResendAction && actionData.success && (
+            <p className="mt-2 text-sm text-muted-foreground">
+              Verification email sent.
+            </p>
+          )}
+          {isResendAction && !actionData.success && actionData.error && (
+            <FieldError className="mt-2">{actionData.error}</FieldError>
+          )}
+          <Form className="mt-3" method="post">
+            <Button
+              disabled={resendCooldownSeconds > 0}
+              name="intent"
+              type="submit"
+              value={RESEND_EMAIL_VERIFICATION_INTENT}
+              variant="outline"
+            >
+              {resendCooldownSeconds > 0
+                ? `Resend again in ${formattedResendCooldown}`
+                : "Resend verification email"}
+            </Button>
+          </Form>
+        </section>
+      )}
 
       {!hasPasskeys && passkeySetupState !== "saved" && (
         <section className="mb-8 rounded-lg border border-border bg-card p-4 text-card-foreground">
@@ -110,6 +182,7 @@ export function TodosPageComponent({
           {t("addTodo")}
         </Button>
         {actionData?.success === false &&
+          actionData.error &&
           isTodoValidationError(actionData.error) && (
             <FieldError>
               {t(validationErrorToI18nKey(actionData.error))}
