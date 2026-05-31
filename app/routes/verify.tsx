@@ -1,22 +1,22 @@
-import type { Route } from "./+types/verify";
-import { authAction } from "~/features/auth/application/auth-action.server";
-import { requireAnonymous } from "~/features/auth/application/auth-session.server";
-import { VerifyPageComponent } from "~/features/auth/application/verify-page";
+import type { Route } from "./+types/verify"
+import { authAction } from "~/features/auth/application/auth-action.server"
+import { requireAnonymous } from "~/features/auth/application/auth-session.server"
+import { VerifyPageComponent } from "~/features/auth/application/verify-page"
 
-export const meta: Route.MetaFunction = () => [{ title: "Verify" }];
+export const meta: Route.MetaFunction = () => [{ title: "Verify" }]
 
 export async function loader({ request }: Route.LoaderArgs) {
-  await requireAnonymous(request);
+  await requireAnonymous(request)
 
-  const url = new URL(request.url);
-  const type = url.searchParams.get("type") ?? "";
-  const target = url.searchParams.get("target") ?? "";
+  const url = new URL(request.url)
+  const type = url.searchParams.get("type") ?? ""
+  const target = url.searchParams.get("target") ?? ""
 
-  return { target, type };
+  return { target, type }
 }
 
 export async function action(args: Route.ActionArgs) {
-  return await authAction(args);
+  return await authAction(args)
 }
 
 export default function VerifyRoute({
@@ -29,5 +29,5 @@ export default function VerifyRoute({
       target={loaderData.target}
       type={loaderData.type}
     />
-  );
+  )
 }

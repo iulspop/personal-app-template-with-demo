@@ -1,6 +1,6 @@
-import type { Meta, StoryObj } from "@storybook/react-vite";
+import type { Meta, StoryObj } from "@storybook/react-vite"
 
-import { Button } from "./button";
+import { Button } from "./button"
 import {
   Card,
   CardAction,
@@ -9,7 +9,8 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "./card";
+} from "./card"
+import * as s from "./card.stories.css"
 
 const meta = {
   argTypes: {
@@ -17,10 +18,10 @@ const meta = {
   },
   component: Card,
   title: "UI/Card",
-} satisfies Meta<typeof Card>;
+} satisfies Meta<typeof Card>
 
-export default meta;
-type Story = StoryObj<typeof meta>;
+export default meta
+type Story = StoryObj<typeof meta>
 
 export const Default: Story = {
   args: {
@@ -35,12 +36,12 @@ export const Default: Story = {
         </CardContent>
         <CardFooter>
           <Button variant="outline">Cancel</Button>
-          <Button className="ml-2">Save</Button>
+          <Button className={s.saveButton}>Save</Button>
         </CardFooter>
       </>
     ),
   },
-};
+}
 
 export const Small: Story = {
   args: {
@@ -57,7 +58,7 @@ export const Small: Story = {
     ),
     size: "sm",
   },
-};
+}
 
 export const WithAction: Story = {
   args: {
@@ -78,4 +79,4 @@ export const WithAction: Story = {
       </>
     ),
   },
-};
+}

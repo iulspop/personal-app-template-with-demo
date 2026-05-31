@@ -1,10 +1,10 @@
-import type { RenderOptions } from "@testing-library/react";
-import { render } from "@testing-library/react";
-import i18next from "i18next";
-import type { ReactElement, ReactNode } from "react";
-import { I18nextProvider, initReactI18next } from "react-i18next";
+import type { RenderOptions } from "@testing-library/react"
+import { render } from "@testing-library/react"
+import i18next from "i18next"
+import type { ReactElement, ReactNode } from "react"
+import { I18nextProvider, initReactI18next } from "react-i18next"
 
-import resources from "~/features/localization/locales";
+import resources from "~/features/localization/locales"
 
 await i18next.use(initReactI18next).init({
   defaultNS: "translation",
@@ -15,18 +15,18 @@ await i18next.use(initReactI18next).init({
     useSuspense: false,
   },
   resources,
-});
+})
 
 function AllTheProviders({ children }: { children: ReactNode }) {
-  return <I18nextProvider i18n={i18next}>{children}</I18nextProvider>;
+  return <I18nextProvider i18n={i18next}>{children}</I18nextProvider>
 }
 
 const customRender = (
   ui: ReactElement,
   options?: Omit<RenderOptions, "wrapper">,
-) => render(ui, { wrapper: AllTheProviders, ...options });
+) => render(ui, { wrapper: AllTheProviders, ...options })
 
-export * from "@testing-library/react";
-export { default as userEvent } from "@testing-library/user-event";
+export * from "@testing-library/react"
+export { default as userEvent } from "@testing-library/user-event"
 
-export { customRender as render };
+export { customRender as render }

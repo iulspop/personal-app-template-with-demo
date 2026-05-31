@@ -1,5 +1,5 @@
-export const CLEAR_COMPLETED_INTENT = "clearCompleted";
-export const CREATE_TODO_INTENT = "createTodo";
-export const DELETE_TODO_INTENT = "deleteTodo";
-export const EDIT_TODO_INTENT = "editTodo";
-export const TOGGLE_TODO_INTENT = "toggleTodo";
+export const CLEAR_COMPLETED_INTENT = "clearCompleted"
+export const CREATE_TODO_INTENT = "createTodo"
+export const DELETE_TODO_INTENT = "deleteTodo"
+export const EDIT_TODO_INTENT = "editTodo"
+export const TOGGLE_TODO_INTENT = "toggleTodo"

@@ -1,12 +1,12 @@
 /** biome-ignore-all lint/suspicious/noExplicitAny: asyncPipe is hard to type */
 /** biome-ignore-all lint/style/noNonNullAssertion: We check for null values */
 // A type that represents either a value or a promise of that value.
-type MaybePromise<T> = T | Promise<T>;
+type MaybePromise<T> = T | Promise<T>
 
 // A function type for asynchronous (or synchronous) functions.
 export type AsyncFunction<T extends any[] = any[], R = any> = (
   ...arguments_: T
-) => MaybePromise<R>;
+) => MaybePromise<R>
 
 /**
  * Pipe asynchronous (or synchronous) functions from left to right.
@@ -15,25 +15,25 @@ export type AsyncFunction<T extends any[] = any[], R = any> = (
  *
  * Overloads allow the first function to accept multiple arguments.
  */
-export function asyncPipe(): <T>(x: T) => Promise<T>;
+export function asyncPipe(): <T>(x: T) => Promise<T>
 export function asyncPipe<A extends any[], R>(
   function_: AsyncFunction<A, R>,
-): (...arguments_: A) => Promise<R>;
+): (...arguments_: A) => Promise<R>
 export function asyncPipe<A extends any[], B, R>(
   function1: AsyncFunction<A, B>,
   function2: AsyncFunction<[B], R>,
-): (...arguments_: A) => Promise<R>;
+): (...arguments_: A) => Promise<R>
 export function asyncPipe<A extends any[], B, C, R>(
   function1: AsyncFunction<A, B>,
   function2: AsyncFunction<[B], C>,
   function3: AsyncFunction<[C], R>,
-): (...arguments_: A) => Promise<R>;
+): (...arguments_: A) => Promise<R>
 export function asyncPipe<A extends any[], B, C, D, R>(
   function1: AsyncFunction<A, B>,
   function2: AsyncFunction<[B], C>,
   function3: AsyncFunction<[C], D>,
   function4: AsyncFunction<[D], R>,
-): (...arguments_: A) => Promise<R>;
+): (...arguments_: A) => Promise<R>
 
 /**
  * Composes multiple asynchronous (or synchronous) functions from left to right
@@ -82,21 +82,21 @@ export function asyncPipe(
 ): (...arguments_: any[]) => Promise<any> {
   if (fns.length === 0) {
     // No functions: return an identity function that wraps its argument in a Promise.
-    return <T>(x: T) => Promise.resolve(x);
+    return <T>(x: T) => Promise.resolve(x)
   }
 
   if (fns.length === 1) {
     // Single function: wrap its result in a Promise.
-    return (...arguments_: any[]) => Promise.resolve(fns[0]!(...arguments_));
+    return (...arguments_: any[]) => Promise.resolve(fns[0]!(...arguments_))
   }
 
   return (...arguments_: any[]) => {
     // Call the first function with all provided arguments.
-    const [first, ...rest] = fns;
+    const [first, ...rest] = fns
     // Chain the remaining functions using Promise.then
     return rest.reduce(
       (chain, function_) => chain.then((result) => function_(result)),
       Promise.resolve(first!(...arguments_)),
-    );
-  };
+    )
+  }
 }

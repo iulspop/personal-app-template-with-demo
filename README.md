@@ -10,8 +10,8 @@ npx create-react-router@latest --template iulspop/personal-app-template-with-dem
 
 - [React Router v7](https://reactrouter.com/) (successor to Remix) with SSR
 - [TypeScript](https://www.typescriptlang.org/) (strict mode)
-- [TailwindCSS v4](https://tailwindcss.com/) with dark mode
-- [shadcn/Base UI](https://ui.shadcn.com/) components + [Tabler Icons](https://tabler.io/icons)
+- [vanilla-extract](https://vanilla-extract.style/) design tokens with dark mode
+- [Base UI](https://base-ui.com/) primitives + [Tabler Icons](https://tabler.io/icons)
 - [SQLite](https://www.sqlite.org/) via [Prisma](https://www.prisma.io/) + [better-sqlite3](https://github.com/WiseLibs/better-sqlite3)
 - [Biome](https://biomejs.dev/) for linting and formatting
 - [Vitest](https://vitest.dev/) for unit/integration/component tests

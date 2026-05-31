@@ -15,11 +15,6 @@
     },
     "enabled": true
   },
-  "css": {
-    "parser": {
-      "tailwindDirectives": true
-    }
-  },
   "files": {
     "ignoreUnknown": false,
     "includes": ["**", "!.react-router"]
@@ -30,7 +25,8 @@
   },
   "javascript": {
     "formatter": {
-      "quoteStyle": "double"
+      "quoteStyle": "double",
+      "semicolons": "asNeeded"
     }
   },
   "linter": {

@@ -1,25 +1,24 @@
-import { data } from "react-router";
-import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+import { data } from "react-router"
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
 
-import { action, loader } from "./index";
-import { requireUserId } from "~/features/auth/application/auth-session.server";
-import { sendVerificationEmail } from "~/features/auth/infrastructure/email.server";
-import { generateVerificationTOTP } from "~/features/auth/infrastructure/totp.server";
+import { action, loader } from "./index"
+import { requireUserId } from "~/features/auth/application/auth-session.server"
+import { sendVerificationEmail } from "~/features/auth/infrastructure/email.server"
+import { generateVerificationTOTP } from "~/features/auth/infrastructure/totp.server"
 import {
   retrieveVerificationFromDatabaseByTypeAndTarget,
   saveVerificationToDatabase,
-} from "~/features/auth/infrastructure/verifications-model.server";
-import { todosAction } from "~/features/todos/application/todos-action.server";
-import { retrieveAllTodosFromDatabase } from "~/features/todos/infrastructure/todos-model.server";
-import { retrieveUserFromDatabaseById } from "~/features/users/infrastructure/users-model.server";
+} from "~/features/auth/infrastructure/verifications-model.server"
+import { todosAction } from "~/features/todos/application/todos-action.server"
+import { retrieveAllTodosFromDatabase } from "~/features/todos/infrastructure/todos-model.server"
 
 vi.mock("~/features/auth/application/auth-session.server", () => ({
   requireUserId: vi.fn(() => "user-id"),
-}));
+}))
 
 vi.mock("~/features/auth/infrastructure/email.server", () => ({
   sendVerificationEmail: vi.fn(),
-}));
+}))
 
 vi.mock("~/features/auth/infrastructure/totp.server", () => ({
   generateVerificationTOTP: vi.fn(() => ({
@@ -30,28 +29,28 @@ vi.mock("~/features/auth/infrastructure/totp.server", () => ({
     period: 600,
     secret: "secret",
   })),
-}));
+}))
 
 vi.mock("~/features/auth/infrastructure/verifications-model.server", () => ({
   retrieveVerificationFromDatabaseByTypeAndTarget: vi.fn(() => null),
   saveVerificationToDatabase: vi.fn(),
-}));
+}))
 
 vi.mock("~/features/todos/application/todos-action.server", () => ({
   todosAction: vi.fn(() => data({ error: null, success: true })),
-}));
+}))
 
 vi.mock("~/features/todos/infrastructure/todos-model.server", () => ({
   retrieveAllTodosFromDatabase: vi.fn(() => []),
-}));
+}))
 
 vi.mock("~/features/auth/infrastructure/passkeys-model.server", () => ({
   retrievePasskeysFromDatabaseByUserId: vi.fn(() => []),
-}));
+}))
 
 vi.mock("~/features/localization/i18next-middleware.server", () => ({
   getInstance: vi.fn(() => ({ t: () => "Todos" })),
-}));
+}))
 
 vi.mock("~/features/users/infrastructure/users-model.server", () => ({
   retrieveUserFromDatabaseById: vi.fn(() => ({
@@ -61,7 +60,7 @@ vi.mock("~/features/users/infrastructure/users-model.server", () => ({
     id: "user-id",
     updatedAt: new Date("2026-05-31T00:00:00.000Z"),
   })),
-}));
+}))
 
 const createRouteArgs = (request: Request) => ({
   context: {} as never,
@@ -69,22 +68,22 @@ const createRouteArgs = (request: Request) => ({
   pattern: "/",
   request,
   url: new URL(request.url),
-});
+})
 
 const createResendRequest = () =>
   new Request("https://example.com/", {
     body: new URLSearchParams({ intent: "resendEmailVerification" }),
     method: "POST",
-  });
+  })
 
 beforeEach(() => {
-  vi.clearAllMocks();
-  vi.setSystemTime(new Date("2026-05-31T00:00:00.000Z"));
-});
+  vi.clearAllMocks()
+  vi.setSystemTime(new Date("2026-05-31T00:00:00.000Z"))
+})
 
 afterEach(() => {
-  vi.useRealTimers();
-});
+  vi.useRealTimers()
+})
 
 describe("index loader", () => {
   test("given: an unverified user with a recent verification email, should: return remaining resend cooldown", async () => {
@@ -101,15 +100,15 @@ describe("index loader", () => {
       secret: "secret",
       target: "user@example.com",
       type: "email",
-    });
+    })
 
     const loaderData = await loader(
       createRouteArgs(new Request("https://example.com/")),
-    );
+    )
 
-    expect(retrieveAllTodosFromDatabase).toHaveBeenCalledWith();
-    expect(loaderData.resendEmailVerificationCooldownSeconds).toEqual(90);
-  });
+    expect(retrieveAllTodosFromDatabase).toHaveBeenCalledWith()
+    expect(loaderData.resendEmailVerificationCooldownSeconds).toEqual(90)
+  })
 
   test("given: a resent verification email with an older record, should: return cooldown from the latest expiry", async () => {
     vi.mocked(
@@ -125,24 +124,24 @@ describe("index loader", () => {
       secret: "secret",
       target: "user@example.com",
       type: "email",
-    });
+    })
 
     const loaderData = await loader(
       createRouteArgs(new Request("https://example.com/")),
-    );
+    )
 
-    expect(loaderData.resendEmailVerificationCooldownSeconds).toEqual(120);
-  });
-});
+    expect(loaderData.resendEmailVerificationCooldownSeconds).toEqual(120)
+  })
+})
 
 describe("index action", () => {
   test("given: a resend email verification request, should: send a new verification email", async () => {
-    const request = createResendRequest();
+    const request = createResendRequest()
 
-    const response = await action(createRouteArgs(request));
+    const response = await action(createRouteArgs(request))
 
-    expect(requireUserId).toHaveBeenCalledWith(request);
-    expect(generateVerificationTOTP).toHaveBeenCalledWith();
+    expect(requireUserId).toHaveBeenCalledWith(request)
+    expect(generateVerificationTOTP).toHaveBeenCalledWith()
     expect(saveVerificationToDatabase).toHaveBeenCalledWith({
       algorithm: "SHA-1",
       charSet: "ABC123",
@@ -152,20 +151,20 @@ describe("index action", () => {
       secret: "secret",
       target: "user@example.com",
       type: "email",
-    });
+    })
     expect(sendVerificationEmail).toHaveBeenCalledWith({
       code: "123456",
       email: "user@example.com",
       verificationUrl:
         "https://example.com/auth/callback?type=email&target=user%40example.com&code=123456",
-    });
+    })
     expect(response.data).toEqual({
       cooldownSeconds: 120,
       error: null,
       intent: "resendEmailVerification",
       success: true,
-    });
-  });
+    })
+  })
 
   test("given: a verification email inside the resend cooldown, should: rate limit resends", async () => {
     vi.mocked(
@@ -181,12 +180,12 @@ describe("index action", () => {
       secret: "secret",
       target: "user@example.com",
       type: "email",
-    });
+    })
 
-    const response = await action(createRouteArgs(createResendRequest()));
+    const response = await action(createRouteArgs(createResendRequest()))
 
-    expect(saveVerificationToDatabase).not.toHaveBeenCalled();
-    expect(sendVerificationEmail).not.toHaveBeenCalled();
+    expect(saveVerificationToDatabase).not.toHaveBeenCalled()
+    expect(sendVerificationEmail).not.toHaveBeenCalled()
     expect({ body: response.data, status: response.init?.status }).toEqual({
       body: {
         cooldownSeconds: 61,
@@ -195,8 +194,8 @@ describe("index action", () => {
         success: false,
       },
       status: 429,
-    });
-  });
+    })
+  })
 
   test("given: a verification email older than the resend cooldown, should: send a new verification email", async () => {
     vi.mocked(
@@ -212,33 +211,33 @@ describe("index action", () => {
       secret: "secret",
       target: "user@example.com",
       type: "email",
-    });
+    })
 
-    const response = await action(createRouteArgs(createResendRequest()));
+    const response = await action(createRouteArgs(createResendRequest()))
 
-    expect(generateVerificationTOTP).toHaveBeenCalledWith();
+    expect(generateVerificationTOTP).toHaveBeenCalledWith()
     expect(sendVerificationEmail).toHaveBeenCalledWith({
       code: "123456",
       email: "user@example.com",
       verificationUrl:
         "https://example.com/auth/callback?type=email&target=user%40example.com&code=123456",
-    });
+    })
     expect(response.data).toEqual({
       cooldownSeconds: 120,
       error: null,
       intent: "resendEmailVerification",
       success: true,
-    });
-  });
+    })
+  })
 
   test("given: a todo request, should: delegate to the todos action", async () => {
     const request = new Request("https://example.com/", {
       body: new URLSearchParams({ intent: "createTodo", title: "Test" }),
       method: "POST",
-    });
+    })
 
-    await action(createRouteArgs(request));
+    await action(createRouteArgs(request))
 
-    expect(todosAction).toHaveBeenCalledWith(createRouteArgs(request));
-  });
-});
+    expect(todosAction).toHaveBeenCalledWith(createRouteArgs(request))
+  })
+})

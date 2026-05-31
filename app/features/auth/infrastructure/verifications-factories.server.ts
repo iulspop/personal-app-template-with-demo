@@ -1,8 +1,8 @@
-import { faker } from "@faker-js/faker";
-import { createId } from "@paralleldrive/cuid2";
+import { faker } from "@faker-js/faker"
+import { createId } from "@paralleldrive/cuid2"
 
-import type { Verification } from "../../../../generated/prisma/client";
-import type { Factory } from "~/utils/types";
+import type { Verification } from "../../../../generated/prisma/client"
+import type { Factory } from "~/utils/types"
 
 /**
  * Creates a verification with populated values.
@@ -32,4 +32,4 @@ export const createPopulatedVerification: Factory<Verification> = ({
   secret,
   target,
   type,
-});
+})

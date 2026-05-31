@@ -1,31 +1,32 @@
-import { useTranslation } from "react-i18next";
-import type { FetcherWithComponents } from "react-router";
+import { useTranslation } from "react-i18next"
+import type { FetcherWithComponents } from "react-router"
 
-import type { Todo } from "../../../../generated/prisma/client";
-import { EDIT_TODO_INTENT } from "../domain/todos-constants";
-import { Button } from "~/components/ui/button";
-import { Input } from "~/components/ui/input";
-import { Textarea } from "~/components/ui/textarea";
+import type { Todo } from "../../../../generated/prisma/client"
+import { EDIT_TODO_INTENT } from "../domain/todos-constants"
+import * as s from "./todo-item-edit.css"
+import { Button } from "~/components/ui/button"
+import { Input } from "~/components/ui/input"
+import { Textarea } from "~/components/ui/textarea"
 
 export function TodoItemEditComponent({
   fetcher,
   onCancel,
   todo,
 }: {
-  fetcher: FetcherWithComponents<unknown>;
-  onCancel: () => void;
-  todo: Todo;
+  fetcher: FetcherWithComponents<unknown>
+  onCancel: () => void
+  todo: Todo
 }) {
-  const { t } = useTranslation("todos");
+  const { t } = useTranslation("todos")
 
   return (
-    <li className="rounded-lg border border-ring p-4">
-      <fetcher.Form className="space-y-3" method="post">
+    <li className={s.item}>
+      <fetcher.Form className={s.form} method="post">
         <input name="id" type="hidden" value={todo.id} />
         <input name="intent" type="hidden" value={EDIT_TODO_INTENT} />
         <Input defaultValue={todo.title} name="title" type="text" />
         <Textarea defaultValue={todo.description} name="description" rows={2} />
-        <div className="flex gap-2">
+        <div className={s.actions}>
           <Button size="sm" type="submit">
             {t("save")}
           </Button>
@@ -40,5 +41,5 @@ export function TodoItemEditComponent({
         </div>
       </fetcher.Form>
     </li>
-  );
+  )
 }

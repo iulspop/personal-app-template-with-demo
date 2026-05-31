@@ -1,5 +1,5 @@
-import type { Prisma, User } from "../../../../generated/prisma/client";
-import { prisma } from "~/utils/db.server";
+import type { Prisma, User } from "../../../../generated/prisma/client"
+import { prisma } from "~/utils/db.server"
 
 /**
  * Saves a user to the database.
@@ -8,7 +8,7 @@ import { prisma } from "~/utils/db.server";
  * @returns The saved user.
  */
 export async function saveUserToDatabase(user: Prisma.UserCreateInput) {
-  return prisma.user.create({ data: user });
+  return prisma.user.create({ data: user })
 }
 
 /**
@@ -18,7 +18,7 @@ export async function saveUserToDatabase(user: Prisma.UserCreateInput) {
  * @returns The user or null.
  */
 export async function retrieveUserFromDatabaseById(id: User["id"]) {
-  return prisma.user.findUnique({ where: { id } });
+  return prisma.user.findUnique({ where: { id } })
 }
 
 /**
@@ -28,7 +28,7 @@ export async function retrieveUserFromDatabaseById(id: User["id"]) {
  * @returns The user or null.
  */
 export async function retrieveUserFromDatabaseByEmail(email: User["email"]) {
-  return prisma.user.findUnique({ where: { email } });
+  return prisma.user.findUnique({ where: { email } })
 }
 
 /**
@@ -41,5 +41,5 @@ export async function updateUserInDatabaseById({
   emailVerifiedAt,
   id,
 }: Pick<User, "emailVerifiedAt" | "id">) {
-  return prisma.user.update({ data: { emailVerifiedAt }, where: { id } });
+  return prisma.user.update({ data: { emailVerifiedAt }, where: { id } })
 }

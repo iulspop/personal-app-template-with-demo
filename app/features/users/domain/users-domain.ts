@@ -6,13 +6,13 @@
  */
 export type Result<T, E> =
   | { error: E; success: false }
-  | { data: T; success: true };
+  | { data: T; success: true }
 
-export type UserValidationError = "EMAIL_EMPTY" | "EMAIL_INVALID";
+export type UserValidationError = "EMAIL_EMPTY" | "EMAIL_INVALID"
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 
 // ─── Functions ───────────────────────────────────────────────────────────────
 
@@ -22,12 +22,12 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 export const validateEmail = (
   email: string,
 ): Result<string, UserValidationError> => {
-  const trimmed = email.trim().toLowerCase();
-  if (trimmed.length === 0) return { error: "EMAIL_EMPTY", success: false };
+  const trimmed = email.trim().toLowerCase()
+  if (trimmed.length === 0) return { error: "EMAIL_EMPTY", success: false }
   if (!EMAIL_REGEX.test(trimmed))
-    return { error: "EMAIL_INVALID", success: false };
-  return { data: trimmed, success: true };
-};
+    return { error: "EMAIL_INVALID", success: false }
+  return { data: trimmed, success: true }
+}
 
 /**
  * Maps user validation errors to i18n keys.
@@ -35,16 +35,16 @@ export const validateEmail = (
 const userValidationErrorI18nKeys = {
   EMAIL_EMPTY: "validation.emailRequired",
   EMAIL_INVALID: "validation.emailInvalid",
-} as const;
+} as const
 
 export const userValidationErrorToI18nKey = (
   error: UserValidationError,
 ): (typeof userValidationErrorI18nKeys)[UserValidationError] =>
-  userValidationErrorI18nKeys[error];
+  userValidationErrorI18nKeys[error]
 
 /**
  * Type guard for UserValidationError.
  */
 export const isUserValidationError = (
   value: string,
-): value is UserValidationError => value in userValidationErrorI18nKeys;
+): value is UserValidationError => value in userValidationErrorI18nKeys

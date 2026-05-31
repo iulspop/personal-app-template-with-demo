@@ -13,4 +13,4 @@ export default {
     reactRouterDocs: "React Router Docs",
     whatsNext: "What's next?",
   },
-};
+}

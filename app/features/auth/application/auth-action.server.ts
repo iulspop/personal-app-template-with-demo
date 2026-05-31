@@ -1,56 +1,56 @@
-import { data, redirect } from "react-router";
-import { match } from "ts-pattern";
+import { data, redirect } from "react-router"
+import { match } from "ts-pattern"
 
 import {
   SEND_MAGIC_LINK_INTENT,
   VERIFICATION_EXPIRY_MINUTES,
   VERIFICATION_TYPE_LOGIN,
   VERIFY_CODE_INTENT,
-} from "../domain/auth-constants";
+} from "../domain/auth-constants"
 import {
   buildMagicLinkUrl,
   computeVerificationExpiry,
   isSessionExpired,
-} from "../domain/auth-domain";
-import { sendMagicLinkEmail } from "../infrastructure/email.server";
+} from "../domain/auth-domain"
+import { sendMagicLinkEmail } from "../infrastructure/email.server"
 import {
   generateVerificationTOTP,
   verifyVerificationTOTP,
-} from "../infrastructure/totp.server";
+} from "../infrastructure/totp.server"
 import {
   deleteVerificationFromDatabaseByTypeAndTarget,
   retrieveVerificationFromDatabaseByTypeAndTarget,
   saveVerificationToDatabase,
-} from "../infrastructure/verifications-model.server";
-import { authActionSchema } from "./auth-schemas";
-import { createUserSession } from "./auth-session.server";
-import { validateEmail } from "~/features/users/domain/users-domain";
+} from "../infrastructure/verifications-model.server"
+import { authActionSchema } from "./auth-schemas"
+import { createUserSession } from "./auth-session.server"
+import { validateEmail } from "~/features/users/domain/users-domain"
 import {
   retrieveUserFromDatabaseByEmail,
   saveUserToDatabase,
-} from "~/features/users/infrastructure/users-model.server";
+} from "~/features/users/infrastructure/users-model.server"
 
 export const authAction = async ({ request }: { request: Request }) => {
-  const formData = await request.formData();
-  const parsed = authActionSchema.safeParse(Object.fromEntries(formData));
+  const formData = await request.formData()
+  const parsed = authActionSchema.safeParse(Object.fromEntries(formData))
 
   if (!parsed.success)
     return data(
       { error: "Invalid form data", success: false as const },
       { status: 400 },
-    );
+    )
 
   return match(parsed.data)
     .with({ intent: SEND_MAGIC_LINK_INTENT }, async ({ email }) => {
-      const emailResult = validateEmail(email);
+      const emailResult = validateEmail(email)
       if (!emailResult.success)
         return data(
           { error: emailResult.error, success: false as const },
           { status: 400 },
-        );
+        )
 
       const { algorithm, charSet, digits, otp, period, secret } =
-        await generateVerificationTOTP();
+        await generateVerificationTOTP()
 
       await saveVerificationToDatabase({
         algorithm,
@@ -61,46 +61,46 @@ export const authAction = async ({ request }: { request: Request }) => {
         secret,
         target: emailResult.data,
         type: VERIFICATION_TYPE_LOGIN,
-      });
+      })
 
-      const baseUrl = new URL(request.url).origin;
+      const baseUrl = new URL(request.url).origin
       const magicLinkUrl = buildMagicLinkUrl({
         baseUrl,
         code: otp,
         target: emailResult.data,
         type: VERIFICATION_TYPE_LOGIN,
-      });
+      })
 
       await sendMagicLinkEmail({
         code: otp,
         email: emailResult.data,
         magicLinkUrl,
-      });
+      })
 
       const searchParams = new URLSearchParams({
         target: emailResult.data,
         type: VERIFICATION_TYPE_LOGIN,
-      });
-      throw redirect(`/verify?${searchParams.toString()}`);
+      })
+      throw redirect(`/verify?${searchParams.toString()}`)
     })
     .with({ intent: VERIFY_CODE_INTENT }, async ({ code, target, type }) => {
       const verification =
         await retrieveVerificationFromDatabaseByTypeAndTarget({
           target,
           type,
-        });
+        })
 
       if (!verification)
         return data(
           { error: "invalidCode", success: false as const },
           { status: 400 },
-        );
+        )
 
       if (isSessionExpired(verification.expiresAt))
         return data(
           { error: "codeExpired", success: false as const },
           { status: 400 },
-        );
+        )
 
       const verifyResult = await verifyVerificationTOTP({
         algorithm: verification.algorithm,
@@ -109,24 +109,23 @@ export const authAction = async ({ request }: { request: Request }) => {
         otp: code,
         period: verification.period,
         secret: verification.secret,
-      });
+      })
 
       if (!verifyResult)
         return data(
           { error: "invalidCode", success: false as const },
           { status: 400 },
-        );
+        )
 
-      await deleteVerificationFromDatabaseByTypeAndTarget({ target, type });
+      await deleteVerificationFromDatabaseByTypeAndTarget({ target, type })
 
-      const existingUser = await retrieveUserFromDatabaseByEmail(target);
-      const user =
-        existingUser ?? (await saveUserToDatabase({ email: target }));
-      const setCookie = await createUserSession(user.id);
+      const existingUser = await retrieveUserFromDatabaseByEmail(target)
+      const user = existingUser ?? (await saveUserToDatabase({ email: target }))
+      const setCookie = await createUserSession(user.id)
 
       throw redirect("/", {
         headers: { "Set-Cookie": setCookie },
-      });
+      })
     })
-    .exhaustive();
-};
+    .exhaustive()
+}

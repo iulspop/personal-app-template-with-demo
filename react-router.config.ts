@@ -1,5 +1,5 @@
-import type { Config } from "@react-router/dev/config";
-import { sentryOnBuildEnd } from "@sentry/react-router";
+import type { Config } from "@react-router/dev/config"
+import { sentryOnBuildEnd } from "@sentry/react-router"
 
 export default {
   buildEnd: ({ viteConfig, reactRouterConfig, buildManifest }) =>
@@ -9,4 +9,4 @@ export default {
   },
   // Server-side render by default, to enable SPA mode set this to `false`
   ssr: true,
-} satisfies Config;
+} satisfies Config

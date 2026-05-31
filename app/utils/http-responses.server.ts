@@ -1,6 +1,6 @@
-import { data } from "react-router";
+import { data } from "react-router"
 
-export type DataWithResponseInit<Data> = ReturnType<typeof data<Data>>;
+export type DataWithResponseInit<Data> = ReturnType<typeof data<Data>>
 
 /**
  * Returns a 201 Created response with optional data and headers.
@@ -27,16 +27,16 @@ export type DataWithResponseInit<Data> = ReturnType<typeof data<Data>>;
 export function created<T>(
   responseData: T,
   init?: Omit<ResponseInit, "status">,
-): DataWithResponseInit<T>;
+): DataWithResponseInit<T>
 export function created(
   responseData?: undefined,
   init?: Omit<ResponseInit, "status">,
-): DataWithResponseInit<Record<string, never>>;
+): DataWithResponseInit<Record<string, never>>
 export function created<T>(
   responseData?: T,
   init?: Omit<ResponseInit, "status">,
 ) {
-  return data(responseData ?? {}, { ...init, status: 201 });
+  return data(responseData ?? {}, { ...init, status: 201 })
 }
 
 /**
@@ -65,16 +65,16 @@ export function created<T>(
 export function badRequest<T>(
   responseData: T,
   init?: Omit<ResponseInit, "status">,
-): DataWithResponseInit<T>;
+): DataWithResponseInit<T>
 export function badRequest(
   responseData?: undefined,
   init?: Omit<ResponseInit, "status">,
-): DataWithResponseInit<Record<string, never>>;
+): DataWithResponseInit<Record<string, never>>
 export function badRequest<T>(
   responseData?: T,
   init?: Omit<ResponseInit, "status">,
 ) {
-  return data(responseData ?? {}, { ...init, status: 400 });
+  return data(responseData ?? {}, { ...init, status: 400 })
 }
 
 /**
@@ -101,16 +101,16 @@ export function badRequest<T>(
 export function unauthorized<T>(
   responseData: T,
   init?: Omit<ResponseInit, "status">,
-): DataWithResponseInit<T>;
+): DataWithResponseInit<T>
 export function unauthorized(
   responseData?: undefined,
   init?: Omit<ResponseInit, "status">,
-): DataWithResponseInit<Record<string, never>>;
+): DataWithResponseInit<Record<string, never>>
 export function unauthorized<T>(
   responseData?: T,
   init?: Omit<ResponseInit, "status">,
 ) {
-  return data(responseData ?? {}, { ...init, status: 401 });
+  return data(responseData ?? {}, { ...init, status: 401 })
 }
 
 /**
@@ -137,16 +137,16 @@ export function unauthorized<T>(
 export function forbidden<T>(
   responseData: T,
   init?: Omit<ResponseInit, "status">,
-): DataWithResponseInit<T>;
+): DataWithResponseInit<T>
 export function forbidden(
   responseData?: undefined,
   init?: Omit<ResponseInit, "status">,
-): DataWithResponseInit<Record<string, never>>;
+): DataWithResponseInit<Record<string, never>>
 export function forbidden<T>(
   responseData?: T,
   init?: Omit<ResponseInit, "status">,
 ) {
-  return data(responseData ?? {}, { ...init, status: 403 });
+  return data(responseData ?? {}, { ...init, status: 403 })
 }
 
 /**
@@ -173,16 +173,16 @@ export function forbidden<T>(
 export function notFound<T>(
   responseData: T,
   init?: Omit<ResponseInit, "status">,
-): DataWithResponseInit<T>;
+): DataWithResponseInit<T>
 export function notFound(
   responseData?: undefined,
   init?: Omit<ResponseInit, "status">,
-): DataWithResponseInit<Record<string, never>>;
+): DataWithResponseInit<Record<string, never>>
 export function notFound<T>(
   responseData?: T,
   init?: Omit<ResponseInit, "status">,
 ) {
-  return data(responseData ?? {}, { ...init, status: 404 });
+  return data(responseData ?? {}, { ...init, status: 404 })
 }
 
 /**
@@ -210,16 +210,16 @@ export function notFound<T>(
 export function methodNotAllowed<T>(
   responseData: T,
   init?: Omit<ResponseInit, "status">,
-): DataWithResponseInit<T>;
+): DataWithResponseInit<T>
 export function methodNotAllowed(
   responseData?: undefined,
   init?: Omit<ResponseInit, "status">,
-): DataWithResponseInit<Record<string, never>>;
+): DataWithResponseInit<Record<string, never>>
 export function methodNotAllowed<T>(
   responseData?: T,
   init?: Omit<ResponseInit, "status">,
 ) {
-  return data(responseData ?? {}, { ...init, status: 405 });
+  return data(responseData ?? {}, { ...init, status: 405 })
 }
 
 /**
@@ -247,16 +247,16 @@ export function methodNotAllowed<T>(
 export function conflict<T>(
   responseData: T,
   init?: Omit<ResponseInit, "status">,
-): DataWithResponseInit<T>;
+): DataWithResponseInit<T>
 export function conflict(
   responseData?: undefined,
   init?: Omit<ResponseInit, "status">,
-): DataWithResponseInit<Record<string, never>>;
+): DataWithResponseInit<Record<string, never>>
 export function conflict<T>(
   responseData?: T,
   init?: Omit<ResponseInit, "status">,
 ) {
-  return data(responseData ?? {}, { ...init, status: 409 });
+  return data(responseData ?? {}, { ...init, status: 409 })
 }
 
 /**
@@ -284,14 +284,14 @@ export function conflict<T>(
 export function tooManyRequests<T>(
   responseData: T,
   init?: Omit<ResponseInit, "status">,
-): DataWithResponseInit<T>;
+): DataWithResponseInit<T>
 export function tooManyRequests(
   responseData?: undefined,
   init?: Omit<ResponseInit, "status">,
-): DataWithResponseInit<Record<string, never>>;
+): DataWithResponseInit<Record<string, never>>
 export function tooManyRequests<T>(
   responseData?: T,
   init?: Omit<ResponseInit, "status">,
 ) {
-  return data(responseData ?? {}, { ...init, status: 429 });
+  return data(responseData ?? {}, { ...init, status: 429 })
 }

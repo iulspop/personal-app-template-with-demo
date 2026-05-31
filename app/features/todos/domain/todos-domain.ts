@@ -5,15 +5,15 @@
  * so the domain layer has zero external imports.
  */
 export type Todo = {
-  completed: boolean;
-  createdAt: Date;
-  description: string;
-  id: string;
-  title: string;
-  updatedAt: Date;
-};
+  completed: boolean
+  createdAt: Date
+  description: string
+  id: string
+  title: string
+  updatedAt: Date
+}
 
-export type TodoFilter = "active" | "all" | "completed";
+export type TodoFilter = "active" | "all" | "completed"
 
 /**
  * Discriminated result union. Defined locally so the domain file
@@ -21,17 +21,17 @@ export type TodoFilter = "active" | "all" | "completed";
  */
 export type Result<T, E> =
   | { error: E; success: false }
-  | { data: T; success: true };
+  | { data: T; success: true }
 
 export type TodoValidationError =
   | "DESCRIPTION_TOO_LONG"
   | "TITLE_EMPTY"
-  | "TITLE_TOO_LONG";
+  | "TITLE_TOO_LONG"
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
-export const MAX_TITLE_LENGTH = 200;
-export const MAX_DESCRIPTION_LENGTH = 1000;
+export const MAX_TITLE_LENGTH = 200
+export const MAX_DESCRIPTION_LENGTH = 1000
 
 // ─── Functions ───────────────────────────────────────────────────────────────
 
@@ -41,12 +41,12 @@ export const MAX_DESCRIPTION_LENGTH = 1000;
 export const validateTodoTitle = (
   title: string,
 ): Result<string, TodoValidationError> => {
-  const trimmed = title.trim();
-  if (trimmed.length === 0) return { error: "TITLE_EMPTY", success: false };
+  const trimmed = title.trim()
+  if (trimmed.length === 0) return { error: "TITLE_EMPTY", success: false }
   if (trimmed.length > MAX_TITLE_LENGTH)
-    return { error: "TITLE_TOO_LONG", success: false };
-  return { data: trimmed, success: true };
-};
+    return { error: "TITLE_TOO_LONG", success: false }
+  return { data: trimmed, success: true }
+}
 
 /**
  * Validates a todo description. Returns the trimmed description on success.
@@ -54,13 +54,13 @@ export const validateTodoTitle = (
 export const validateTodoDescription = (
   description: string,
 ): Result<string, TodoValidationError> => {
-  const trimmed = description.trim();
+  const trimmed = description.trim()
   if (trimmed.length > MAX_DESCRIPTION_LENGTH)
-    return { error: "DESCRIPTION_TOO_LONG", success: false };
-  return { data: trimmed, success: true };
-};
+    return { error: "DESCRIPTION_TOO_LONG", success: false }
+  return { data: trimmed, success: true }
+}
 
-export type ValidatedNewTodo = { description: string; title: string };
+export type ValidatedNewTodo = { description: string; title: string }
 
 /**
  * Validates a new todo's title and description together.
@@ -69,20 +69,20 @@ export const validateNewTodo = ({
   description,
   title,
 }: {
-  description: string;
-  title: string;
+  description: string
+  title: string
 }): Result<ValidatedNewTodo, TodoValidationError> => {
-  const titleResult = validateTodoTitle(title);
-  if (!titleResult.success) return titleResult;
+  const titleResult = validateTodoTitle(title)
+  if (!titleResult.success) return titleResult
 
-  const descriptionResult = validateTodoDescription(description);
-  if (!descriptionResult.success) return descriptionResult;
+  const descriptionResult = validateTodoDescription(description)
+  if (!descriptionResult.success) return descriptionResult
 
   return {
     data: { description: descriptionResult.data, title: titleResult.data },
     success: true,
-  };
-};
+  }
+}
 
 /**
  * Maps a domain validation error code to its i18n translation key.
@@ -91,21 +91,21 @@ const validationErrorI18nKeys = {
   DESCRIPTION_TOO_LONG: "validation.descriptionTooLong",
   TITLE_EMPTY: "validation.titleRequired",
   TITLE_TOO_LONG: "validation.titleTooLong",
-} as const;
+} as const
 
 export const validationErrorToI18nKey = (
   error: TodoValidationError,
 ): (typeof validationErrorI18nKeys)[TodoValidationError] =>
-  validationErrorI18nKeys[error];
+  validationErrorI18nKeys[error]
 
 export const isTodoValidationError = (
   value: string,
-): value is TodoValidationError => value in validationErrorI18nKeys;
+): value is TodoValidationError => value in validationErrorI18nKeys
 
 /**
  * Flips the completed status of a todo.
  */
-export const toggleCompleted = (completed: boolean): boolean => !completed;
+export const toggleCompleted = (completed: boolean): boolean => !completed
 
 /**
  * Parses a string into a valid TodoFilter, defaulting to "all".
@@ -113,7 +113,7 @@ export const toggleCompleted = (completed: boolean): boolean => !completed;
 export const parseTodoFilter = (value: string | null): TodoFilter =>
   (["all", "active", "completed"] as TodoFilter[]).includes(value as TodoFilter)
     ? (value as TodoFilter)
-    : "all";
+    : "all"
 
 /**
  * Filters todos by their completion status.
@@ -121,13 +121,13 @@ export const parseTodoFilter = (value: string | null): TodoFilter =>
 export const filterTodos = (todos: Todo[], filter: TodoFilter): Todo[] => {
   switch (filter) {
     case "active":
-      return todos.filter((todo) => !todo.completed);
+      return todos.filter((todo) => !todo.completed)
     case "all":
-      return todos;
+      return todos
     case "completed":
-      return todos.filter((todo) => todo.completed);
+      return todos.filter((todo) => todo.completed)
   }
-};
+}
 
 /**
  * Counts todos by their completion status.
@@ -135,21 +135,21 @@ export const filterTodos = (todos: Todo[], filter: TodoFilter): Todo[] => {
 export const countByStatus = (
   todos: Todo[],
 ): { active: number; completed: number; total: number } => {
-  const completed = todos.filter((todo) => todo.completed).length;
+  const completed = todos.filter((todo) => todo.completed).length
   return {
     active: todos.length - completed,
     completed,
     total: todos.length,
-  };
-};
+  }
+}
 
 /**
  * Extracts the IDs of all completed todos.
  */
 export const extractCompletedIds = (todos: Todo[]): string[] =>
-  todos.filter((t) => t.completed).map((t) => t.id);
+  todos.filter((t) => t.completed).map((t) => t.id)
 
 /**
  * Validates a todo update. Same rules as new todo validation.
  */
-export const validateTodoUpdate = validateNewTodo;
+export const validateTodoUpdate = validateNewTodo

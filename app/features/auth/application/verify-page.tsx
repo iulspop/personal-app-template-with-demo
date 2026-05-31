@@ -1,42 +1,41 @@
-import { useTranslation } from "react-i18next";
-import { Form } from "react-router";
+import { useTranslation } from "react-i18next"
+import { Form } from "react-router"
 
-import { VERIFY_CODE_INTENT } from "../domain/auth-constants";
-import { Button } from "~/components/ui/button";
-import { FieldError } from "~/components/ui/field";
-import { Input } from "~/components/ui/input";
+import { VERIFY_CODE_INTENT } from "../domain/auth-constants"
+import * as s from "./verify-page.css"
+import { Button } from "~/components/ui/button"
+import { FieldError } from "~/components/ui/field"
+import { Input } from "~/components/ui/input"
 
 type VerifyPageActionData =
   | { error: string; success: false }
   | { error: null; success: true }
-  | undefined;
+  | undefined
 
 export function VerifyPageComponent({
   actionData,
   target,
   type,
 }: {
-  actionData?: VerifyPageActionData;
-  target: string;
-  type: string;
+  actionData?: VerifyPageActionData
+  target: string
+  type: string
 }) {
-  const { t } = useTranslation("auth", { keyPrefix: "verify" });
-  const { t: tValidation } = useTranslation("auth");
+  const { t } = useTranslation("auth", { keyPrefix: "verify" })
+  const { t: tValidation } = useTranslation("auth")
 
   return (
-    <main className="mx-auto max-w-md px-4 py-16">
-      <h1 className="mb-2 text-3xl font-bold text-foreground">{t("title")}</h1>
-      <p className="mb-8 text-muted-foreground">
-        {t("description", { email: target })}
-      </p>
+    <main className={s.page}>
+      <h1 className={s.title}>{t("title")}</h1>
+      <p className={s.description}>{t("description", { email: target })}</p>
 
-      <Form className="space-y-4" method="post">
+      <Form className={s.form} method="post">
         <input name="type" type="hidden" value={type} />
         <input name="target" type="hidden" value={target} />
         <div>
           <Input
             autoComplete="one-time-code"
-            className="text-center text-2xl tracking-widest"
+            className={s.codeInput}
             maxLength={6}
             name="code"
             placeholder="XXXXXX"
@@ -44,7 +43,7 @@ export function VerifyPageComponent({
           />
         </div>
         <Button
-          className="w-full"
+          className={s.fullWidth}
           name="intent"
           type="submit"
           value={VERIFY_CODE_INTENT}
@@ -58,5 +57,5 @@ export function VerifyPageComponent({
         )}
       </Form>
     </main>
-  );
+  )
 }

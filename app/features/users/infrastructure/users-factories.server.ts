@@ -1,8 +1,8 @@
-import { faker } from "@faker-js/faker";
-import { createId } from "@paralleldrive/cuid2";
+import { faker } from "@faker-js/faker"
+import { createId } from "@paralleldrive/cuid2"
 
-import type { User } from "../../../../generated/prisma/client";
-import type { Factory } from "~/utils/types";
+import type { User } from "../../../../generated/prisma/client"
+import type { Factory } from "~/utils/types"
 
 /**
  * Creates a user with populated values.
@@ -22,4 +22,4 @@ export const createPopulatedUser: Factory<User> = ({
   emailVerifiedAt,
   id,
   updatedAt,
-});
+})

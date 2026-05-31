@@ -1,13 +1,12 @@
-import { reactRouter } from "@react-router/dev/vite";
-import { sentryReactRouter } from "@sentry/react-router";
-import tailwindcss from "@tailwindcss/vite";
-import devtoolsJson from "vite-plugin-devtools-json";
-import tsconfigPaths from "vite-tsconfig-paths";
-import { defineConfig } from "vitest/config";
+import { reactRouter } from "@react-router/dev/vite"
+import { sentryReactRouter } from "@sentry/react-router"
+import { vanillaExtractPlugin } from "@vanilla-extract/vite-plugin"
+import devtoolsJson from "vite-plugin-devtools-json"
+import { defineConfig } from "vitest/config"
 
 export default defineConfig((config) => ({
   plugins: [
-    tailwindcss(),
+    vanillaExtractPlugin(),
     !process.env.VITEST && !process.env.STORYBOOK && reactRouter(),
     !process.env.VITEST &&
       !process.env.STORYBOOK &&
@@ -19,9 +18,11 @@ export default defineConfig((config) => ({
         },
         config,
       ),
-    tsconfigPaths(),
     devtoolsJson(),
   ],
+  resolve: {
+    tsconfigPaths: true,
+  },
   test: {
     projects: [
       {
@@ -51,4 +52,4 @@ export default defineConfig((config) => ({
       },
     ],
   },
-}));
+}))

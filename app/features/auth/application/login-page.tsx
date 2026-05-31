@@ -1,1 +1,1 @@
-export { SignInPageComponent as LoginPageComponent } from "./signin-page";
+export { SignInPageComponent as LoginPageComponent } from "./signin-page"

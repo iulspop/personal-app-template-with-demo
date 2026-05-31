@@ -1,9 +1,5 @@
-import type {
-  Passkey,
-  Prisma,
-  User,
-} from "../../../../generated/prisma/client";
-import { prisma } from "~/utils/db.server";
+import type { Passkey, Prisma, User } from "../../../../generated/prisma/client"
+import { prisma } from "~/utils/db.server"
 
 /**
  * Saves a passkey to the database.
@@ -14,7 +10,7 @@ import { prisma } from "~/utils/db.server";
 export async function savePasskeyToDatabase(
   passkey: Prisma.PasskeyCreateInput,
 ) {
-  return prisma.passkey.create({ data: passkey });
+  return prisma.passkey.create({ data: passkey })
 }
 
 /**
@@ -29,7 +25,7 @@ export async function retrievePasskeyFromDatabaseByCredentialId(
   return prisma.passkey.findUnique({
     include: { user: true },
     where: { credentialId },
-  });
+  })
 }
 
 /**
@@ -39,7 +35,7 @@ export async function retrievePasskeyFromDatabaseByCredentialId(
  * @returns The user's passkeys.
  */
 export async function retrievePasskeysFromDatabaseByUserId(userId: User["id"]) {
-  return prisma.passkey.findMany({ where: { userId } });
+  return prisma.passkey.findMany({ where: { userId } })
 }
 
 /**
@@ -52,11 +48,11 @@ export async function updatePasskeyCounterInDatabaseByCredentialId({
   counter,
   credentialId,
 }: {
-  counter: Passkey["counter"];
-  credentialId: Passkey["credentialId"];
+  counter: Passkey["counter"]
+  credentialId: Passkey["credentialId"]
 }) {
   return prisma.passkey.update({
     data: { counter },
     where: { credentialId },
-  });
+  })
 }

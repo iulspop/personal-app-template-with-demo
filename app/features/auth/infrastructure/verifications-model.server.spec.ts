@@ -1,15 +1,15 @@
-import { afterEach, describe, expect, test } from "vitest";
+import { afterEach, describe, expect, test } from "vitest"
 
 import {
   deleteVerificationFromDatabaseByTypeAndTarget,
   retrieveVerificationFromDatabaseByTypeAndTarget,
   saveVerificationToDatabase,
-} from "./verifications-model.server";
-import { prisma } from "~/utils/db.server";
+} from "./verifications-model.server"
+import { prisma } from "~/utils/db.server"
 
 afterEach(async () => {
-  await prisma.verification.deleteMany();
-});
+  await prisma.verification.deleteMany()
+})
 
 describe("saveVerificationToDatabase()", () => {
   test("given: valid verification data, should: create and return the verification", async () => {
@@ -22,15 +22,15 @@ describe("saveVerificationToDatabase()", () => {
       secret: "test-secret",
       target: "test@example.com",
       type: "login",
-    });
+    })
 
     expect(result).toMatchObject({
       secret: "test-secret",
       target: "test@example.com",
       type: "login",
-    });
-    expect(result.id).toBeDefined();
-  });
+    })
+    expect(result.id).toBeDefined()
+  })
 
   test("given: same type+target, should: upsert (update) the existing record", async () => {
     await saveVerificationToDatabase({
@@ -42,7 +42,7 @@ describe("saveVerificationToDatabase()", () => {
       secret: "first-secret",
       target: "upsert@example.com",
       type: "login",
-    });
+    })
 
     const updated = await saveVerificationToDatabase({
       algorithm: "SHA-1",
@@ -53,16 +53,16 @@ describe("saveVerificationToDatabase()", () => {
       secret: "second-secret",
       target: "upsert@example.com",
       type: "login",
-    });
+    })
 
-    expect(updated.secret).toBe("second-secret");
+    expect(updated.secret).toBe("second-secret")
 
     const all = await prisma.verification.findMany({
       where: { target: "upsert@example.com", type: "login" },
-    });
-    expect(all).toHaveLength(1);
-  });
-});
+    })
+    expect(all).toHaveLength(1)
+  })
+})
 
 describe("retrieveVerificationFromDatabaseByTypeAndTarget()", () => {
   test("given: existing type+target, should: return the verification", async () => {
@@ -75,28 +75,28 @@ describe("retrieveVerificationFromDatabaseByTypeAndTarget()", () => {
       secret: "find-me",
       target: "find@example.com",
       type: "login",
-    });
+    })
 
     const found = await retrieveVerificationFromDatabaseByTypeAndTarget({
       target: "find@example.com",
       type: "login",
-    });
+    })
 
     expect(found).toMatchObject({
       secret: "find-me",
       target: "find@example.com",
-    });
-  });
+    })
+  })
 
   test("given: non-existent type+target, should: return null", async () => {
     const found = await retrieveVerificationFromDatabaseByTypeAndTarget({
       target: "missing@example.com",
       type: "login",
-    });
+    })
 
-    expect(found).toBeNull();
-  });
-});
+    expect(found).toBeNull()
+  })
+})
 
 describe("deleteVerificationFromDatabaseByTypeAndTarget()", () => {
   test("given: existing type+target, should: delete and return it", async () => {
@@ -109,19 +109,19 @@ describe("deleteVerificationFromDatabaseByTypeAndTarget()", () => {
       secret: "delete-me",
       target: "delete@example.com",
       type: "login",
-    });
+    })
 
     const deleted = await deleteVerificationFromDatabaseByTypeAndTarget({
       target: "delete@example.com",
       type: "login",
-    });
+    })
 
-    expect(deleted.secret).toBe("delete-me");
+    expect(deleted.secret).toBe("delete-me")
 
     const found = await retrieveVerificationFromDatabaseByTypeAndTarget({
       target: "delete@example.com",
       type: "login",
-    });
-    expect(found).toBeNull();
-  });
-});
+    })
+    expect(found).toBeNull()
+  })
+})

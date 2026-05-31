@@ -1,7 +1,7 @@
 /**
  * Arbitrary factory function for object of shape `Shape`.
  */
-export type Factory<Shape> = (object?: Partial<Shape>) => Shape;
+export type Factory<Shape> = (object?: Partial<Shape>) => Shape
 
 /**
  * Discriminated result union for operations that can succeed or fail.
@@ -10,4 +10,4 @@ export type Factory<Shape> = (object?: Partial<Shape>) => Shape;
  */
 export type Result<T, E = string> =
   | { error: E; success: false }
-  | { data: T; success: true };
+  | { data: T; success: true }

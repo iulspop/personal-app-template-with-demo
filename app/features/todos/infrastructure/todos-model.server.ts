@@ -1,5 +1,5 @@
-import type { Prisma, Todo } from "../../../../generated/prisma/client";
-import { prisma } from "~/utils/db.server";
+import type { Prisma, Todo } from "../../../../generated/prisma/client"
+import { prisma } from "~/utils/db.server"
 
 /**
  * Saves a new todo to the database.
@@ -8,7 +8,7 @@ import { prisma } from "~/utils/db.server";
  * @returns The newly created todo.
  */
 export async function saveTodoToDatabase(todo: Prisma.TodoCreateInput) {
-  return prisma.todo.create({ data: todo });
+  return prisma.todo.create({ data: todo })
 }
 
 /**
@@ -17,7 +17,7 @@ export async function saveTodoToDatabase(todo: Prisma.TodoCreateInput) {
  * @returns All todos, newest first.
  */
 export async function retrieveAllTodosFromDatabase() {
-  return prisma.todo.findMany({ orderBy: { createdAt: "desc" } });
+  return prisma.todo.findMany({ orderBy: { createdAt: "desc" } })
 }
 
 /**
@@ -27,7 +27,7 @@ export async function retrieveAllTodosFromDatabase() {
  * @returns The todo or null if not found.
  */
 export async function retrieveTodoFromDatabaseById(id: Todo["id"]) {
-  return prisma.todo.findUnique({ where: { id } });
+  return prisma.todo.findUnique({ where: { id } })
 }
 
 /**
@@ -41,10 +41,10 @@ export async function updateTodoInDatabaseById({
   data,
   id,
 }: {
-  data: Prisma.TodoUpdateInput;
-  id: Todo["id"];
+  data: Prisma.TodoUpdateInput
+  id: Todo["id"]
 }) {
-  return prisma.todo.update({ data, where: { id } });
+  return prisma.todo.update({ data, where: { id } })
 }
 
 /**
@@ -54,7 +54,7 @@ export async function updateTodoInDatabaseById({
  * @returns The deleted todo.
  */
 export async function deleteTodoFromDatabaseById(id: Todo["id"]) {
-  return prisma.todo.delete({ where: { id } });
+  return prisma.todo.delete({ where: { id } })
 }
 
 /**
@@ -64,5 +64,5 @@ export async function deleteTodoFromDatabaseById(id: Todo["id"]) {
  * @returns The count of deleted todos.
  */
 export async function deleteCompletedTodosFromDatabaseByIds(ids: string[]) {
-  return prisma.todo.deleteMany({ where: { id: { in: ids } } });
+  return prisma.todo.deleteMany({ where: { id: { in: ids } } })
 }

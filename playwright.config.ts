@@ -1,8 +1,8 @@
-import { defineConfig, devices } from "@playwright/test";
+import { defineConfig, devices } from "@playwright/test"
 
 // Ensure the test runner process uses UTC, matching the browser (timezoneId)
 // and the dev server (webServer.env.TZ).
-process.env.TZ = "UTC";
+process.env.TZ = "UTC"
 
 /**
  * See https://playwright.dev/docs/test-configuration.
@@ -45,4 +45,4 @@ export default defineConfig({
   },
   /* Opt out of parallel tests. */
   workers: 1,
-});
+})

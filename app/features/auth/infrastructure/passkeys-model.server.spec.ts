@@ -1,27 +1,27 @@
-import { afterEach, beforeEach, describe, expect, test } from "vitest";
+import { afterEach, beforeEach, describe, expect, test } from "vitest"
 
 import {
   retrievePasskeyFromDatabaseByCredentialId,
   retrievePasskeysFromDatabaseByUserId,
   savePasskeyToDatabase,
   updatePasskeyCounterInDatabaseByCredentialId,
-} from "./passkeys-model.server";
-import { prisma } from "~/utils/db.server";
+} from "./passkeys-model.server"
+import { prisma } from "~/utils/db.server"
 
-let testUserId: string;
-const credentialId = "credential-id";
+let testUserId: string
+const credentialId = "credential-id"
 
 beforeEach(async () => {
   const user = await prisma.user.create({
     data: { email: `passkey-test-${Date.now()}@example.com` },
-  });
-  testUserId = user.id;
-});
+  })
+  testUserId = user.id
+})
 
 afterEach(async () => {
-  await prisma.passkey.deleteMany({ where: { userId: testUserId } });
-  await prisma.user.deleteMany({ where: { id: testUserId } });
-});
+  await prisma.passkey.deleteMany({ where: { userId: testUserId } })
+  await prisma.user.deleteMany({ where: { id: testUserId } })
+})
 
 describe("savePasskeyToDatabase()", () => {
   test("given: valid passkey data, should: create and return the passkey", async () => {
@@ -33,15 +33,15 @@ describe("savePasskeyToDatabase()", () => {
       credentialPublicKey: "public-key",
       transports: "internal,hybrid",
       user: { connect: { id: testUserId } },
-    });
+    })
 
     expect(result).toMatchObject({
       counter: 0,
       credentialId,
       userId: testUserId,
-    });
-  });
-});
+    })
+  })
+})
 
 describe("retrievePasskeyFromDatabaseByCredentialId()", () => {
   test("given: an existing credential id, should: return the passkey with user", async () => {
@@ -53,17 +53,16 @@ describe("retrievePasskeyFromDatabaseByCredentialId()", () => {
       credentialPublicKey: "public-key",
       transports: "internal",
       user: { connect: { id: testUserId } },
-    });
+    })
 
-    const result =
-      await retrievePasskeyFromDatabaseByCredentialId(credentialId);
+    const result = await retrievePasskeyFromDatabaseByCredentialId(credentialId)
 
     expect(result).toMatchObject({
       credentialId,
       user: { id: testUserId },
-    });
-  });
-});
+    })
+  })
+})
 
 describe("retrievePasskeysFromDatabaseByUserId()", () => {
   test("given: a user with passkeys, should: return their passkeys", async () => {
@@ -75,14 +74,14 @@ describe("retrievePasskeysFromDatabaseByUserId()", () => {
       credentialPublicKey: "public-key",
       transports: "internal",
       user: { connect: { id: testUserId } },
-    });
+    })
 
-    const result = await retrievePasskeysFromDatabaseByUserId(testUserId);
+    const result = await retrievePasskeysFromDatabaseByUserId(testUserId)
 
-    expect(result).toHaveLength(1);
-    expect(result[0]).toMatchObject({ credentialId });
-  });
-});
+    expect(result).toHaveLength(1)
+    expect(result[0]).toMatchObject({ credentialId })
+  })
+})
 
 describe("updatePasskeyCounterInDatabaseByCredentialId()", () => {
   test("given: an existing credential id, should: update the counter", async () => {
@@ -94,13 +93,13 @@ describe("updatePasskeyCounterInDatabaseByCredentialId()", () => {
       credentialPublicKey: "public-key",
       transports: "internal",
       user: { connect: { id: testUserId } },
-    });
+    })
 
     const result = await updatePasskeyCounterInDatabaseByCredentialId({
       counter: 10,
       credentialId,
-    });
+    })
 
-    expect(result.counter).toBe(10);
-  });
-});
+    expect(result.counter).toBe(10)
+  })
+})

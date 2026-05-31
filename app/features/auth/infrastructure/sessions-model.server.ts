@@ -1,5 +1,5 @@
-import type { Prisma, Session } from "../../../../generated/prisma/client";
-import { prisma } from "~/utils/db.server";
+import type { Prisma, Session } from "../../../../generated/prisma/client"
+import { prisma } from "~/utils/db.server"
 
 /**
  * Saves a new session to the database.
@@ -10,7 +10,7 @@ import { prisma } from "~/utils/db.server";
 export async function saveSessionToDatabase(
   session: Prisma.SessionCreateInput,
 ) {
-  return prisma.session.create({ data: session });
+  return prisma.session.create({ data: session })
 }
 
 /**
@@ -25,7 +25,7 @@ export async function retrieveSessionWithUserFromDatabaseById(
   return prisma.session.findUnique({
     include: { user: true },
     where: { id },
-  });
+  })
 }
 
 /**
@@ -35,5 +35,5 @@ export async function retrieveSessionWithUserFromDatabaseById(
  * @returns The deleted session.
  */
 export async function deleteSessionFromDatabaseById(id: Session["id"]) {
-  return prisma.session.delete({ where: { id } });
+  return prisma.session.delete({ where: { id } })
 }

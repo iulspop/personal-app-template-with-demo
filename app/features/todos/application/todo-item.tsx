@@ -1,54 +1,49 @@
-import { IconCheck, IconPencil, IconX } from "@tabler/icons-react";
-import { useEffect, useState } from "react";
-import { Form, useFetcher } from "react-router";
+import { IconCheck, IconPencil, IconX } from "@tabler/icons-react"
+import { useEffect, useState } from "react"
+import { Form, useFetcher } from "react-router"
 
-import type { Todo } from "../../../../generated/prisma/client";
+import type { Todo } from "../../../../generated/prisma/client"
 import {
   DELETE_TODO_INTENT,
   TOGGLE_TODO_INTENT,
-} from "../domain/todos-constants";
-import { TodoItemEditComponent } from "./todo-item-edit";
-import { Button } from "~/components/ui/button";
-import { cn } from "~/lib/utils";
+} from "../domain/todos-constants"
+import * as s from "./todo-item.css"
+import { TodoItemEditComponent } from "./todo-item-edit"
+import { Button } from "~/components/ui/button"
 
 export function TodoItemDisplayComponent({
   onEdit,
   todo,
 }: {
-  onEdit: () => void;
-  todo: Todo;
+  onEdit: () => void
+  todo: Todo
 }) {
   return (
-    <li className="flex items-center gap-3 rounded-lg border border-border p-4">
+    <li className={s.item}>
       <Form method="post">
         <input name="id" type="hidden" value={todo.id} />
         <Button
           aria-label={`Toggle ${todo.title}`}
-          className={cn(
-            "size-5",
-            todo.completed &&
-              "border-primary bg-primary text-primary-foreground",
-          )}
+          className={todo.completed ? s.toggleChecked : undefined}
           name="intent"
           size="icon-xs"
           type="submit"
           value={TOGGLE_TODO_INTENT}
           variant="outline"
         >
-          {todo.completed && <IconCheck className="size-3" />}
+          {todo.completed && <IconCheck className={s.checkIcon} />}
         </Button>
       </Form>
 
-      <div className="flex-1">
+      <div className={s.content}>
         <span
-          className={todo.completed ? "text-muted-foreground line-through" : ""}
+          className={todo.completed ? s.completedTitle : undefined}
+          data-completed={todo.completed}
         >
           {todo.title}
         </span>
         {todo.description && (
-          <p className="mt-1 text-sm text-muted-foreground">
-            {todo.description}
-          </p>
+          <p className={s.description}>{todo.description}</p>
         )}
       </div>
 
@@ -59,7 +54,7 @@ export function TodoItemDisplayComponent({
         type="button"
         variant="ghost"
       >
-        <IconPencil className="size-4" />
+        <IconPencil className={s.actionIcon} />
       </Button>
 
       <Form method="post">
@@ -72,22 +67,22 @@ export function TodoItemDisplayComponent({
           value={DELETE_TODO_INTENT}
           variant="ghost"
         >
-          <IconX className="size-4" />
+          <IconX className={s.actionIcon} />
         </Button>
       </Form>
     </li>
-  );
+  )
 }
 
 export function TodoItemComponent({ todo }: { todo: Todo }) {
-  const [isEditing, setIsEditing] = useState(false);
-  const fetcher = useFetcher();
+  const [isEditing, setIsEditing] = useState(false)
+  const fetcher = useFetcher()
 
   useEffect(() => {
     if (fetcher.state === "idle" && fetcher.data) {
-      setIsEditing(false);
+      setIsEditing(false)
     }
-  }, [fetcher.state, fetcher.data]);
+  }, [fetcher.state, fetcher.data])
 
   if (isEditing) {
     return (
@@ -96,10 +91,10 @@ export function TodoItemComponent({ todo }: { todo: Todo }) {
         onCancel={() => setIsEditing(false)}
         todo={todo}
       />
-    );
+    )
   }
 
   return (
     <TodoItemDisplayComponent onEdit={() => setIsEditing(true)} todo={todo} />
-  );
+  )
 }

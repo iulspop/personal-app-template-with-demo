@@ -1,22 +1,22 @@
-import crypto from "node:crypto";
-import { PassThrough } from "node:stream";
-import { contentSecurity } from "@nichtsam/helmet/content";
-import { createReadableStreamFromReadable } from "@react-router/node";
-import * as Sentry from "@sentry/react-router";
-import { isbot } from "isbot";
-import type { RenderToPipeableStreamOptions } from "react-dom/server";
-import { renderToPipeableStream } from "react-dom/server";
-import { I18nextProvider } from "react-i18next";
-import type { EntryContext, RouterContextProvider } from "react-router";
-import { ServerRouter } from "react-router";
+import crypto from "node:crypto"
+import { PassThrough } from "node:stream"
+import { contentSecurity } from "@nichtsam/helmet/content"
+import { createReadableStreamFromReadable } from "@react-router/node"
+import * as Sentry from "@sentry/react-router"
+import { isbot } from "isbot"
+import type { RenderToPipeableStreamOptions } from "react-dom/server"
+import { renderToPipeableStream } from "react-dom/server"
+import { I18nextProvider } from "react-i18next"
+import type { EntryContext, RouterContextProvider } from "react-router"
+import { ServerRouter } from "react-router"
 
-import { getInstance } from "./features/localization/i18next-middleware.server";
-import { NonceProvider } from "./utils/nonce-provider";
+import { getInstance } from "./features/localization/i18next-middleware.server"
+import { NonceProvider } from "./utils/nonce-provider"
 
-export const streamTimeout = 5000;
+export const streamTimeout = 5000
 
-const nonceLength = 16;
-const MODE = process.env.NODE_ENV ?? "development";
+const nonceLength = 16
+const MODE = process.env.NODE_ENV ?? "development"
 
 function handleRequest(
   request: Request,
@@ -31,24 +31,21 @@ function handleRequest(
         headers: responseHeaders,
         status: responseStatusCode,
       }),
-    );
+    )
   }
 
-  const nonce = crypto.randomBytes(nonceLength).toString("hex");
+  const nonce = crypto.randomBytes(nonceLength).toString("hex")
 
   return new Promise((resolve, reject) => {
-    let shellRendered = false;
-    const userAgent = request.headers.get("user-agent");
+    let shellRendered = false
+    const userAgent = request.headers.get("user-agent")
 
     const readyOption: keyof RenderToPipeableStreamOptions =
       (userAgent && isbot(userAgent)) || routerContext.isSpaMode
         ? "onAllReady"
-        : "onShellReady";
+        : "onShellReady"
 
-    const timeoutId: ReturnType<typeof setTimeout> | undefined = setTimeout(
-      () => abort(),
-      streamTimeout + 1000,
-    );
+    let timeoutId: ReturnType<typeof setTimeout> | undefined
 
     const { pipe, abort } = renderToPipeableStream(
       <NonceProvider value={nonce}>
@@ -63,16 +60,16 @@ function handleRequest(
       {
         nonce,
         [readyOption]() {
-          shellRendered = true;
+          shellRendered = true
           const body = new PassThrough({
             final(callback) {
-              clearTimeout(timeoutId);
-              callback();
+              clearTimeout(timeoutId)
+              callback()
             },
-          });
-          const stream = createReadableStreamFromReadable(body);
+          })
+          const stream = createReadableStreamFromReadable(body)
 
-          responseHeaders.set("Content-Type", "text/html");
+          responseHeaders.set("Content-Type", "text/html")
 
           contentSecurity(responseHeaders, {
             contentSecurityPolicy: {
@@ -98,31 +95,33 @@ function handleRequest(
               reportOnly: MODE !== "production",
             },
             crossOriginEmbedderPolicy: false,
-          });
+          })
 
-          pipe(Sentry.getMetaTagTransformer(body));
+          pipe(Sentry.getMetaTagTransformer(body))
 
           resolve(
             new Response(stream, {
               headers: responseHeaders,
               status: responseStatusCode,
             }),
-          );
+          )
         },
         onError(error: unknown) {
-          responseStatusCode = 500;
+          responseStatusCode = 500
           if (shellRendered) {
-            console.error(error);
+            console.error(error)
           }
         },
         onShellError(error: unknown) {
-          reject(error);
+          reject(error)
         },
       },
-    );
-  });
+    )
+
+    timeoutId = setTimeout(() => abort(), streamTimeout + 1000)
+  })
 }
 
-export default Sentry.wrapSentryHandleRequest(handleRequest);
+export default Sentry.wrapSentryHandleRequest(handleRequest)
 
-export const handleError = Sentry.createSentryHandleError({ logErrors: true });
+export const handleError = Sentry.createSentryHandleError({ logErrors: true })

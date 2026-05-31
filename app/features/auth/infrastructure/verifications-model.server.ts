@@ -1,5 +1,5 @@
-import type { Prisma } from "../../../../generated/prisma/client";
-import { prisma } from "~/utils/db.server";
+import type { Prisma } from "../../../../generated/prisma/client"
+import { prisma } from "~/utils/db.server"
 
 /**
  * Upserts a verification to the database by type + target.
@@ -19,7 +19,7 @@ export async function saveVerificationToDatabase(
         type: verification.type,
       },
     },
-  });
+  })
 }
 
 /**
@@ -32,12 +32,12 @@ export async function retrieveVerificationFromDatabaseByTypeAndTarget({
   target,
   type,
 }: {
-  target: string;
-  type: string;
+  target: string
+  type: string
 }) {
   return prisma.verification.findUnique({
     where: { type_target: { target, type } },
-  });
+  })
 }
 
 /**
@@ -50,10 +50,10 @@ export async function deleteVerificationFromDatabaseByTypeAndTarget({
   target,
   type,
 }: {
-  target: string;
-  type: string;
+  target: string
+  type: string
 }) {
   return prisma.verification.delete({
     where: { type_target: { target, type } },
-  });
+  })
 }

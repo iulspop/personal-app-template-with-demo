@@ -18,4 +18,4 @@ export default {
     submit: "Verify",
     title: "Check your email",
   },
-};
+}

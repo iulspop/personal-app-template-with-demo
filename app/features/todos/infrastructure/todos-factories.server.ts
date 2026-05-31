@@ -1,8 +1,8 @@
-import { faker } from "@faker-js/faker";
-import { createId } from "@paralleldrive/cuid2";
+import { faker } from "@faker-js/faker"
+import { createId } from "@paralleldrive/cuid2"
 
-import type { Todo } from "../../../../generated/prisma/client";
-import type { Factory } from "~/utils/types";
+import type { Todo } from "../../../../generated/prisma/client"
+import type { Factory } from "~/utils/types"
 
 /**
  * Creates a todo with populated values.
@@ -24,4 +24,4 @@ export const createPopulatedTodo: Factory<Todo> = ({
   id,
   title,
   updatedAt,
-});
+})

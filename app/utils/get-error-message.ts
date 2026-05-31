@@ -1,6 +1,6 @@
 type ErrorWithMessage = {
-  message: string;
-};
+  message: string
+}
 
 // This validates an existing message property in standard errors, custom errors
 // and objects with a message property.
@@ -10,20 +10,20 @@ function isErrorWithMessage(error: unknown): error is ErrorWithMessage {
     error !== null &&
     "message" in error &&
     typeof (error as Record<string, unknown>).message === "string"
-  );
+  )
 }
 
 function toErrorWithMessage(maybeError: unknown): ErrorWithMessage {
-  if (isErrorWithMessage(maybeError)) return maybeError;
+  if (isErrorWithMessage(maybeError)) return maybeError
 
   try {
-    if (typeof maybeError === "string") return new Error(maybeError);
+    if (typeof maybeError === "string") return new Error(maybeError)
 
-    return new Error(JSON.stringify(maybeError));
+    return new Error(JSON.stringify(maybeError))
   } catch {
     // JSON.stringify() would throw in the case of a circular reference. We then
     // catch it here and coerce it into the [object Object] string.
-    return new Error(String(maybeError));
+    return new Error(String(maybeError))
   }
 }
 
@@ -57,5 +57,5 @@ function toErrorWithMessage(maybeError: unknown): ErrorWithMessage {
  * ```
  */
 export function getErrorMessage(error: unknown) {
-  return toErrorWithMessage(error).message;
+  return toErrorWithMessage(error).message
 }

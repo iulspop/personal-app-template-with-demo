@@ -1,11 +1,11 @@
-import { generateTOTP, verifyTOTP } from "@epic-web/totp";
+import { generateTOTP, verifyTOTP } from "@epic-web/totp"
 
 import {
   TOTP_ALGORITHM,
   TOTP_CHAR_SET,
   TOTP_DIGITS,
   TOTP_PERIOD,
-} from "../domain/auth-constants";
+} from "../domain/auth-constants"
 
 /**
  * Generates a TOTP with the project's standard configuration.
@@ -18,7 +18,7 @@ export const generateVerificationTOTP = () =>
     charSet: TOTP_CHAR_SET,
     digits: TOTP_DIGITS,
     period: TOTP_PERIOD,
-  });
+  })
 
 /**
  * Verifies a TOTP code against a stored secret.
@@ -34,12 +34,12 @@ export const verifyVerificationTOTP = ({
   period,
   secret,
 }: {
-  algorithm: string;
-  charSet: string;
-  digits: number;
-  otp: string;
-  period: number;
-  secret: string;
+  algorithm: string
+  charSet: string
+  digits: number
+  otp: string
+  period: number
+  secret: string
 }) =>
   verifyTOTP({
     algorithm,
@@ -48,4 +48,4 @@ export const verifyVerificationTOTP = ({
     otp,
     period,
     secret,
-  });
+  })

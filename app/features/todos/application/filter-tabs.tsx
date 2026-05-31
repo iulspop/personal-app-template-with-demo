@@ -1,29 +1,25 @@
-import { useTranslation } from "react-i18next";
-import { Link } from "react-router";
+import { useTranslation } from "react-i18next"
+import { Link } from "react-router"
 
-import type { TodoFilter } from "../domain/todos-domain";
-import { cn } from "~/lib/utils";
+import type { TodoFilter } from "../domain/todos-domain"
+import * as s from "./filter-tabs.css"
+import { cx } from "~/utils/class-name"
 
-const filters: TodoFilter[] = ["all", "active", "completed"];
+const filters: TodoFilter[] = ["all", "active", "completed"]
 
 export function FilterTabsComponent({
   currentFilter,
 }: {
-  currentFilter: TodoFilter;
+  currentFilter: TodoFilter
 }) {
-  const { t } = useTranslation("todos");
+  const { t } = useTranslation("todos")
 
   return (
-    <nav aria-label={t("filterLabel")} className="mb-6 flex gap-2">
+    <nav aria-label={t("filterLabel")} className={s.nav}>
       {filters.map((filter) => (
         <Link
           aria-current={filter === currentFilter ? "page" : undefined}
-          className={cn(
-            "rounded-lg px-3 py-1 text-sm",
-            filter === currentFilter
-              ? "bg-primary text-primary-foreground"
-              : "bg-secondary text-secondary-foreground hover:bg-secondary/80",
-          )}
+          className={cx(s.link, filter === currentFilter && s.activeLink)}
           key={filter}
           to={`/?filter=${filter}`}
         >
@@ -31,5 +27,5 @@ export function FilterTabsComponent({
         </Link>
       ))}
     </nav>
-  );
+  )
 }

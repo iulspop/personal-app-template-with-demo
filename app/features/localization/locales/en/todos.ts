@@ -22,4 +22,4 @@ export default {
     titleRequired: "Title is required",
     titleTooLong: "Title must be 200 characters or less",
   },
-};
+}

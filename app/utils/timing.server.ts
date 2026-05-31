@@ -6,29 +6,29 @@ export type Timings = Record<
       | { time?: never; start: number }
     )
   >
->;
+>
 
 export function makeTimings(type: string, desc?: string) {
   const timings: Timings = {
     [type]: [{ desc, start: performance.now() }],
-  };
+  }
   Object.defineProperty(timings, "toString", {
     enumerable: false,
     value() {
-      return getServerTimeHeader(timings);
+      return getServerTimeHeader(timings)
     },
-  });
-  return timings;
+  })
+  return timings
 }
 
 function createTimer(type: string, desc?: string) {
-  const start = performance.now();
+  const start = performance.now()
   return {
     end(timings: Timings) {
-      if (!timings[type]) timings[type] = [];
-      timings[type].push({ desc, time: performance.now() - start });
+      if (!timings[type]) timings[type] = []
+      timings[type].push({ desc, time: performance.now() - start })
     },
-  };
+  }
 }
 
 export async function time<ReturnType>(
@@ -38,49 +38,49 @@ export async function time<ReturnType>(
     desc,
     timings,
   }: {
-    type: string;
-    desc?: string;
-    timings?: Timings;
+    type: string
+    desc?: string
+    timings?: Timings
   },
 ): Promise<ReturnType> {
-  const timer = createTimer(type, desc);
-  const promise = typeof fn === "function" ? fn() : fn;
-  if (!timings) return promise;
+  const timer = createTimer(type, desc)
+  const promise = typeof fn === "function" ? fn() : fn
+  if (!timings) return promise
 
-  const result = await promise;
+  const result = await promise
 
-  timer.end(timings);
-  return result;
+  timer.end(timings)
+  return result
 }
 
 export function getServerTimeHeader(timings?: Timings) {
-  if (!timings) return "";
+  if (!timings) return ""
   return Object.entries(timings)
     .map(([key, timingInfos]) => {
       const dur = timingInfos
         .reduce((acc, timingInfo) => {
           const elapsed =
-            timingInfo.time ?? performance.now() - timingInfo.start;
-          return acc + elapsed;
+            timingInfo.time ?? performance.now() - timingInfo.start
+          return acc + elapsed
         }, 0)
-        .toFixed(1);
+        .toFixed(1)
       const desc = timingInfos
         .map((t) => t.desc)
         .filter(Boolean)
-        .join(" & ");
+        .join(" & ")
       return [
         key.replaceAll(/(:| |@|=|;|,|\/|\\)/g, "_"),
         desc ? `desc=${JSON.stringify(desc)}` : null,
         `dur=${dur}`,
       ]
         .filter(Boolean)
-        .join(";");
+        .join(";")
     })
-    .join(",");
+    .join(",")
 }
 
 export function combineServerTimings(headers1: Headers, headers2: Headers) {
-  const newHeaders = new Headers(headers1);
-  newHeaders.append("Server-Timing", headers2.get("Server-Timing") ?? "");
-  return newHeaders.get("Server-Timing") ?? "";
+  const newHeaders = new Headers(headers1)
+  newHeaders.append("Server-Timing", headers2.get("Server-Timing") ?? "")
+  return newHeaders.get("Server-Timing") ?? ""
 }
