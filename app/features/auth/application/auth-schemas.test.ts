@@ -1,7 +1,6 @@
 import { describe, expect, test } from "vitest";
 
 import {
-  ONBOARD_INTENT,
   SEND_MAGIC_LINK_INTENT,
   VERIFY_CODE_INTENT,
 } from "../domain/auth-constants";
@@ -53,31 +52,6 @@ describe("authActionSchema", () => {
       intent: VERIFY_CODE_INTENT,
       target: "test@example.com",
       type: "login",
-    });
-
-    expect(result.success).toBe(false);
-  });
-
-  test("given: valid onboard data, should: parse successfully", () => {
-    const result = authActionSchema.safeParse({
-      email: "test@example.com",
-      intent: ONBOARD_INTENT,
-      name: "Alice",
-    });
-
-    expect(result.success).toBe(true);
-    expect(result.data).toEqual({
-      email: "test@example.com",
-      intent: ONBOARD_INTENT,
-      name: "Alice",
-    });
-  });
-
-  test("given: onboard with empty name, should: fail", () => {
-    const result = authActionSchema.safeParse({
-      email: "test@example.com",
-      intent: ONBOARD_INTENT,
-      name: "",
     });
 
     expect(result.success).toBe(false);

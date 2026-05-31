@@ -1,6 +1,5 @@
 export const SEND_MAGIC_LINK_INTENT = "sendMagicLink";
 export const VERIFY_CODE_INTENT = "verifyCode";
-export const ONBOARD_INTENT = "onboard";
 
 export const VERIFICATION_TYPE_LOGIN = "login";
 

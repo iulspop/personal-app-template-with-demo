@@ -1,7 +1,6 @@
 import { z } from "zod";
 
 import {
-  ONBOARD_INTENT,
   SEND_MAGIC_LINK_INTENT,
   VERIFY_CODE_INTENT,
 } from "../domain/auth-constants";
@@ -18,19 +17,11 @@ export const verifyCodeSchema = z.object({
   type: z.string().min(1),
 });
 
-export const onboardSchema = z.object({
-  email: z.string().trim().min(1),
-  intent: z.literal(ONBOARD_INTENT),
-  name: z.string().trim().min(1, { message: "auth:validation.nameRequired" }),
-});
-
 export const authActionSchema = z.discriminatedUnion("intent", [
-  onboardSchema,
   sendMagicLinkSchema,
   verifyCodeSchema,
 ]);
 
 export type AuthActionSchema = z.infer<typeof authActionSchema>;
-export type OnboardSchema = z.infer<typeof onboardSchema>;
 export type SendMagicLinkSchema = z.infer<typeof sendMagicLinkSchema>;
 export type VerifyCodeSchema = z.infer<typeof verifyCodeSchema>;

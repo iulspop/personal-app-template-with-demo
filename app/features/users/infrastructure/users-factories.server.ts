@@ -13,13 +13,11 @@ import type { Factory } from "~/utils/types";
 export const createPopulatedUser: Factory<User> = ({
   id = createId(),
   email = faker.internet.email(),
-  name = faker.person.fullName(),
   updatedAt = faker.date.recent({ days: 10 }),
   createdAt = faker.date.past({ refDate: updatedAt, years: 3 }),
 } = {}) => ({
   createdAt,
   email,
   id,
-  name,
   updatedAt,
 });

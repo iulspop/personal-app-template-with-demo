@@ -51,6 +51,51 @@ describe("TodosPageComponent", () => {
     expect(screen.getByText("1 completed")).toBeInTheDocument();
   });
 
+  test("given: the user has no passkeys, should: invite passkey setup", () => {
+    const path = "/";
+    const RouterStub = createRoutesStub([
+      {
+        Component: () => (
+          <TodosPageComponent
+            counts={defaultCounts}
+            filter="all"
+            hasPasskeys={false}
+            todos={[]}
+          />
+        ),
+        path,
+      },
+    ]);
+
+    render(<RouterStub initialEntries={[path]} />);
+
+    expect(screen.getByText(/add a passkey/i)).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /set up passkey/i }),
+    ).toBeInTheDocument();
+  });
+
+  test("given: the user has passkeys, should: hide passkey setup invitation", () => {
+    const path = "/";
+    const RouterStub = createRoutesStub([
+      {
+        Component: () => (
+          <TodosPageComponent
+            counts={defaultCounts}
+            filter="all"
+            hasPasskeys={true}
+            todos={[]}
+          />
+        ),
+        path,
+      },
+    ]);
+
+    render(<RouterStub initialEntries={[path]} />);
+
+    expect(screen.queryByText(/add a passkey/i)).not.toBeInTheDocument();
+  });
+
   test("given: the page, should: render the add todo form", () => {
     const path = "/";
     const RouterStub = createRoutesStub([

@@ -8,7 +8,6 @@ describe("createPopulatedUser()", () => {
 
     expect(user.id).toBeDefined();
     expect(user.email).toBeDefined();
-    expect(user.name).toBeDefined();
     expect(user.createdAt).toBeInstanceOf(Date);
     expect(user.updatedAt).toBeInstanceOf(Date);
   });
@@ -16,11 +15,9 @@ describe("createPopulatedUser()", () => {
   test("given: overrides, should: use overridden values", () => {
     const user = createPopulatedUser({
       email: "custom@test.com",
-      name: "Custom Name",
     });
 
     expect(user.email).toBe("custom@test.com");
-    expect(user.name).toBe("Custom Name");
   });
 
   test("given: two calls, should: return distinct ids", () => {

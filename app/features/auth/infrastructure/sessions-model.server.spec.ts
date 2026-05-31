@@ -11,7 +11,7 @@ let testUserId: string;
 
 beforeEach(async () => {
   const user = await prisma.user.create({
-    data: { email: `session-test-${Date.now()}@example.com`, name: "Test" },
+    data: { email: `session-test-${Date.now()}@example.com` },
   });
   testUserId = user.id;
 });

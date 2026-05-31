@@ -8,16 +8,11 @@ export type Result<T, E> =
   | { error: E; success: false }
   | { data: T; success: true };
 
-export type UserValidationError =
-  | "EMAIL_EMPTY"
-  | "EMAIL_INVALID"
-  | "NAME_EMPTY"
-  | "NAME_TOO_LONG";
+export type UserValidationError = "EMAIL_EMPTY" | "EMAIL_INVALID";
 
 // ─── Constants ───────────────────────────────────────────────────────────────
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const MAX_NAME_LENGTH = 100;
 
 // ─── Functions ───────────────────────────────────────────────────────────────
 
@@ -35,26 +30,11 @@ export const validateEmail = (
 };
 
 /**
- * Validates and trims a display name.
- */
-export const validateName = (
-  name: string,
-): Result<string, UserValidationError> => {
-  const trimmed = name.trim();
-  if (trimmed.length === 0) return { error: "NAME_EMPTY", success: false };
-  if (trimmed.length > MAX_NAME_LENGTH)
-    return { error: "NAME_TOO_LONG", success: false };
-  return { data: trimmed, success: true };
-};
-
-/**
  * Maps user validation errors to i18n keys.
  */
 const userValidationErrorI18nKeys = {
   EMAIL_EMPTY: "validation.emailRequired",
   EMAIL_INVALID: "validation.emailInvalid",
-  NAME_EMPTY: "validation.nameRequired",
-  NAME_TOO_LONG: "validation.nameTooLong",
 } as const;
 
 export const userValidationErrorToI18nKey = (

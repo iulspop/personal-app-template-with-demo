@@ -4,7 +4,6 @@ import {
   isUserValidationError,
   userValidationErrorToI18nKey,
   validateEmail,
-  validateName,
 } from "./users-domain";
 
 describe("validateEmail()", () => {
@@ -33,33 +32,6 @@ describe("validateEmail()", () => {
   });
 });
 
-describe("validateName()", () => {
-  test("given: a valid name, should: return trimmed name", () => {
-    const result = validateName("  Alice  ");
-
-    expect(result).toEqual({ data: "Alice", success: true });
-  });
-
-  test("given: an empty name, should: return NAME_EMPTY error", () => {
-    const result = validateName("   ");
-
-    expect(result).toEqual({ error: "NAME_EMPTY", success: false });
-  });
-
-  test("given: a name exceeding 100 characters, should: return NAME_TOO_LONG error", () => {
-    const result = validateName("a".repeat(101));
-
-    expect(result).toEqual({ error: "NAME_TOO_LONG", success: false });
-  });
-
-  test("given: a name of exactly 100 characters, should: succeed", () => {
-    const name = "a".repeat(100);
-    const result = validateName(name);
-
-    expect(result).toEqual({ data: name, success: true });
-  });
-});
-
 describe("userValidationErrorToI18nKey()", () => {
   test("given: EMAIL_EMPTY, should: return validation.emailRequired", () => {
     expect(userValidationErrorToI18nKey("EMAIL_EMPTY")).toBe(
@@ -72,24 +44,11 @@ describe("userValidationErrorToI18nKey()", () => {
       "validation.emailInvalid",
     );
   });
-
-  test("given: NAME_EMPTY, should: return validation.nameRequired", () => {
-    expect(userValidationErrorToI18nKey("NAME_EMPTY")).toBe(
-      "validation.nameRequired",
-    );
-  });
-
-  test("given: NAME_TOO_LONG, should: return validation.nameTooLong", () => {
-    expect(userValidationErrorToI18nKey("NAME_TOO_LONG")).toBe(
-      "validation.nameTooLong",
-    );
-  });
 });
 
 describe("isUserValidationError()", () => {
   test("given: a valid error code, should: return true", () => {
     expect(isUserValidationError("EMAIL_EMPTY")).toBe(true);
-    expect(isUserValidationError("NAME_TOO_LONG")).toBe(true);
   });
 
   test("given: an invalid string, should: return false", () => {

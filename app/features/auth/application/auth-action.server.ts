@@ -2,7 +2,6 @@ import { data, redirect } from "react-router";
 import { match } from "ts-pattern";
 
 import {
-  ONBOARD_INTENT,
   SEND_MAGIC_LINK_INTENT,
   VERIFICATION_EXPIRY_MINUTES,
   VERIFICATION_TYPE_LOGIN,
@@ -25,10 +24,7 @@ import {
 } from "../infrastructure/verifications-model.server";
 import { authActionSchema } from "./auth-schemas";
 import { createUserSession } from "./auth-session.server";
-import {
-  validateEmail,
-  validateName,
-} from "~/features/users/domain/users-domain";
+import { validateEmail } from "~/features/users/domain/users-domain";
 import {
   retrieveUserFromDatabaseByEmail,
   saveUserToDatabase,
@@ -124,48 +120,10 @@ export const authAction = async ({ request }: { request: Request }) => {
       await deleteVerificationFromDatabaseByTypeAndTarget({ target, type });
 
       const existingUser = await retrieveUserFromDatabaseByEmail(target);
-
-      if (existingUser) {
-        const setCookie = await createUserSession(existingUser.id);
-        throw redirect("/", {
-          headers: { "Set-Cookie": setCookie },
-        });
-      }
-
-      const onboardParams = new URLSearchParams({ email: target });
-      throw redirect(`/onboarding?${onboardParams.toString()}`);
-    })
-    .with({ intent: ONBOARD_INTENT }, async ({ email, name }) => {
-      const emailResult = validateEmail(email);
-      if (!emailResult.success)
-        return data(
-          { error: emailResult.error, success: false as const },
-          { status: 400 },
-        );
-
-      const nameResult = validateName(name);
-      if (!nameResult.success)
-        return data(
-          { error: nameResult.error, success: false as const },
-          { status: 400 },
-        );
-
-      const existingUser = await retrieveUserFromDatabaseByEmail(
-        emailResult.data,
-      );
-      if (existingUser) {
-        const setCookie = await createUserSession(existingUser.id);
-        throw redirect("/", {
-          headers: { "Set-Cookie": setCookie },
-        });
-      }
-
-      const user = await saveUserToDatabase({
-        email: emailResult.data,
-        name: nameResult.data,
-      });
-
+      const user =
+        existingUser ?? (await saveUserToDatabase({ email: target }));
       const setCookie = await createUserSession(user.id);
+
       throw redirect("/", {
         headers: { "Set-Cookie": setCookie },
       });

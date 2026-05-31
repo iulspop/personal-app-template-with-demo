@@ -44,20 +44,17 @@ export async function getVerificationCode(email: string): Promise<string> {
 /**
  * Creates a test user directly in the DB. Returns the user details.
  */
-export async function setupTestUser(
-  overrides: { email?: string; name?: string } = {},
-) {
+export async function setupTestUser(overrides: { email?: string } = {}) {
   const prisma = createPrisma();
   const email = overrides.email ?? `test-${Date.now()}@example.com`;
-  const name = overrides.name ?? "Test User";
 
   try {
     const user = await prisma.user.upsert({
-      create: { email, name },
-      update: { name },
+      create: { email },
+      update: {},
       where: { email },
     });
-    return { email: user.email, id: user.id, name: user.name };
+    return { email: user.email, id: user.id };
   } finally {
     await prisma.$disconnect();
   }
@@ -83,16 +80,15 @@ export async function deleteAllTodos() {
  */
 export async function loginAsTestUser(
   page: Page,
-  overrides: { email?: string; name?: string } = {},
+  overrides: { email?: string } = {},
 ) {
   const prisma = createPrisma();
   const email = overrides.email ?? `login-${Date.now()}@example.com`;
-  const name = overrides.name ?? "Test User";
 
   try {
     const user = await prisma.user.upsert({
-      create: { email, name },
-      update: { name },
+      create: { email },
+      update: {},
       where: { email },
     });
 
@@ -133,7 +129,7 @@ export async function loginAsTestUser(
       },
     ]);
 
-    return { email: user.email, id: user.id, name: user.name };
+    return { email: user.email, id: user.id };
   } finally {
     await prisma.$disconnect();
   }

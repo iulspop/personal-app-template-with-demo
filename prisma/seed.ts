@@ -17,19 +17,16 @@ async function seed() {
   await prisma.user.deleteMany();
 
   const demoUsers = [
-    createPopulatedUser({ email: "alice@example.com", name: "Alice Johnson" }),
-    createPopulatedUser({ email: "bob@example.com", name: "Bob Smith" }),
-    createPopulatedUser({
-      email: "charlie@example.com",
-      name: "Charlie Brown",
-    }),
+    createPopulatedUser({ email: "alice@example.com" }),
+    createPopulatedUser({ email: "bob@example.com" }),
+    createPopulatedUser({ email: "charlie@example.com" }),
   ];
 
   console.time(`👥 Created ${demoUsers.length} users`);
 
   for (const user of demoUsers) {
     await saveUserToDatabase(user);
-    console.log(`  ✓ ${user.name} (${user.email})`);
+    console.log(`  ✓ ${user.email}`);
   }
 
   console.timeEnd(`👥 Created ${demoUsers.length} users`);

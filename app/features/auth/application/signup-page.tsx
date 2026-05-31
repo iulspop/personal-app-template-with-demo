@@ -1,0 +1,141 @@
+import { startRegistration } from "@simplewebauthn/browser";
+import {
+  IconBrandAppleFilled,
+  IconBrandGoogleFilled,
+} from "@tabler/icons-react";
+import { Img } from "openimg/react";
+import { useState } from "react";
+import { Form, Link } from "react-router";
+
+import { SEND_MAGIC_LINK_INTENT } from "../domain/auth-constants";
+import type { SignInPageActionData } from "./signin-page";
+import { Button } from "~/components/ui/button";
+import { FieldError } from "~/components/ui/field";
+import { Input } from "~/components/ui/input";
+
+export function SignUpPageComponent({
+  actionData,
+}: {
+  actionData?: SignInPageActionData;
+}) {
+  const [passkeySignupState, setPasskeySignupState] = useState<
+    "idle" | "saving" | "error"
+  >("idle");
+  const [isMagicLinkFormVisible, setIsMagicLinkFormVisible] = useState(
+    actionData?.success === false,
+  );
+
+  const signupWithPasskey = async () => {
+    setPasskeySignupState("saving");
+
+    try {
+      const optionsJSON = await fetch("/auth/passkey/signup").then((res) =>
+        res.json(),
+      );
+      const credential = await startRegistration({ optionsJSON });
+      const result = await fetch("/auth/passkey/signup", {
+        body: JSON.stringify({ credential }),
+        headers: { "Content-Type": "application/json" },
+        method: "post",
+      });
+
+      if (!result.ok) {
+        setPasskeySignupState("error");
+        return;
+      }
+
+      window.location.assign("/");
+    } catch {
+      setPasskeySignupState("error");
+    }
+  };
+
+  return (
+    <main className="mx-auto max-w-md px-4 py-16">
+      <Img
+        alt=""
+        className="mx-auto mb-8 size-12 rounded-lg"
+        height={48}
+        src="/images/logo.png"
+        width={48}
+      />
+      <h1 className="mb-2 text-center text-4xl font-bold text-foreground">
+        Sign up
+      </h1>
+      <p className="mb-8 text-center text-muted-foreground">
+        Create your account to get started
+      </p>
+
+      <div className="space-y-4">
+        <Button
+          className="w-full"
+          disabled={passkeySignupState === "saving"}
+          onClick={() => void signupWithPasskey()}
+          type="button"
+        >
+          {passkeySignupState === "saving"
+            ? "Creating passkey…"
+            : "Create with Passkey"}
+        </Button>
+
+        <div className="flex items-center gap-3 py-2 text-sm text-muted-foreground">
+          <div className="h-px flex-1 bg-border" />
+          <span>OR</span>
+          <div className="h-px flex-1 bg-border" />
+        </div>
+
+        <Button className="w-full" disabled type="button" variant="outline">
+          <IconBrandGoogleFilled aria-hidden="true" />
+          Continue with Google
+        </Button>
+        <Button className="w-full" disabled type="button" variant="outline">
+          <IconBrandAppleFilled aria-hidden="true" />
+          Continue with Apple
+        </Button>
+
+        {isMagicLinkFormVisible ? (
+          <Form className="space-y-3" method="post">
+            <Input
+              aria-label="Email"
+              autoComplete="email"
+              name="email"
+              placeholder="you@example.com"
+              type="email"
+            />
+            <Button
+              className="w-full"
+              name="intent"
+              type="submit"
+              value={SEND_MAGIC_LINK_INTENT}
+              variant="outline"
+            >
+              Send signup link
+            </Button>
+            {actionData?.success === false && (
+              <FieldError>{actionData.error}</FieldError>
+            )}
+          </Form>
+        ) : (
+          <Button
+            className="w-full"
+            onClick={() => setIsMagicLinkFormVisible(true)}
+            type="button"
+            variant="outline"
+          >
+            Sign up with email link
+          </Button>
+        )}
+        {passkeySignupState === "error" && (
+          <FieldError>Passkey signup failed.</FieldError>
+        )}
+      </div>
+
+      <p className="mt-8 text-center text-sm text-muted-foreground">
+        Already have an account?{" "}
+        <Link className="font-medium text-primary" to="/auth/signin">
+          Log in
+        </Link>
+      </p>
+    </main>
+  );
+}

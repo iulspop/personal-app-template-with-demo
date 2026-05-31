@@ -51,11 +51,11 @@ export const getUserId = async (request: Request): Promise<string | null> => {
 };
 
 /**
- * Requires an authenticated user. Throws a redirect to /login if not authenticated.
+ * Requires an authenticated user. Throws a redirect to /auth/signin if not authenticated.
  */
 export const requireUserId = async (request: Request): Promise<string> => {
   const userId = await getUserId(request);
-  if (!userId) throw redirect("/login");
+  if (!userId) throw redirect("/auth/signin");
   return userId;
 };
 

@@ -3,7 +3,7 @@
 A production-ready template for building full-stack personal applications using React Router, SQLite, and Fly.io.
 
 ```bash
-npx create-react-router@latest --template iulspop/personal-app-template-sqlite-fly-io
+npx create-react-router@latest --template iulspop/personal-app-template-with-demo
 ```
 
 ## Tech Stack

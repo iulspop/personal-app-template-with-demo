@@ -1,3 +1,5 @@
+import { startRegistration } from "@simplewebauthn/browser";
+import { useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Form } from "react-router";
 
@@ -27,14 +29,39 @@ export function TodosPageComponent({
   actionData,
   counts,
   filter,
+  hasPasskeys = true,
   todos,
 }: {
   actionData?: TodosPageActionData;
   counts: { active: number; completed: number; total: number };
   filter: TodoFilter;
+  hasPasskeys?: boolean;
   todos: Todo[];
 }) {
   const { t } = useTranslation("todos");
+  const [passkeySetupState, setPasskeySetupState] = useState<
+    "idle" | "saving" | "saved" | "error"
+  >("idle");
+
+  const setupPasskey = async () => {
+    setPasskeySetupState("saving");
+
+    try {
+      const optionsJSON = await fetch("/auth/passkey/register").then((res) =>
+        res.json(),
+      );
+      const credential = await startRegistration({ optionsJSON });
+      const result = await fetch("/auth/passkey/register", {
+        body: JSON.stringify(credential),
+        headers: { "Content-Type": "application/json" },
+        method: "post",
+      }).then((res) => res.json());
+
+      setPasskeySetupState(result.verified ? "saved" : "error");
+    } catch {
+      setPasskeySetupState("error");
+    }
+  };
 
   return (
     <main className="mx-auto max-w-2xl px-4 py-8">
@@ -46,6 +73,27 @@ export function TodosPageComponent({
           </Button>
         </Form>
       </div>
+
+      {!hasPasskeys && passkeySetupState !== "saved" && (
+        <section className="mb-8 rounded-lg border border-border bg-card p-4 text-card-foreground">
+          <h2 className="font-semibold">Add a passkey</h2>
+          <p className="mt-1 text-sm text-muted-foreground">
+            Use your device unlock for faster future logins.
+          </p>
+          <Button
+            className="mt-3"
+            disabled={passkeySetupState === "saving"}
+            onClick={setupPasskey}
+            type="button"
+            variant="outline"
+          >
+            {passkeySetupState === "saving" ? "Setting up…" : "Set up passkey"}
+          </Button>
+          {passkeySetupState === "error" && (
+            <FieldError className="mt-2">Passkey setup failed.</FieldError>
+          )}
+        </section>
+      )}
 
       <Form className="mb-8 space-y-4" method="post">
         <div>

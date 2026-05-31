@@ -16,9 +16,14 @@ describe("LoginPageComponent", () => {
 
     render(<RouterStub initialEntries={[path]} />);
 
-    expect(screen.getByPlaceholderText("you@example.com")).toBeInTheDocument();
     expect(
-      screen.getByRole("button", { name: /send magic link/i }),
+      screen.queryByPlaceholderText("you@example.com"),
+    ).not.toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /email me a sign-in link/i }),
+    ).toBeInTheDocument();
+    expect(
+      screen.getByRole("button", { name: /sign in with passkey/i }),
     ).toBeInTheDocument();
   });
 
@@ -37,7 +42,9 @@ describe("LoginPageComponent", () => {
 
     render(<RouterStub initialEntries={[path]} />);
 
-    expect(screen.getByRole("alert")).toHaveTextContent(/email is required/i);
+    expect(screen.getByRole("alert")).toHaveTextContent(
+      /validation.emailRequired/i,
+    );
   });
 
   test("given: no actionData, should: not display any error", () => {
