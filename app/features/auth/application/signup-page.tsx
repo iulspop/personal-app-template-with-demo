@@ -2,6 +2,8 @@ import { startRegistration } from "@simplewebauthn/browser";
 import {
   IconBrandAppleFilled,
   IconBrandGoogleFilled,
+  IconFingerprint,
+  IconMail,
 } from "@tabler/icons-react";
 import { Img } from "openimg/react";
 import { useState } from "react";
@@ -113,6 +115,7 @@ export function SignUpPageComponent({
             onClick={() => setPasskeySignupState("email")}
             type="button"
           >
+            <IconFingerprint aria-hidden="true" className="size-5" />
             Create with Passkey
           </Button>
         )}
@@ -156,11 +159,12 @@ export function SignUpPageComponent({
           </Form>
         ) : (
           <Button
-            className="w-full"
+            className="mx-auto flex w-fit bg-transparent text-muted-foreground hover:bg-transparent hover:text-foreground"
             onClick={() => setIsMagicLinkFormVisible(true)}
             type="button"
-            variant="outline"
+            variant="ghost"
           >
+            <IconMail aria-hidden="true" className="size-5" />
             Sign up with email link
           </Button>
         )}

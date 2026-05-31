@@ -2,6 +2,8 @@ import { startAuthentication } from "@simplewebauthn/browser";
 import {
   IconBrandAppleFilled,
   IconBrandGoogleFilled,
+  IconFingerprint,
+  IconMail,
 } from "@tabler/icons-react";
 import { Img } from "openimg/react";
 import { useState } from "react";
@@ -69,10 +71,10 @@ export function SignInPageComponent({
         width={48}
       />
       <h1 className="mb-2 text-center text-4xl font-bold text-foreground">
-        Welcome back
+        Sign in
       </h1>
       <p className="mb-8 text-center text-muted-foreground">
-        Sign in to your workspace
+        Sign in to your account
       </p>
 
       <div className="space-y-4">
@@ -82,6 +84,7 @@ export function SignInPageComponent({
           onClick={loginWithPasskey}
           type="button"
         >
+          <IconFingerprint aria-hidden="true" className="size-5" />
           {passkeyLoginState === "checking"
             ? "Checking passkey…"
             : "Sign in with Passkey"}
@@ -135,11 +138,12 @@ export function SignInPageComponent({
           </Form>
         ) : (
           <Button
-            className="w-full"
+            className="mx-auto flex w-fit bg-transparent text-muted-foreground hover:bg-transparent hover:text-foreground"
             onClick={() => setIsMagicLinkFormVisible(true)}
             type="button"
-            variant="outline"
+            variant="ghost"
           >
+            <IconMail aria-hidden="true" className="size-5" />
             Email me a sign-in link
           </Button>
         )}

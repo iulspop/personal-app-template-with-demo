@@ -17,14 +17,23 @@ describe("SignInPageComponent", () => {
     render(<RouterStub initialEntries={[path]} />);
 
     expect(
-      screen.getByRole("heading", { name: /welcome back/i }),
+      screen.getByRole("heading", { name: /^sign in$/i }),
     ).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: /sign in with passkey/i }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: /email me a sign-in link/i }),
-    ).toBeInTheDocument();
+    expect(screen.getByText(/sign in to your account/i)).toBeInTheDocument();
+    const passkeyButton = screen.getByRole("button", {
+      name: /sign in with passkey/i,
+    });
+    expect(passkeyButton.querySelector("svg")).toBeInTheDocument();
+    const magicLinkButton = screen.getByRole("button", {
+      name: /email me a sign-in link/i,
+    });
+    expect(magicLinkButton).toHaveClass(
+      "w-fit",
+      "text-muted-foreground",
+      "hover:bg-transparent",
+      "hover:text-foreground",
+    );
+    expect(magicLinkButton.querySelector("svg")).toBeInTheDocument();
     expect(
       screen.queryByPlaceholderText("you@example.com"),
     ).not.toBeInTheDocument();

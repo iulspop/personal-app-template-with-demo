@@ -29,12 +29,20 @@ describe("SignUpPageComponent", () => {
     ).toBeInTheDocument();
     expect(screen.getByText(/create your account/i)).toBeInTheDocument();
     expect(screen.queryByLabelText(/email/i)).not.toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: /create with passkey/i }),
-    ).toBeInTheDocument();
-    expect(
-      screen.getByRole("button", { name: /sign up with email link/i }),
-    ).toBeInTheDocument();
+    const passkeyButton = screen.getByRole("button", {
+      name: /create with passkey/i,
+    });
+    expect(passkeyButton.querySelector("svg")).toBeInTheDocument();
+    const magicLinkButton = screen.getByRole("button", {
+      name: /sign up with email link/i,
+    });
+    expect(magicLinkButton).toHaveClass(
+      "w-fit",
+      "text-muted-foreground",
+      "hover:bg-transparent",
+      "hover:text-foreground",
+    );
+    expect(magicLinkButton.querySelector("svg")).toBeInTheDocument();
     expect(screen.getByRole("link", { name: /log in/i })).toHaveAttribute(
       "href",
       "/auth/signin",
