@@ -28,6 +28,7 @@ import { validateEmail } from "~/features/users/domain/users-domain"
 import {
   retrieveUserFromDatabaseByEmail,
   saveUserToDatabase,
+  updateUserInDatabaseById,
 } from "~/features/users/infrastructure/users-model.server"
 
 export const authAction = async ({ request }: { request: Request }) => {
@@ -120,7 +121,15 @@ export const authAction = async ({ request }: { request: Request }) => {
       await deleteVerificationFromDatabaseByTypeAndTarget({ target, type })
 
       const existingUser = await retrieveUserFromDatabaseByEmail(target)
-      const user = existingUser ?? (await saveUserToDatabase({ email: target }))
+      const user = existingUser
+        ? await updateUserInDatabaseById({
+            emailVerifiedAt: new Date(),
+            id: existingUser.id,
+          })
+        : await saveUserToDatabase({
+            email: target,
+            emailVerifiedAt: new Date(),
+          })
       const setCookie = await createUserSession(user.id)
 
       throw redirect("/", {
