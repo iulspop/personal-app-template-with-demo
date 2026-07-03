@@ -2,7 +2,10 @@ import { data } from "react-router"
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
 
 import { action, loader } from "./index"
-import { requireUserId } from "~/features/auth/application/auth-session.server"
+import {
+  getUserId,
+  requireUserId,
+} from "~/features/auth/application/auth-session.server"
 import { sendVerificationEmail } from "~/features/auth/infrastructure/email.server"
 import { generateVerificationTOTP } from "~/features/auth/infrastructure/totp.server"
 import {
@@ -13,6 +16,7 @@ import { todosAction } from "~/features/todos/application/todos-action.server"
 import { retrieveAllTodosFromDatabase } from "~/features/todos/infrastructure/todos-model.server"
 
 vi.mock("~/features/auth/application/auth-session.server", () => ({
+  getUserId: vi.fn(() => "user-id"),
   requireUserId: vi.fn(() => "user-id"),
 }))
 
@@ -82,6 +86,17 @@ afterEach(() => {
 })
 
 describe("index loader", () => {
+  test("given: an anonymous visitor, should: return landing page data", async () => {
+    vi.mocked(getUserId).mockResolvedValueOnce(null)
+
+    const loaderData = await loader(
+      createRouteArgs(new Request("https://example.com/")),
+    )
+
+    expect(loaderData).toEqual({ isLanding: true, pageTitle: "Todo Demo" })
+    expect(retrieveAllTodosFromDatabase).not.toHaveBeenCalled()
+  })
+
   test("given: an unverified user with a recent verification email, should: return remaining resend cooldown", async () => {
     vi.mocked(
       retrieveVerificationFromDatabaseByTypeAndTarget,

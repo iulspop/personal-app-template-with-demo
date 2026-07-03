@@ -1,7 +1,10 @@
 import { data } from "react-router"
 
 import type { Route } from "./+types/index"
-import { requireUserId } from "~/features/auth/application/auth-session.server"
+import {
+  getUserId,
+  requireUserId,
+} from "~/features/auth/application/auth-session.server"
 import {
   RESEND_EMAIL_VERIFICATION_INTENT,
   VERIFICATION_EXPIRY_MINUTES,
@@ -19,6 +22,7 @@ import {
   retrieveVerificationFromDatabaseByTypeAndTarget,
   saveVerificationToDatabase,
 } from "~/features/auth/infrastructure/verifications-model.server"
+import { LandingPageComponent } from "~/features/todos/application/landing-page"
 import { todosAction } from "~/features/todos/application/todos-action.server"
 import { TodosPageComponent } from "~/features/todos/application/todos-page"
 import {
@@ -51,7 +55,9 @@ const calculateRemainingResendCooldownSeconds = ({
 }
 
 export async function loader({ request }: Route.LoaderArgs) {
-  const userId = await requireUserId(request)
+  const userId = await getUserId(request)
+  if (!userId) return { isLanding: true as const, pageTitle: "Todo Demo" }
+
   const [allTodos, passkeys, user] = await Promise.all([
     retrieveAllTodosFromDatabase(),
     retrievePasskeysFromDatabaseByUserId(userId),
@@ -72,6 +78,7 @@ export async function loader({ request }: Route.LoaderArgs) {
     filter,
     hasPasskeys: passkeys.length > 0,
     isEmailVerified: Boolean(user?.emailVerifiedAt),
+    isLanding: false as const,
     pageTitle: "Todos",
     resendEmailVerificationCooldownSeconds: existingVerification
       ? calculateRemainingResendCooldownSeconds(existingVerification)
@@ -157,6 +164,8 @@ export default function TodosRoute({
   actionData,
   loaderData,
 }: Route.ComponentProps) {
+  if (loaderData.isLanding) return <LandingPageComponent />
+
   return (
     <TodosPageComponent
       actionData={actionData}
