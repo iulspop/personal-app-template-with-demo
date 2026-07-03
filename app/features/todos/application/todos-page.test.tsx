@@ -29,6 +29,25 @@ describe("TodosPageComponent", () => {
     expect(screen.getByText(/no todos yet/i)).toBeInTheDocument()
   })
 
+  test("given: the todos page, should: link to settings", () => {
+    const path = "/"
+    const RouterStub = createRoutesStub([
+      {
+        Component: () => (
+          <TodosPageComponent counts={defaultCounts} filter="all" todos={[]} />
+        ),
+        path,
+      },
+    ])
+
+    render(<RouterStub initialEntries={[path]} />)
+
+    expect(screen.getByRole("link", { name: /settings/i })).toHaveAttribute(
+      "href",
+      "/settings",
+    )
+  })
+
   test("given: todos, should: render the todo list with status counts", () => {
     const todos = [
       createPopulatedTodo({ completed: false, id: "1", title: "First" }),
@@ -56,7 +75,7 @@ describe("TodosPageComponent", () => {
     expect(screen.getByText("1 completed")).toBeInTheDocument()
   })
 
-  test("given: the user has no passkeys, should: invite passkey setup", () => {
+  test("given: the user has no passkeys, should: link to passkey settings", () => {
     const path = "/"
     const RouterStub = createRoutesStub([
       {
@@ -76,8 +95,8 @@ describe("TodosPageComponent", () => {
 
     expect(screen.getByText(/add a passkey/i)).toBeInTheDocument()
     expect(
-      screen.getByRole("button", { name: /set up passkey/i }),
-    ).toBeInTheDocument()
+      screen.getByRole("link", { name: /manage sign-in settings/i }),
+    ).toHaveAttribute("href", "/settings")
   })
 
   test("given: the user has passkeys, should: hide passkey setup invitation", () => {

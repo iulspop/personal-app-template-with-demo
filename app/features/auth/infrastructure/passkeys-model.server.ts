@@ -35,7 +35,20 @@ export async function retrievePasskeyFromDatabaseByCredentialId(
  * @returns The user's passkeys.
  */
 export async function retrievePasskeysFromDatabaseByUserId(userId: User["id"]) {
-  return prisma.passkey.findMany({ where: { userId } })
+  return prisma.passkey.findMany({
+    orderBy: { createdAt: "desc" },
+    where: { userId },
+  })
+}
+
+export async function deletePasskeyFromDatabaseByIdAndUserId({
+  id,
+  userId,
+}: {
+  id: Passkey["id"]
+  userId: User["id"]
+}) {
+  return prisma.passkey.deleteMany({ where: { id, userId } })
 }
 
 /**

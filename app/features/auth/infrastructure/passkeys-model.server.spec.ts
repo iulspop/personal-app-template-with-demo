@@ -1,6 +1,7 @@
 import { afterEach, beforeEach, describe, expect, test } from "vitest"
 
 import {
+  deletePasskeyFromDatabaseByIdAndUserId,
   retrievePasskeyFromDatabaseByCredentialId,
   retrievePasskeysFromDatabaseByUserId,
   savePasskeyToDatabase,
@@ -80,6 +81,30 @@ describe("retrievePasskeysFromDatabaseByUserId()", () => {
 
     expect(result).toHaveLength(1)
     expect(result[0]).toMatchObject({ credentialId })
+  })
+})
+
+describe("deletePasskeyFromDatabaseByIdAndUserId()", () => {
+  test("given: a user-owned passkey, should: delete it", async () => {
+    const passkey = await savePasskeyToDatabase({
+      counter: 0,
+      credentialBackedUp: true,
+      credentialDeviceType: "singleDevice",
+      credentialId,
+      credentialPublicKey: "public-key",
+      transports: "internal",
+      user: { connect: { id: testUserId } },
+    })
+
+    const result = await deletePasskeyFromDatabaseByIdAndUserId({
+      id: passkey.id,
+      userId: testUserId,
+    })
+
+    expect(result.count).toBe(1)
+    await expect(
+      retrievePasskeyFromDatabaseByCredentialId(credentialId),
+    ).resolves.toBeNull()
   })
 })
 

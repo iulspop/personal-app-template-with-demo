@@ -15,20 +15,7 @@ export const header = style({
   marginBottom: theme.space[8],
 })
 
-export const title = style({
-  color: theme.color.text.primary,
-  fontSize: theme.font.size["3xl"],
-  fontWeight: theme.font.weight.bold,
-  lineHeight: theme.font.lineHeight.tight,
-})
-
-export const headerActions = style({
-  alignItems: "center",
-  display: "flex",
-  gap: theme.space[2],
-})
-
-export const settingsLink = style({
+export const backLink = style({
   alignItems: "center",
   background: theme.color.background.card,
   border: `1px solid ${theme.color.border.default}`,
@@ -43,64 +30,67 @@ export const settingsLink = style({
   textDecoration: "none",
 })
 
-export const notice = style({
+export const title = style({
+  color: theme.color.text.primary,
+  fontSize: theme.font.size["3xl"],
+  fontWeight: theme.font.weight.bold,
+  lineHeight: theme.font.lineHeight.tight,
+})
+
+export const card = style({
   background: theme.color.background.card,
   border: `1px solid ${theme.color.border.default}`,
   borderRadius: theme.radius.lg,
   color: theme.color.text.primary,
-  marginBottom: theme.space[8],
   padding: theme.space[4],
 })
 
-export const noticeTitle = style({
+export const cardHeader = style({
+  display: "flex",
+  flexDirection: "column",
+  gap: theme.space[1],
+  marginBottom: theme.space[4],
+})
+
+export const cardTitle = style({
+  fontSize: theme.font.size.lg,
   fontWeight: theme.font.weight.semibold,
 })
 
-export const noticeBody = style({
+export const cardBody = style({
   color: theme.color.text.muted,
   fontSize: theme.font.size.sm,
-  marginTop: theme.space[1],
 })
 
-export const noticeAction = style({
-  marginTop: theme.space[3],
-})
-
-export const noticeLink = style({
-  color: theme.color.text.primary,
-  display: "inline-flex",
-  fontSize: theme.font.size.sm,
-  fontWeight: theme.font.weight.medium,
-  marginTop: theme.space[3],
-})
-
-export const form = style({
-  display: "flex",
-  flexDirection: "column",
-  gap: theme.space[4],
-  marginBottom: theme.space[8],
-})
-
-export const emptyState = style({
-  color: theme.color.text.muted,
-  textAlign: "center",
-})
-
-export const list = style({
+export const passkeyList = style({
   display: "flex",
   flexDirection: "column",
   gap: theme.space[2],
+  listStyle: "none",
+  marginTop: theme.space[4],
+  padding: 0,
 })
 
-export const footer = style({
+export const passkeyItem = style({
   alignItems: "center",
-  color: theme.color.text.muted,
+  border: `1px solid ${theme.color.border.default}`,
+  borderRadius: theme.radius.md,
   display: "flex",
   fontSize: theme.font.size.sm,
+  gap: theme.space[3],
   justifyContent: "space-between",
-  marginTop: theme.space[6],
+  padding: theme.space[3],
 })
 
-export const dangerAction = style({
-  color: theme.color.text.danger,
+export const action = style({
+  marginTop: theme.space[4],
+})
+
+export const status = style({
+  fontSize: theme.font.size.sm,
+  marginTop: theme.space[3],
+})
+
+export const success = style({
+  color: theme.color.text.primary,
 })

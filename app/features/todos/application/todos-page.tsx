@@ -1,6 +1,5 @@
-import { startRegistration } from "@simplewebauthn/browser"
 import { useEffect, useState } from "react"
-import { Form } from "react-router"
+import { Form, Link } from "react-router"
 
 import type { Todo } from "../../../../generated/prisma/client"
 import {
@@ -49,9 +48,6 @@ export function TodosPageComponent({
   resendEmailVerificationCooldownSeconds?: number
   todos: Todo[]
 }) {
-  const [passkeySetupState, setPasskeySetupState] = useState<
-    "idle" | "saving" | "saved" | "error"
-  >("idle")
   const [resendCooldownSeconds, setResendCooldownSeconds] = useState(
     resendEmailVerificationCooldownSeconds,
   )
@@ -84,35 +80,20 @@ export function TodosPageComponent({
     return () => window.clearTimeout(timeout)
   }, [resendCooldownSeconds])
 
-  const setupPasskey = async () => {
-    setPasskeySetupState("saving")
-
-    try {
-      const optionsJSON = await fetch("/auth/passkey/register").then((res) =>
-        res.json(),
-      )
-      const credential = await startRegistration({ optionsJSON })
-      const result = await fetch("/auth/passkey/register", {
-        body: JSON.stringify(credential),
-        headers: { "Content-Type": "application/json" },
-        method: "post",
-      }).then((res) => res.json())
-
-      setPasskeySetupState(result.verified ? "saved" : "error")
-    } catch {
-      setPasskeySetupState("error")
-    }
-  }
-
   return (
     <main className={s.page}>
       <div className={s.header}>
         <h1 className={s.title}>Todos</h1>
-        <Form action="/logout" method="post">
-          <Button size="sm" type="submit" variant="outline">
-            Log out
-          </Button>
-        </Form>
+        <div className={s.headerActions}>
+          <Link className={s.settingsLink} to="/settings">
+            Settings
+          </Link>
+          <Form action="/logout" method="post">
+            <Button size="sm" type="submit" variant="outline">
+              Log out
+            </Button>
+          </Form>
+        </div>
       </div>
 
       {!isEmailVerified && (
@@ -143,26 +124,15 @@ export function TodosPageComponent({
         </section>
       )}
 
-      {!hasPasskeys && passkeySetupState !== "saved" && (
+      {!hasPasskeys && (
         <section className={s.notice}>
           <h2 className={s.noticeTitle}>Add a passkey</h2>
           <p className={s.noticeBody}>
             Use your device unlock for faster future logins.
           </p>
-          <Button
-            className={s.noticeAction}
-            disabled={passkeySetupState === "saving"}
-            onClick={setupPasskey}
-            type="button"
-            variant="outline"
-          >
-            {passkeySetupState === "saving" ? "Setting up…" : "Set up passkey"}
-          </Button>
-          {passkeySetupState === "error" && (
-            <FieldError className={s.noticeBody}>
-              Passkey setup failed.
-            </FieldError>
-          )}
+          <Link className={s.noticeLink} to="/settings">
+            Manage sign-in settings
+          </Link>
         </section>
       )}
 
