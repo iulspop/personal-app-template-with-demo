@@ -58,12 +58,13 @@
     "vitest": "^4.1.7"
   },
   "name": "personal-app-template-sqlite-fly-io",
-  "packageManager": "pnpm@11.2.2",
+  "packageManager": "pnpm@11.8.0",
   "private": true,
   "scripts": {
     "build": "prisma generate && react-router build",
     "check": "biome check --write .",
     "db:migrate": "prisma migrate dev --name",
+    "db:migrate:prod": "prisma migrate deploy",
     "db:push": "prisma db push",
     "db:reset": "prisma migrate reset --force && prisma db push && pnpm db:seed",
     "db:seed": "prisma db seed",

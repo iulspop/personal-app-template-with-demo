@@ -3,10 +3,11 @@ set -euo pipefail
 
 # Idempotent Fly.io deploy script.
 # Reads app name and region from fly.toml, creates app/volume if missing,
-# stages secrets from env vars, then deploys.
+# stages secrets from env vars, then deploys. Production migrations run manually
+# after deployment so the mounted /data volume is available.
 #
 # Usage:
-#   SESSION_SECRET=xxx RESEND_API_KEY=re_xxx EMAIL_FROM=noreply@example.com ./scripts/deploy.sh
+#   SESSION_SECRET=xxx RESEND_API_KEY=re_xxx EMAIL_FROM=noreply@example.com APP_URL=https://example.com ./scripts/deploy.sh
 
 # --- Prerequisites -----------------------------------------------------------
 
@@ -77,6 +78,12 @@ else
   echo "Warning: EMAIL_FROM not set in environment, skipping (assumes already configured)."
 fi
 
+if [[ -n "${APP_URL:-}" ]]; then
+  SECRETS_TO_SET+="APP_URL=$APP_URL "
+else
+  echo "Warning: APP_URL not set in environment, skipping (assumes already configured)."
+fi
+
 if [[ -n "$SECRETS_TO_SET" ]]; then
   echo "Staging secrets..."
   flyctl secrets set $SECRETS_TO_SET --app "$APP_NAME" --stage
@@ -89,6 +96,9 @@ flyctl deploy --app "$APP_NAME" --config "$FLY_TOML"
 
 echo ""
 echo "Deploy complete!"
+echo ""
+echo "Run production migrations on the Fly machine:"
+echo "  flyctl ssh console --app $APP_NAME -C \"sh -lc 'cd /app && pnpm db:migrate:prod'\""
 echo ""
 echo "Next steps (first deploy only):"
 echo "  1. Generate a deploy token:  flyctl tokens create deploy --app $APP_NAME"

@@ -18,8 +18,10 @@ describe("VerifyPageComponent", () => {
 
     render(<RouterStub initialEntries={[path]} />)
 
-    expect(screen.getByPlaceholderText("XXXXXX")).toBeInTheDocument()
-    expect(screen.getByRole("button", { name: /verify/i })).toBeInTheDocument()
+    expect(screen.getByPlaceholderText("ABC123")).toBeInTheDocument()
+    expect(
+      screen.getByRole("button", { name: /verify code/i }),
+    ).toBeInTheDocument()
   })
 
   test("given: a target email, should: display it in the description", () => {

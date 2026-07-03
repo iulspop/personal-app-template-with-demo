@@ -63,7 +63,7 @@ export const authAction = async ({ request }: { request: Request }) => {
         type: VERIFICATION_TYPE_LOGIN,
       })
 
-      const baseUrl = new URL(request.url).origin
+      const baseUrl = process.env.APP_URL || new URL(request.url).origin
       const magicLinkUrl = buildMagicLinkUrl({
         baseUrl,
         code: otp,

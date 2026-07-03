@@ -42,6 +42,13 @@ export const form = style({
   gap: theme.space[3],
 })
 
+export const codeInput = style({
+  fontSize: theme.font.size.xl,
+  fontWeight: theme.font.weight.semibold,
+  letterSpacing: "0.35em",
+  textAlign: "center",
+})
+
 export const fullWidth = style({
   width: "100%",
 })

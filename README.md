@@ -219,7 +219,11 @@ docker build -t my-app .
 docker run -p 3000:3000 my-app
 ```
 
-The multi-stage Dockerfile uses Node 20 Alpine with pnpm, runs `prisma migrate deploy` on startup, and can be deployed to any Docker-compatible platform.
+The multi-stage Dockerfile uses Node 22 Alpine with pnpm and can be deployed to any Docker-compatible platform. On Fly.io, run production migrations manually on the app machine after deploy so the mounted `/data` SQLite volume is available:
+
+```bash
+flyctl ssh console --app personal-app-template-sqlite-fly-io -C "sh -lc 'cd /app && pnpm db:migrate:prod'"
+```
 
 ## AI-Driven Development
 
