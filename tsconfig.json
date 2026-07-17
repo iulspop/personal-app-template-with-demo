@@ -1,6 +1,5 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
     "esModuleInterop": true,
     "ignoreDeprecations": "6.0",
     "jsx": "react-jsx",
@@ -9,6 +8,7 @@
     "moduleResolution": "bundler",
     "noEmit": true,
     "paths": {
+      "*": ["./*"],
       "~/*": ["./app/*"]
     },
     "resolveJsonModule": true,

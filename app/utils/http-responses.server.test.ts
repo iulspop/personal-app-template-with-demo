@@ -34,7 +34,7 @@ describe("created()", () => {
 
     expect(response.init?.status).toEqual(201)
     expect(response.data).toEqual(customData)
-    expect((response.init?.headers as Headers).get("Location")).toEqual(
+    expect((response.init!.headers as Headers).get("Location")).toEqual(
       "/api/resources/123",
     )
   })
@@ -63,7 +63,7 @@ describe("badRequest()", () => {
 
     expect(response.init?.status).toEqual(400)
     expect(response.data).toEqual(customErrors)
-    expect((response.init?.headers as Headers).get("X-Custom-Header")).toEqual(
+    expect((response.init!.headers as Headers).get("X-Custom-Header")).toEqual(
       "TestValue",
     )
   })
@@ -92,7 +92,7 @@ describe("unauthorized()", () => {
 
     expect(response.init?.status).toEqual(401)
     expect(response.data).toEqual(customErrors)
-    expect((response.init?.headers as Headers).get("WWW-Authenticate")).toEqual(
+    expect((response.init!.headers as Headers).get("WWW-Authenticate")).toEqual(
       "Bearer",
     )
   })
@@ -125,7 +125,7 @@ describe("forbidden()", () => {
     expect(response.init?.status).toEqual(403)
     expect(response.data).toEqual(customErrors)
     expect(
-      (response.init?.headers as Headers).get("X-Forbidden-Reason"),
+      (response.init!.headers as Headers).get("X-Forbidden-Reason"),
     ).toEqual("No Access")
   })
 })
@@ -153,7 +153,7 @@ describe("methodNotAllowed()", () => {
 
     expect(response.init?.status).toEqual(405)
     expect(response.data).toEqual(customErrors)
-    expect((response.init?.headers as Headers).get("Allow")).toEqual("GET, PUT")
+    expect((response.init!.headers as Headers).get("Allow")).toEqual("GET, PUT")
   })
 })
 
@@ -181,7 +181,7 @@ describe("conflict()", () => {
     expect(response.init?.status).toEqual(409)
     expect(response.data).toEqual(customErrors)
     expect(
-      (response.init?.headers as Headers).get("X-Conflict-Version"),
+      (response.init!.headers as Headers).get("X-Conflict-Version"),
     ).toEqual("1.2.3")
   })
 })
@@ -212,7 +212,7 @@ describe("tooManyRequests()", () => {
 
     expect(response.init?.status).toEqual(429)
     expect(response.data).toEqual(customErrors)
-    expect((response.init?.headers as Headers).get("Retry-After")).toEqual("60")
+    expect((response.init!.headers as Headers).get("Retry-After")).toEqual("60")
   })
 })
 
@@ -239,7 +239,7 @@ describe("notFound()", () => {
 
     expect(response.init?.status).toEqual(404)
     expect(response.data).toEqual(customErrors)
-    expect((response.init?.headers as Headers).get("X-Resource-Type")).toEqual(
+    expect((response.init!.headers as Headers).get("X-Resource-Type")).toEqual(
       "User",
     )
   })
