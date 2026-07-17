@@ -1,5 +1,3 @@
-import "dotenv/config"
-
 import { generateTOTP } from "@epic-web/totp"
 import type { Page } from "@playwright/test"
 import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3"

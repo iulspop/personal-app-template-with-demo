@@ -50,9 +50,6 @@ importers:
       '@vanilla-extract/css':
         specifier: ^1.21.1
         version: 1.21.1
-      dotenv:
-        specifier: ^17.4.2
-        version: 17.4.2
       isbot:
         specifier: ^5.2.0
         version: 5.2.0

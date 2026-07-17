@@ -3,16 +3,22 @@ set -euo pipefail
 
 # Idempotent Fly.io deploy script.
 # Reads app name and region from fly.toml, creates app/volume if missing,
-# stages secrets from env vars, then deploys. Production migrations run manually
-# after deployment so the mounted /data volume is available.
+# syncs production runtime secrets from Infisical to Fly, then deploys.
+# Production migrations run manually after deployment so the mounted /data
+# volume is available.
 #
 # Usage:
-#   SESSION_SECRET=xxx RESEND_API_KEY=re_xxx EMAIL_FROM=noreply@example.com APP_URL=https://example.com ./scripts/deploy.sh
+#   ./scripts/deploy.sh
 
 # --- Prerequisites -----------------------------------------------------------
 
 if ! command -v flyctl &>/dev/null; then
   echo "Error: flyctl is not installed. Install it from https://fly.io/docs/flyctl/install/"
+  exit 1
+fi
+
+if ! command -v infisical &>/dev/null; then
+  echo "Error: infisical CLI is not installed. Install it from https://infisical.com/docs/cli/overview."
   exit 1
 fi
 
@@ -35,8 +41,13 @@ fi
 APP_NAME=$(grep '^app' "$FLY_TOML" | head -1 | sed 's/.*= *"\(.*\)"/\1/')
 REGION=$(grep '^primary_region' "$FLY_TOML" | head -1 | sed 's/.*= *"\(.*\)"/\1/')
 
-echo "App:    $APP_NAME"
-echo "Region: $REGION"
+INFISICAL_ENV="${INFISICAL_ENV:-prod}"
+INFISICAL_PATH="${INFISICAL_PATH:-/web}"
+
+echo "App:            $APP_NAME"
+echo "Region:         $REGION"
+echo "Infisical env:  $INFISICAL_ENV"
+echo "Infisical path: $INFISICAL_PATH"
 
 # --- Create app if it doesn't exist ------------------------------------------
 
@@ -56,38 +67,11 @@ else
   flyctl volumes create data --app "$APP_NAME" --region "$REGION" --size 1 --yes
 fi
 
-# --- Stage secrets ------------------------------------------------------------
+# --- Sync runtime secrets -----------------------------------------------------
 
-SECRETS_TO_SET=""
-
-if [[ -n "${SESSION_SECRET:-}" ]]; then
-  SECRETS_TO_SET+="SESSION_SECRET=$SESSION_SECRET "
-else
-  echo "Warning: SESSION_SECRET not set in environment, skipping (assumes already configured)."
-fi
-
-if [[ -n "${RESEND_API_KEY:-}" ]]; then
-  SECRETS_TO_SET+="RESEND_API_KEY=$RESEND_API_KEY "
-else
-  echo "Warning: RESEND_API_KEY not set in environment, skipping (assumes already configured)."
-fi
-
-if [[ -n "${EMAIL_FROM:-}" ]]; then
-  SECRETS_TO_SET+="EMAIL_FROM=$EMAIL_FROM "
-else
-  echo "Warning: EMAIL_FROM not set in environment, skipping (assumes already configured)."
-fi
-
-if [[ -n "${APP_URL:-}" ]]; then
-  SECRETS_TO_SET+="APP_URL=$APP_URL "
-else
-  echo "Warning: APP_URL not set in environment, skipping (assumes already configured)."
-fi
-
-if [[ -n "$SECRETS_TO_SET" ]]; then
-  echo "Staging secrets..."
-  flyctl secrets set $SECRETS_TO_SET --app "$APP_NAME" --stage
-fi
+echo "Syncing Fly runtime secrets from Infisical..."
+infisical export --env="$INFISICAL_ENV" --path="$INFISICAL_PATH" --format=dotenv \
+  | flyctl secrets import --app "$APP_NAME" --stage
 
 # --- Deploy -------------------------------------------------------------------
 
@@ -101,5 +85,5 @@ echo "Run production migrations on the Fly machine:"
 echo "  flyctl ssh console --app $APP_NAME -C \"sh -lc 'cd /app && pnpm db:migrate:prod'\""
 echo ""
 echo "Next steps (first deploy only):"
-echo "  1. Generate a deploy token:  flyctl tokens create deploy --app $APP_NAME"
-echo "  2. Add FLY_API_TOKEN to your GitHub repo secrets"
+echo "  1. Create GitHub repo vars INFISICAL_IDENTITY_ID and INFISICAL_PROJECT_SLUG"
+echo "  2. Add Infisical prod /web secret FLY_API_TOKEN for CI deploys"

@@ -12,6 +12,7 @@ concurrency:
 
 permissions:
   contents: read
+  id-token: write
 
 jobs:
   lint:
@@ -33,8 +34,14 @@ jobs:
       - name: 📥 Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: 🏄 Copy test env vars
-        run: cp .env.example .env
+      - name: 🔐 Load Infisical secrets
+        uses: Infisical/secrets-action@v1.0.9
+        with:
+          method: oidc
+          identity-id: ${{ vars.INFISICAL_IDENTITY_ID }}
+          project-slug: ${{ vars.INFISICAL_PROJECT_SLUG }}
+          env-slug: dev
+          secret-path: /web
 
       - name: 🔬 Lint
         run: pnpm lint
@@ -58,8 +65,14 @@ jobs:
       - name: 📥 Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: 🏄 Copy test env vars
-        run: cp .env.example .env
+      - name: 🔐 Load Infisical secrets
+        uses: Infisical/secrets-action@v1.0.9
+        with:
+          method: oidc
+          identity-id: ${{ vars.INFISICAL_IDENTITY_ID }}
+          project-slug: ${{ vars.INFISICAL_PROJECT_SLUG }}
+          env-slug: dev
+          secret-path: /web
 
       - name: 🔎 Type check
         run: pnpm typecheck
@@ -83,8 +96,14 @@ jobs:
       - name: 📥 Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: 🏄 Copy test env vars
-        run: cp .env.example .env
+      - name: 🔐 Load Infisical secrets
+        uses: Infisical/secrets-action@v1.0.9
+        with:
+          method: oidc
+          identity-id: ${{ vars.INFISICAL_IDENTITY_ID }}
+          project-slug: ${{ vars.INFISICAL_PROJECT_SLUG }}
+          env-slug: dev
+          secret-path: /web
 
       - name: 🛠 Setup Database
         run: pnpm prisma generate && pnpm prisma migrate dev
@@ -111,8 +130,14 @@ jobs:
       - name: 📥 Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: 🏄 Copy test env vars
-        run: cp .env.example .env
+      - name: 🔐 Load Infisical secrets
+        uses: Infisical/secrets-action@v1.0.9
+        with:
+          method: oidc
+          identity-id: ${{ vars.INFISICAL_IDENTITY_ID }}
+          project-slug: ${{ vars.INFISICAL_PROJECT_SLUG }}
+          env-slug: dev
+          secret-path: /web
 
       - name: 🌐 Install Playwright Browsers
         run: npx playwright install --with-deps chromium
