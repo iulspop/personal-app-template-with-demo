@@ -48,11 +48,44 @@ export async function setupTestUser(overrides: { email?: string } = {}) {
 
   try {
     const user = await prisma.user.upsert({
-      create: { email },
-      update: {},
+      create: { email, emailVerifiedAt: new Date() },
+      update: { emailVerifiedAt: new Date() },
       where: { email },
     })
     return { email: user.email, id: user.id }
+  } finally {
+    await prisma.$disconnect()
+  }
+}
+
+export async function setupChatOwner(email: string) {
+  const prisma = createPrisma()
+
+  try {
+    await prisma.ownerClaim.deleteMany()
+    const owner = await prisma.user.upsert({
+      create: { email, emailVerifiedAt: new Date() },
+      update: { emailVerifiedAt: new Date() },
+      where: { email },
+    })
+    await prisma.ownerClaim.create({
+      data: { singletonKey: 1, userId: owner.id },
+    })
+    return { email: owner.email, id: owner.id }
+  } finally {
+    await prisma.$disconnect()
+  }
+}
+
+export async function deleteAllChatData() {
+  const prisma = createPrisma()
+
+  try {
+    await prisma.chatNotification.deleteMany()
+    await prisma.chatAttachment.deleteMany()
+    await prisma.chatMessage.deleteMany()
+    await prisma.chatConversation.deleteMany()
+    await prisma.ownerClaim.deleteMany()
   } finally {
     await prisma.$disconnect()
   }

@@ -48,6 +48,66 @@ describe("TodosPageComponent", () => {
     )
   })
 
+  test("given: a regular user with unread chat, should: link to the owner conversation", () => {
+    const RouterStub = createRoutesStub([
+      {
+        Component: () => (
+          <TodosPageComponent
+            chatUnreadCount={2}
+            counts={defaultCounts}
+            filter="all"
+            todos={[]}
+          />
+        ),
+        path: "/",
+      },
+    ])
+    render(<RouterStub initialEntries={["/"]} />)
+    expect(
+      screen.getByRole("link", { name: /chat with owner \(2\)/i }),
+    ).toHaveAttribute("href", "/chat")
+  })
+
+  test("given: the owner, should: link to the owner dashboard", () => {
+    const RouterStub = createRoutesStub([
+      {
+        Component: () => (
+          <TodosPageComponent
+            counts={defaultCounts}
+            filter="all"
+            isOwner
+            todos={[]}
+          />
+        ),
+        path: "/",
+      },
+    ])
+    render(<RouterStub initialEntries={["/"]} />)
+    expect(
+      screen.getByRole("link", { name: /chat dashboard/i }),
+    ).toHaveAttribute("href", "/owner/chats")
+  })
+
+  test("given: an eligible user, should: link to owner onboarding", () => {
+    const RouterStub = createRoutesStub([
+      {
+        Component: () => (
+          <TodosPageComponent
+            canClaimOwner
+            counts={defaultCounts}
+            filter="all"
+            todos={[]}
+          />
+        ),
+        path: "/",
+      },
+    ])
+    render(<RouterStub initialEntries={["/"]} />)
+    expect(
+      screen.getByRole("link", { name: /claim owner seat/i }),
+    ).toHaveAttribute("href", "/owner/claim")
+  })
+
   test("given: todos, should: render the todo list with status counts", () => {
     const todos = [
       createPopulatedTodo({ completed: false, id: "1", title: "First" }),

@@ -16,6 +16,8 @@ import "./design-system/global.css"
 
 import { ProgressBarComponent } from "./components/progress-bar"
 import { authMiddleware } from "./features/auth/application/auth-middleware.server"
+import { getUserId } from "./features/auth/application/auth-session.server"
+import { ChatNotificationProvider } from "./features/chat/application/chat-notification-provider"
 import * as s from "./root.css"
 import { ClientHintCheck, getHints } from "./utils/client-hints"
 import { getDomainUrl } from "./utils/get-domain-url.server"
@@ -33,6 +35,7 @@ export async function loader({ request }: Route.LoaderArgs) {
       POSTHOG_API_HOST: process.env.POSTHOG_API_HOST,
       POSTHOG_API_KEY: process.env.POSTHOG_API_KEY,
     },
+    isAuthenticated: Boolean(await getUserId(request)),
     requestInfo: {
       hints: getHints(request),
       origin: getDomainUrl(request),
@@ -51,6 +54,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <ClientHintCheck nonce={nonce} />
         <meta charSet="utf-8" />
         <meta content="width=device-width, initial-scale=1" name="viewport" />
+        <title>Personal App</title>
         {!rootData?.allowIndexing && (
           <meta content="noindex, nofollow" name="robots" />
         )}
@@ -63,7 +67,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
           getSrc={getImgSrc}
           optimizerEndpoint="/api/images"
         >
-          {children}
+          {rootData?.isAuthenticated ? (
+            <ChatNotificationProvider>{children}</ChatNotificationProvider>
+          ) : (
+            children
+          )}
         </OpenImgContextProvider>
         <script
           // biome-ignore lint/security/noDangerouslySetInnerHtml: Standard pattern for exposing ENV to client in React Router

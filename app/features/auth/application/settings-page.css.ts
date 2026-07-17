@@ -3,6 +3,9 @@ import { style } from "@vanilla-extract/css"
 import { theme } from "~/design-system/theme.css"
 
 export const page = style({
+  display: "flex",
+  flexDirection: "column",
+  gap: theme.space[4],
   marginInline: "auto",
   maxWidth: theme.layout.contentWidth,
   padding: `${theme.space[8]} ${theme.space[4]}`,

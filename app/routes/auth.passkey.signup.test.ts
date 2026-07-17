@@ -102,6 +102,7 @@ describe("auth.passkey.signup loader", () => {
       email: "user@example.com",
       emailVerifiedAt: null,
       id: "existing-user-id",
+      lastSeenAt: null,
       updatedAt: new Date("2026-05-31T00:00:00.000Z"),
     })
     const request = new Request(

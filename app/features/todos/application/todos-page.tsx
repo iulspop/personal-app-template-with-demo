@@ -33,18 +33,24 @@ type TodosPageActionData =
 
 export function TodosPageComponent({
   actionData,
+  canClaimOwner = false,
+  chatUnreadCount = 0,
   counts,
   filter,
   hasPasskeys = true,
   isEmailVerified = true,
+  isOwner = false,
   resendEmailVerificationCooldownSeconds = 0,
   todos,
 }: {
   actionData?: TodosPageActionData
+  canClaimOwner?: boolean
+  chatUnreadCount?: number
   counts: { active: number; completed: number; total: number }
   filter: TodoFilter
   hasPasskeys?: boolean
   isEmailVerified?: boolean
+  isOwner?: boolean
   resendEmailVerificationCooldownSeconds?: number
   todos: Todo[]
 }) {
@@ -85,6 +91,18 @@ export function TodosPageComponent({
       <div className={s.header}>
         <h1 className={s.title}>Todos</h1>
         <div className={s.headerActions}>
+          <Link
+            className={s.settingsLink}
+            to={isOwner ? "/owner/chats" : "/chat"}
+          >
+            {isOwner ? "Chat dashboard" : "Chat with owner"}
+            {chatUnreadCount > 0 ? ` (${chatUnreadCount})` : ""}
+          </Link>
+          {canClaimOwner && (
+            <Link className={s.settingsLink} to="/owner/claim">
+              Claim owner seat
+            </Link>
+          )}
           <Link className={s.settingsLink} to="/settings">
             Settings
           </Link>

@@ -62,6 +62,13 @@ Create these secrets/config values in Infisical:
 | `POSTHOG_API_KEY` | Optional PostHog project key | `phc_...` |
 | `POSTHOG_API_HOST` | Optional PostHog API host | `https://us.i.posthog.com` |
 | `FLY_API_TOKEN` | Fly deploy token for CI deploys | Stored in Infisical `prod` `/web` |
+| `OWNER_EMAIL_ALLOWLIST` | Comma-separated verified emails allowed to claim the sole owner seat | `owner@example.com` |
+| `OWNER_PHONE_NUMBER` | Optional owner SMS notification destination | E.164 number such as `+15551234567` |
+| `TWILIO_ACCOUNT_SID` | Optional Twilio account identifier | `AC...` |
+| `TWILIO_AUTH_TOKEN` | Optional Twilio API credential | Keep secret |
+| `TWILIO_FROM_NUMBER` | Optional Twilio sender number | E.164 number |
+
+Twilio is optional. If any SMS value is missing, chat and email notifications continue normally and no SMS delivery is attempted.
 
 The repo still defensively ignores `.env*` files so secrets are not accidentally committed.
 
@@ -142,6 +149,17 @@ CI jobs load Infisical secrets through GitHub OIDC before running the standard `
 | `pnpm db:seed:secrets` | Seed database with demo data with Infisical config |
 | `pnpm db:studio:secrets` | Open Prisma Studio GUI with Infisical config |
 | `pnpm db:migrate:prod:secrets` | Run production migrations with Infisical `prod` `/web` config |
+
+### Owner live chat operations
+
+The demo includes one private conversation per regular user and one globally claimed owner seat. An eligible, verified user claims the seat at `/owner/claim`; the allowlist is normalized and enforced server-side. The owner uses `/owner/chats`, while regular users use `/chat`.
+
+- Attachments are private and stored outside the public web root at `/data/chat-attachments` in production. Back up both the SQLite database and Fly volume. Allowed files are PNG, JPEG, WebP, and PDF, with a 10 MB per-file limit.
+- Resend email and Twilio SMS notifications are best-effort. A failed provider call never rolls back a persisted message. External notifications are suppressed during a five-minute unread-conversation cooldown to avoid duplicate alerts.
+- Same-origin SSE provides near-real-time updates by polling SQLite. Presence means a visible or recently active authenticated browser tab; it does not imply background device availability.
+- The deployment assumes one Fly machine and fewer than 1,000 users. Before adding replicas, move attachments to shared object storage and replace local SQLite polling with multi-instance realtime fan-out.
+- Before production rollout, back up the database and volume, run `pnpm db:migrate:prod:secrets` manually over Fly SSH, then deploy. Do not run Prisma migrations from the Docker command or Fly release command.
+- Use non-delivering Twilio/Resend test credentials or mocks in CI. Never store real provider credentials or phone numbers in the repository.
 
 ### Security
 

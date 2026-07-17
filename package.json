@@ -25,6 +25,7 @@
     "sharp": "^0.35.3",
     "spin-delay": "^2.0.1",
     "ts-pattern": "^5.9.0",
+    "twilio": "^6.0.2",
     "zod": "^4.4.3"
   },
   "devDependencies": {
@@ -75,8 +76,8 @@
     "db:seed:secrets": "infisical run --env=dev --path=/web -- pnpm db:seed",
     "db:studio": "prisma studio",
     "db:studio:secrets": "infisical run --env=dev --path=/web -- pnpm db:studio",
-    "dev": "react-router dev",
-    "dev:secrets": "infisical run --env=dev --path=/web -- pnpm dev",
+    "dev": "infisical run --env=dev --path=/web -- react-router dev",
+    "dev:secrets": "pnpm dev",
     "lint": "biome ci .",
     "prepare": "lefthook install",
     "secrets:dev": "infisical run --env=dev --path=/web --",

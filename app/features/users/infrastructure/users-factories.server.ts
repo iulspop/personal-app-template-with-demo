@@ -14,6 +14,7 @@ export const createPopulatedUser: Factory<User> = ({
   id = createId(),
   email = faker.internet.email(),
   emailVerifiedAt = faker.date.recent({ days: 10 }),
+  lastSeenAt = null,
   updatedAt = faker.date.recent({ days: 10 }),
   createdAt = faker.date.past({ refDate: updatedAt, years: 3 }),
 } = {}) => ({
@@ -21,5 +22,6 @@ export const createPopulatedUser: Factory<User> = ({
   email,
   emailVerifiedAt,
   id,
+  lastSeenAt,
   updatedAt,
 })

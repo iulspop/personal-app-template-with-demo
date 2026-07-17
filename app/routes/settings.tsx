@@ -7,11 +7,14 @@ import {
   deletePasskeyFromDatabaseByIdAndUserId,
   retrievePasskeysFromDatabaseByUserId,
 } from "~/features/auth/infrastructure/passkeys-model.server"
+import { retrieveOwnerStatusForUser } from "~/features/chat/infrastructure/chat-model.server"
+import { isOwnerChatSmsConfigured } from "~/features/chat/infrastructure/chat-sms.server"
 import { retrieveUserFromDatabaseById } from "~/features/users/infrastructure/users-model.server"
 
 export async function loader({ request }: Route.LoaderArgs) {
   const userId = await requireUserId(request)
-  const [passkeys, user] = await Promise.all([
+  const [ownerStatus, passkeys, user] = await Promise.all([
+    retrieveOwnerStatusForUser(userId),
     retrievePasskeysFromDatabaseByUserId(userId),
     retrieveUserFromDatabaseById(userId),
   ])
@@ -19,6 +22,11 @@ export async function loader({ request }: Route.LoaderArgs) {
   if (!user) throw redirect("/auth/signin")
 
   return {
+    chatEmailConfigured: Boolean(
+      process.env.RESEND_API_KEY && process.env.EMAIL_FROM,
+    ),
+    chatSmsConfigured: isOwnerChatSmsConfigured(process.env.OWNER_PHONE_NUMBER),
+    isOwner: Boolean(ownerStatus),
     pageTitle: "Settings",
     passkeys: passkeys.map((passkey) => ({
       createdAt: passkey.createdAt.toISOString(),
@@ -63,6 +71,9 @@ export default function SettingsRoute({
   return (
     <SettingsPageComponent
       actionData={actionData}
+      chatEmailConfigured={loaderData.chatEmailConfigured}
+      chatSmsConfigured={loaderData.chatSmsConfigured}
+      isOwner={loaderData.isOwner}
       passkeys={loaderData.passkeys}
       userEmail={loaderData.userEmail}
     />

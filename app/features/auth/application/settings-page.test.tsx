@@ -62,6 +62,34 @@ describe("SettingsPageComponent", () => {
     ).toBeInTheDocument()
   })
 
+  test("given: the owner, should: show chat notification readiness", () => {
+    const RouterStub = createRoutesStub([
+      {
+        Component: () => (
+          <SettingsPageComponent
+            chatEmailConfigured
+            chatSmsConfigured={false}
+            isOwner
+            passkeys={[]}
+            userEmail="owner@example.com"
+          />
+        ),
+        path: "/settings",
+      },
+    ])
+    render(<RouterStub initialEntries={["/settings"]} />)
+    expect(screen.getByText(/status: owner/i)).toBeInTheDocument()
+    expect(
+      screen.getByText(/email notifications: configured/i),
+    ).toBeInTheDocument()
+    expect(
+      screen.getByText(/sms notifications: not configured/i),
+    ).toBeInTheDocument()
+    expect(
+      screen.getByRole("link", { name: /open chat dashboard/i }),
+    ).toHaveAttribute("href", "/owner/chats")
+  })
+
   test("given: passkey registration succeeds, should: show success", async () => {
     const user = userEvent.setup()
     vi.spyOn(globalThis, "fetch")

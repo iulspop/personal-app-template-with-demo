@@ -22,6 +22,14 @@ import {
   retrieveVerificationFromDatabaseByTypeAndTarget,
   saveVerificationToDatabase,
 } from "~/features/auth/infrastructure/verifications-model.server"
+import { isOwnerEmailAllowed } from "~/features/chat/domain/chat-domain"
+import {
+  countUnreadMessages,
+  retrieveOrCreateConversation,
+  retrieveOwnerClaim,
+  retrieveOwnerConversationSummaries,
+  retrieveOwnerStatusForUser,
+} from "~/features/chat/infrastructure/chat-model.server"
 import { LandingPageComponent } from "~/features/todos/application/landing-page"
 import { todosAction } from "~/features/todos/application/todos-action.server"
 import { TodosPageComponent } from "~/features/todos/application/todos-page"
@@ -72,13 +80,41 @@ export async function loader({ request }: Route.LoaderArgs) {
         target: user?.email ?? "",
         type: VERIFICATION_TYPE_EMAIL,
       })
+  const [ownerClaim, ownerStatus] = await Promise.all([
+    retrieveOwnerClaim(),
+    retrieveOwnerStatusForUser(userId),
+  ])
+  let chatUnreadCount = 0
+  if (ownerStatus) {
+    const summaries = await retrieveOwnerConversationSummaries(userId)
+    chatUnreadCount = summaries.reduce(
+      (total, conversation) => total + conversation.unreadCount,
+      0,
+    )
+  } else if (ownerClaim) {
+    const conversation = await retrieveOrCreateConversation({
+      ownerId: ownerClaim.userId,
+      userId,
+    })
+    chatUnreadCount =
+      (await countUnreadMessages({
+        conversationId: conversation.id,
+        readerId: userId,
+      })) ?? 0
+  }
 
   return {
+    canClaimOwner:
+      !ownerClaim &&
+      Boolean(user?.emailVerifiedAt) &&
+      Boolean(user && isOwnerEmailAllowed(user.email)),
+    chatUnreadCount,
     counts: countByStatus(allTodos),
     filter,
     hasPasskeys: passkeys.length > 0,
     isEmailVerified: Boolean(user?.emailVerifiedAt),
     isLanding: false as const,
+    isOwner: Boolean(ownerStatus),
     pageTitle: "Todos",
     resendEmailVerificationCooldownSeconds: existingVerification
       ? calculateRemainingResendCooldownSeconds(existingVerification)
@@ -169,10 +205,13 @@ export default function TodosRoute({
   return (
     <TodosPageComponent
       actionData={actionData}
+      canClaimOwner={loaderData.canClaimOwner}
+      chatUnreadCount={loaderData.chatUnreadCount}
       counts={loaderData.counts}
       filter={loaderData.filter}
       hasPasskeys={loaderData.hasPasskeys}
       isEmailVerified={loaderData.isEmailVerified}
+      isOwner={loaderData.isOwner}
       resendEmailVerificationCooldownSeconds={
         loaderData.resendEmailVerificationCooldownSeconds
       }

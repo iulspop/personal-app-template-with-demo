@@ -6,6 +6,7 @@ import {
   deletePasskeyFromDatabaseByIdAndUserId,
   retrievePasskeysFromDatabaseByUserId,
 } from "~/features/auth/infrastructure/passkeys-model.server"
+import { retrieveOwnerStatusForUser } from "~/features/chat/infrastructure/chat-model.server"
 import { retrieveUserFromDatabaseById } from "~/features/users/infrastructure/users-model.server"
 
 vi.mock("~/features/auth/application/auth-session.server", () => ({
@@ -15,6 +16,10 @@ vi.mock("~/features/auth/application/auth-session.server", () => ({
 vi.mock("~/features/auth/infrastructure/passkeys-model.server", () => ({
   deletePasskeyFromDatabaseByIdAndUserId: vi.fn(() => ({ count: 1 })),
   retrievePasskeysFromDatabaseByUserId: vi.fn(() => []),
+}))
+
+vi.mock("~/features/chat/infrastructure/chat-model.server", () => ({
+  retrieveOwnerStatusForUser: vi.fn(() => null),
 }))
 
 vi.mock("~/features/users/infrastructure/users-model.server", () => ({
@@ -49,7 +54,11 @@ describe("settings loader", () => {
 
     expect(requireUserId).toHaveBeenCalledWith(request)
     expect(retrievePasskeysFromDatabaseByUserId).toHaveBeenCalledWith("user-id")
+    expect(retrieveOwnerStatusForUser).toHaveBeenCalledWith("user-id")
     expect(loaderData).toEqual({
+      chatEmailConfigured: true,
+      chatSmsConfigured: false,
+      isOwner: false,
       pageTitle: "Settings",
       passkeys: [],
       userEmail: "user@example.com",

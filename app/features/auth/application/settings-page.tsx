@@ -19,10 +19,16 @@ type PasskeySummary = {
 
 export function SettingsPageComponent({
   actionData,
+  chatEmailConfigured = false,
+  chatSmsConfigured = false,
+  isOwner = false,
   passkeys,
   userEmail,
 }: {
   actionData?: SettingsActionData
+  chatEmailConfigured?: boolean
+  chatSmsConfigured?: boolean
+  isOwner?: boolean
   passkeys: PasskeySummary[]
   userEmail: string
 }) {
@@ -64,6 +70,30 @@ export function SettingsPageComponent({
           Back to todos
         </Link>
       </div>
+
+      <section className={s.card}>
+        <div className={s.cardHeader}>
+          <h2 className={s.cardTitle}>Chat role</h2>
+          <p className={s.cardBody}>
+            Status: {isOwner ? "Owner" : "Regular user"}
+          </p>
+          {isOwner && (
+            <>
+              <p className={s.cardBody}>
+                Email notifications:{" "}
+                {chatEmailConfigured ? "Configured" : "Not configured"}
+              </p>
+              <p className={s.cardBody}>
+                SMS notifications:{" "}
+                {chatSmsConfigured ? "Configured" : "Not configured"}
+              </p>
+              <Link className={s.backLink} to="/owner/chats">
+                Open chat dashboard
+              </Link>
+            </>
+          )}
+        </div>
+      </section>
 
       <section className={s.card}>
         <div className={s.cardHeader}>
