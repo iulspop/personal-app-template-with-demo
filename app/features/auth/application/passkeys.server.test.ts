@@ -24,8 +24,8 @@ beforeEach(() => {
 })
 
 describe("generatePasskeyRegistrationOptions()", () => {
-  test("given: passkey-only signup, should: require a discoverable credential for username-free signin", async () => {
-    const request = new Request("https://example.com/auth/passkey/signup")
+  test("given: authenticated passkey setup, should: require a discoverable credential for username-free signin", async () => {
+    const request = new Request("https://example.com/auth/passkey/register")
 
     await generatePasskeyRegistrationOptions({
       request,

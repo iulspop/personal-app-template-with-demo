@@ -1,12 +1,8 @@
-import { startRegistration } from "@simplewebauthn/browser"
 import {
   IconBrandAppleFilled,
   IconBrandGoogleFilled,
-  IconFingerprint,
-  IconMail,
 } from "@tabler/icons-react"
 import { Img } from "openimg/react"
-import { useState } from "react"
 import { Form, Link } from "react-router"
 
 import { SEND_MAGIC_LINK_INTENT } from "../domain/auth-constants"
@@ -21,51 +17,6 @@ export function SignUpPageComponent({
 }: {
   actionData?: SignInPageActionData
 }) {
-  const [passkeySignupState, setPasskeySignupState] = useState<
-    "idle" | "email" | "saving" | "error"
-  >("idle")
-  const [passkeySignupError, setPasskeySignupError] = useState(
-    "Passkey signup failed.",
-  )
-  const [isMagicLinkFormVisible, setIsMagicLinkFormVisible] = useState(
-    actionData?.success === false,
-  )
-
-  const signupWithPasskey = async (email: string) => {
-    setPasskeySignupState("saving")
-
-    try {
-      const optionsResponse = await fetch(
-        `/auth/passkey/signup?email=${encodeURIComponent(email)}`,
-      )
-      const optionsJSON = await optionsResponse.json()
-
-      if (!optionsResponse.ok) {
-        setPasskeySignupError(optionsJSON.error ?? "Passkey signup failed.")
-        setPasskeySignupState("error")
-        return
-      }
-
-      const credential = await startRegistration({ optionsJSON })
-      const result = await fetch("/auth/passkey/signup", {
-        body: JSON.stringify({ credential }),
-        headers: { "Content-Type": "application/json" },
-        method: "post",
-      })
-
-      if (!result.ok) {
-        setPasskeySignupError("Passkey signup failed.")
-        setPasskeySignupState("error")
-        return
-      }
-
-      window.location.assign("/")
-    } catch {
-      setPasskeySignupError("Passkey signup failed.")
-      setPasskeySignupState("error")
-    }
-  }
-
   return (
     <main className={pageStyles.page}>
       <Img
@@ -76,46 +27,33 @@ export function SignUpPageComponent({
         width={48}
       />
       <h1 className={pageStyles.heading}>Sign up</h1>
-      <p className={pageStyles.subcopy}>Create your account to get started</p>
+      <p className={pageStyles.subcopy}>
+        Verify your email to create your account. You can add a passkey after
+        signing in.
+      </p>
 
       <div className={pageStyles.stack}>
-        {passkeySignupState === "email" || passkeySignupState === "saving" ? (
-          <form
-            className={pageStyles.form}
-            onSubmit={(event) => {
-              event.preventDefault()
-              const form = new FormData(event.currentTarget)
-              void signupWithPasskey(String(form.get("email") ?? ""))
-            }}
-          >
-            <Input
-              aria-label="Email"
-              autoComplete="email"
-              name="email"
-              placeholder="you@example.com"
-              required
-              type="email"
-            />
-            <Button
-              className={pageStyles.fullWidth}
-              disabled={passkeySignupState === "saving"}
-              type="submit"
-            >
-              {passkeySignupState === "saving"
-                ? "Creating passkey…"
-                : "Continue"}
-            </Button>
-          </form>
-        ) : (
+        <Form className={pageStyles.form} method="post">
+          <Input
+            aria-label="Email"
+            autoComplete="email"
+            name="email"
+            placeholder="you@example.com"
+            required
+            type="email"
+          />
           <Button
             className={pageStyles.fullWidth}
-            onClick={() => setPasskeySignupState("email")}
-            type="button"
+            name="intent"
+            type="submit"
+            value={SEND_MAGIC_LINK_INTENT}
           >
-            <IconFingerprint aria-hidden="true" className={pageStyles.icon} />
-            Create with Passkey
+            Continue with email
           </Button>
-        )}
+          {actionData?.success === false && (
+            <FieldError>{actionData.error}</FieldError>
+          )}
+        </Form>
 
         <div className={pageStyles.divider}>
           <div className={pageStyles.dividerLine} />
@@ -141,43 +79,6 @@ export function SignUpPageComponent({
           <IconBrandAppleFilled aria-hidden="true" />
           Continue with Apple
         </Button>
-
-        {isMagicLinkFormVisible ? (
-          <Form className={pageStyles.form} method="post">
-            <Input
-              aria-label="Email"
-              autoComplete="email"
-              name="email"
-              placeholder="you@example.com"
-              type="email"
-            />
-            <Button
-              className={pageStyles.fullWidth}
-              name="intent"
-              type="submit"
-              value={SEND_MAGIC_LINK_INTENT}
-              variant="outline"
-            >
-              Send signup link
-            </Button>
-            {actionData?.success === false && (
-              <FieldError>{actionData.error}</FieldError>
-            )}
-          </Form>
-        ) : (
-          <Button
-            className={pageStyles.textAction}
-            onClick={() => setIsMagicLinkFormVisible(true)}
-            type="button"
-            variant="ghost"
-          >
-            <IconMail aria-hidden="true" className={pageStyles.icon} />
-            Sign up with email link
-          </Button>
-        )}
-        {passkeySignupState === "error" && (
-          <FieldError>{passkeySignupError}</FieldError>
-        )}
       </div>
 
       <p className={pageStyles.footer}>

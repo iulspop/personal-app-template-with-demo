@@ -52,6 +52,14 @@ vi.mock("~/features/auth/infrastructure/passkeys-model.server", () => ({
   retrievePasskeysFromDatabaseByUserId: vi.fn(() => []),
 }))
 
+vi.mock("~/features/chat/infrastructure/chat-model.server", () => ({
+  countUnreadMessages: vi.fn(() => 0),
+  retrieveOrCreateConversation: vi.fn(() => ({ id: "conversation-id" })),
+  retrieveOwnerClaim: vi.fn(() => null),
+  retrieveOwnerConversationSummaries: vi.fn(() => []),
+  retrieveOwnerStatusForUser: vi.fn(() => null),
+}))
+
 vi.mock("~/features/users/infrastructure/users-model.server", () => ({
   retrieveUserFromDatabaseById: vi.fn(() => ({
     createdAt: new Date("2026-05-31T00:00:00.000Z"),
