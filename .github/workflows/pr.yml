@@ -15,13 +15,13 @@ permissions:
 jobs:
   commitlint:
     name: ⚙️ commitlint
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     if: github.actor != 'dependabot[bot]'
     env:
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
     steps:
       - name: ⬇️ Checkout repo
-        uses: actions/checkout@v4
+        uses: useblacksmith/checkout@v1
         with:
           fetch-depth: 0
       - name: ⚙️ commitlint
@@ -29,18 +29,18 @@ jobs:
 
   lint:
     name: ⬣ Biome
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     steps:
       - name: ⬇️ Checkout repo
-        uses: actions/checkout@v4
+        uses: useblacksmith/checkout@v1
 
       - name: 📦 Setup pnpm
         uses: pnpm/action-setup@v4
 
       - name: ⎔ Setup node
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
           cache: "pnpm"
 
       - name: 📥 Install dependencies
@@ -60,18 +60,18 @@ jobs:
 
   type-check:
     name: ʦ TypeScript
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     steps:
       - name: ⬇️ Checkout repo
-        uses: actions/checkout@v4
+        uses: useblacksmith/checkout@v1
 
       - name: 📦 Setup pnpm
         uses: pnpm/action-setup@v4
 
       - name: ⎔ Setup node
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
           cache: "pnpm"
 
       - name: 📥 Install dependencies
@@ -91,18 +91,18 @@ jobs:
 
   vitest:
     name: ⚡ Vitest
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     steps:
       - name: ⬇️ Checkout repo
-        uses: actions/checkout@v4
+        uses: useblacksmith/checkout@v1
 
       - name: 📦 Setup pnpm
         uses: pnpm/action-setup@v4
 
       - name: ⎔ Setup node
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
           cache: "pnpm"
 
       - name: 📥 Install dependencies
@@ -125,18 +125,18 @@ jobs:
 
   playwright-chrome:
     name: 🎭 Playwright Chrome
-    runs-on: ubuntu-latest
+    runs-on: blacksmith-4vcpu-ubuntu-2404
     steps:
       - name: ⬇️ Checkout repo
-        uses: actions/checkout@v4
+        uses: useblacksmith/checkout@v1
 
       - name: 📦 Setup pnpm
         uses: pnpm/action-setup@v4
 
       - name: ⎔ Setup node
-        uses: actions/setup-node@v5
+        uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
           cache: "pnpm"
 
       - name: 📥 Install dependencies
