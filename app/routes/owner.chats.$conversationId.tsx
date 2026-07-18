@@ -67,6 +67,7 @@ export default function OwnerConversationRoute({
       <ChatThread
         backTo="/owner/chats"
         messages={loaderData.messages}
+        mobileFullHeight
         participant={loaderData.participantEmail}
         presence={loaderData.participantPresence}
         title="Private conversation"

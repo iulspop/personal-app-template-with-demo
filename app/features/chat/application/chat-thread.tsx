@@ -26,12 +26,14 @@ export type ChatThreadMessage = {
 export function ChatThread({
   backTo,
   messages,
+  mobileFullHeight = false,
   participant,
   presence,
   title,
 }: {
   backTo: string
   messages: ChatThreadMessage[]
+  mobileFullHeight?: boolean
   participant: string
   presence: string
   title: string
@@ -81,7 +83,10 @@ export function ChatThread({
   }
 
   return (
-    <section aria-label={title} className={s.page}>
+    <section
+      aria-label={title}
+      className={mobileFullHeight ? s.mobileFullHeight : s.page}
+    >
       <header className={s.header}>
         <Link
           aria-label="Back to conversations"

@@ -28,7 +28,26 @@ export const page = style({
   width: "100%",
 })
 
+export const mobileFullHeight = style([
+  page,
+  {
+    "@media": {
+      "(max-width: 40rem)": {
+        height: "100dvh",
+      },
+    },
+  },
+])
+
 export const header = style({
+  "@media": {
+    "(max-width: 40rem)": {
+      gap: theme.space[2],
+      gridTemplateColumns: "2.25rem minmax(0, 1fr)",
+      minHeight: "3.5rem",
+      padding: `${theme.space[2]} ${theme.space[3]}`,
+    },
+  },
   alignItems: "center",
   borderBottom: `1px solid ${theme.color.border.subtle}`,
   display: "grid",
@@ -53,6 +72,9 @@ export const backLink = style({
 })
 
 export const avatar = style({
+  "@media": {
+    "(max-width: 40rem)": { display: "none" },
+  },
   alignItems: "center",
   background: theme.color.background.subtle,
   border: `1px solid ${theme.color.border.default}`,
@@ -68,6 +90,11 @@ export const avatar = style({
 
 export const identity = style({ minWidth: 0 })
 export const title = style({
+  "@media": {
+    "(max-width: 40rem)": {
+      fontSize: theme.font.role.body,
+    },
+  },
   color: theme.color.text.primary,
   fontSize: theme.font.role.sectionTitle,
   fontWeight: theme.font.weight.semibold,
@@ -81,8 +108,11 @@ export const presence = style({
   gap: theme.space[1],
   lineHeight: theme.font.lineHeight.compact,
   minWidth: 0,
+  whiteSpace: "nowrap",
 })
 export const participant = style({
+  flex: "0 1 auto",
+  minWidth: 0,
   overflow: "hidden",
   textOverflow: "ellipsis",
   whiteSpace: "nowrap",
