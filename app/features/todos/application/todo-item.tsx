@@ -24,9 +24,9 @@ export function TodoItemDisplayComponent({
         <input name="id" type="hidden" value={todo.id} />
         <Button
           aria-label={`Toggle ${todo.title}`}
-          className={todo.completed ? s.toggleChecked : undefined}
+          className={todo.completed ? s.toggleChecked : s.toggle}
           name="intent"
-          size="icon-xs"
+          size="icon-sm"
           type="submit"
           value={TOGGLE_TODO_INTENT}
           variant="outline"
@@ -45,31 +45,36 @@ export function TodoItemDisplayComponent({
         {todo.description && (
           <p className={s.description}>{todo.description}</p>
         )}
+        <span className={s.status}>
+          {todo.completed ? "Completed" : "Open"}
+        </span>
       </div>
 
-      <Button
-        aria-label={`Edit ${todo.title}`}
-        onClick={onEdit}
-        size="icon-xs"
-        type="button"
-        variant="ghost"
-      >
-        <IconPencil className={s.actionIcon} />
-      </Button>
-
-      <Form method="post">
-        <input name="id" type="hidden" value={todo.id} />
+      <div className={s.actions}>
         <Button
-          aria-label={`Delete ${todo.title}`}
-          name="intent"
-          size="icon-xs"
-          type="submit"
-          value={DELETE_TODO_INTENT}
+          aria-label={`Edit ${todo.title}`}
+          onClick={onEdit}
+          size="icon-sm"
+          type="button"
           variant="ghost"
         >
-          <IconX className={s.actionIcon} />
+          <IconPencil className={s.actionIcon} />
         </Button>
-      </Form>
+
+        <Form method="post">
+          <input name="id" type="hidden" value={todo.id} />
+          <Button
+            aria-label={`Delete ${todo.title}`}
+            name="intent"
+            size="icon-sm"
+            type="submit"
+            value={DELETE_TODO_INTENT}
+            variant="ghost"
+          >
+            <IconX className={s.actionIcon} />
+          </Button>
+        </Form>
+      </div>
     </li>
   )
 }

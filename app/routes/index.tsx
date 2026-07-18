@@ -120,6 +120,7 @@ export async function loader({ request }: Route.LoaderArgs) {
       ? calculateRemainingResendCooldownSeconds(existingVerification)
       : 0,
     todos: filterTodos(allTodos, filter),
+    userEmail: user?.email ?? "",
   }
 }
 
@@ -216,6 +217,7 @@ export default function TodosRoute({
         loaderData.resendEmailVerificationCooldownSeconds
       }
       todos={loaderData.todos}
+      userEmail={loaderData.userEmail}
     />
   )
 }

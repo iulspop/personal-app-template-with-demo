@@ -11,8 +11,10 @@ import { shadow } from "./tokens/shadows.css"
 import { layout, space } from "./tokens/spacing.css"
 import {
   fontFamily,
+  fontRole,
   fontSize,
   fontWeight,
+  letterSpacing,
   lineHeight,
 } from "./tokens/typography.css"
 import { zIndex } from "./tokens/z-index.css"
@@ -23,7 +25,9 @@ export const theme = createThemeContract({
   easing,
   font: {
     family: fontFamily,
+    letterSpacing,
     lineHeight,
+    role: fontRole,
     size: fontSize,
     weight: fontWeight,
   },
@@ -40,7 +44,9 @@ export const lightThemeClass = createTheme(theme, {
   easing,
   font: {
     family: fontFamily,
+    letterSpacing,
     lineHeight,
+    role: fontRole,
     size: fontSize,
     weight: fontWeight,
   },
@@ -57,7 +63,9 @@ export const darkThemeClass = createTheme(theme, {
   easing,
   font: {
     family: fontFamily,
+    letterSpacing,
     lineHeight,
+    role: fontRole,
     size: fontSize,
     weight: fontWeight,
   },

@@ -9,6 +9,7 @@ import {
   serializeChatThread,
 } from "~/features/chat/application/chat-route.server"
 import { ChatThread } from "~/features/chat/application/chat-thread"
+import * as layout from "~/features/chat/application/owner-chat-layout.css"
 import {
   retrieveConversationMessages,
   retrieveOwnerStatusForUser,
@@ -62,12 +63,14 @@ export default function OwnerConversationRoute({
   loaderData,
 }: Route.ComponentProps) {
   return (
-    <ChatThread
-      backTo="/owner/chats"
-      messages={loaderData.messages}
-      participant={loaderData.participantEmail}
-      presence={loaderData.participantPresence}
-      title="Private conversation"
-    />
+    <main className={layout.workspace}>
+      <ChatThread
+        backTo="/owner/chats"
+        messages={loaderData.messages}
+        participant={loaderData.participantEmail}
+        presence={loaderData.participantPresence}
+        title="Private conversation"
+      />
+    </main>
   )
 }

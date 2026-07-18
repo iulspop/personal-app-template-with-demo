@@ -1,6 +1,7 @@
 import { data, redirect } from "react-router"
 
 import type { Route } from "./+types/settings"
+import { AppShell } from "~/components/app-shell/app-shell"
 import { requireUserId } from "~/features/auth/application/auth-session.server"
 import { SettingsPageComponent } from "~/features/auth/application/settings-page"
 import {
@@ -69,13 +70,15 @@ export default function SettingsRoute({
   loaderData,
 }: Route.ComponentProps) {
   return (
-    <SettingsPageComponent
-      actionData={actionData}
-      chatEmailConfigured={loaderData.chatEmailConfigured}
-      chatSmsConfigured={loaderData.chatSmsConfigured}
-      isOwner={loaderData.isOwner}
-      passkeys={loaderData.passkeys}
-      userEmail={loaderData.userEmail}
-    />
+    <AppShell isOwner={loaderData.isOwner} userEmail={loaderData.userEmail}>
+      <SettingsPageComponent
+        actionData={actionData}
+        chatEmailConfigured={loaderData.chatEmailConfigured}
+        chatSmsConfigured={loaderData.chatSmsConfigured}
+        isOwner={loaderData.isOwner}
+        passkeys={loaderData.passkeys}
+        userEmail={loaderData.userEmail}
+      />
+    </AppShell>
   )
 }

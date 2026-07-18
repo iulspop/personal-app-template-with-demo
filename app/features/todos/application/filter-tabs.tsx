@@ -13,8 +13,10 @@ const filterLabels: Record<TodoFilter, string> = {
 }
 
 export function FilterTabsComponent({
+  counts,
   currentFilter,
 }: {
+  counts?: { active: number; completed: number; total: number }
   currentFilter: TodoFilter
 }) {
   return (
@@ -26,7 +28,16 @@ export function FilterTabsComponent({
           key={filter}
           to={`/?filter=${filter}`}
         >
-          {filterLabels[filter]}
+          <span>{filterLabels[filter]}</span>
+          {counts ? (
+            <span aria-hidden="true" className={s.count}>
+              {filter === "all"
+                ? counts.total
+                : filter === "active"
+                  ? counts.active
+                  : counts.completed}
+            </span>
+          ) : null}
         </Link>
       ))}
     </nav>

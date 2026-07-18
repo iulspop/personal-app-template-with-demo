@@ -3,6 +3,7 @@ import { redirect } from "react-router"
 import type { Route } from "./+types/owner.chats"
 import { requireUserId } from "~/features/auth/application/auth-session.server"
 import { OwnerChatDashboard } from "~/features/chat/application/owner-chat-dashboard"
+import * as layout from "~/features/chat/application/owner-chat-layout.css"
 import {
   retrieveOwnerConversationSummaries,
   retrieveOwnerStatusForUser,
@@ -38,5 +39,9 @@ export const meta: Route.MetaFunction = ({ loaderData }) => [
 ]
 
 export default function OwnerChatsRoute({ loaderData }: Route.ComponentProps) {
-  return <OwnerChatDashboard conversations={loaderData.conversations} />
+  return (
+    <main className={layout.workspace}>
+      <OwnerChatDashboard conversations={loaderData.conversations} />
+    </main>
+  )
 }

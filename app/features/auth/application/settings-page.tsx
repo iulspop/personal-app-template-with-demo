@@ -2,6 +2,7 @@ import { startRegistration } from "@simplewebauthn/browser"
 import { useState } from "react"
 import { Form, Link } from "react-router"
 
+import { AppearanceControl } from "./appearance-control"
 import * as s from "./settings-page.css"
 import { Button } from "~/components/ui/button"
 import { FieldError } from "~/components/ui/field"
@@ -63,13 +64,23 @@ export function SettingsPageComponent({
   }
 
   return (
-    <main className={s.page}>
+    <section className={s.page}>
       <div className={s.header}>
         <h1 className={s.title}>Settings</h1>
         <Link className={s.backLink} to="/">
           Back to todos
         </Link>
       </div>
+
+      <section className={s.card}>
+        <div className={s.cardHeader}>
+          <h2 className={s.cardTitle}>Appearance</h2>
+          <p className={s.cardBody}>
+            Light mode is the default. Your preference is saved on this device.
+          </p>
+        </div>
+        <AppearanceControl />
+      </section>
 
       <section className={s.card}>
         <div className={s.cardHeader}>
@@ -153,6 +164,6 @@ export function SettingsPageComponent({
           <FieldError className={s.status}>{actionData.error}</FieldError>
         )}
       </section>
-    </main>
+    </section>
   )
 }

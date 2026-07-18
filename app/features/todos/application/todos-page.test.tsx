@@ -42,10 +42,9 @@ describe("TodosPageComponent", () => {
 
     render(<RouterStub initialEntries={[path]} />)
 
-    expect(screen.getByRole("link", { name: /settings/i })).toHaveAttribute(
-      "href",
-      "/settings",
-    )
+    expect(
+      screen.getAllByRole("link", { name: /settings/i })[0],
+    ).toHaveAttribute("href", "/settings")
   })
 
   test("given: a regular user with unread chat, should: link to the owner conversation", () => {
@@ -64,7 +63,7 @@ describe("TodosPageComponent", () => {
     ])
     render(<RouterStub initialEntries={["/"]} />)
     expect(
-      screen.getByRole("link", { name: /chat with owner \(2\)/i }),
+      screen.getByRole("link", { name: /chat with founder 2/i }),
     ).toHaveAttribute("href", "/chat")
   })
 
@@ -104,7 +103,7 @@ describe("TodosPageComponent", () => {
     ])
     render(<RouterStub initialEntries={["/"]} />)
     expect(
-      screen.getByRole("link", { name: /claim owner seat/i }),
+      screen.getByRole("link", { name: /set up owner access/i }),
     ).toHaveAttribute("href", "/owner/claim")
   })
 
@@ -131,8 +130,16 @@ describe("TodosPageComponent", () => {
 
     expect(screen.getByText("First")).toBeInTheDocument()
     expect(screen.getByText("Second")).toBeInTheDocument()
-    expect(screen.getByText("1 active")).toBeInTheDocument()
-    expect(screen.getByText("1 completed")).toBeInTheDocument()
+    expect(
+      screen
+        .getByRole("link", { name: "Active" })
+        .querySelector("span:last-child"),
+    ).toHaveTextContent("1")
+    expect(
+      screen
+        .getByRole("link", { name: "Completed" })
+        .querySelector("span:last-child"),
+    ).toHaveTextContent("1")
   })
 
   test("given: the user has no passkeys, should: link to passkey settings", () => {

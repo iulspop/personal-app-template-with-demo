@@ -11,7 +11,7 @@ import {
 } from "react-router"
 
 import type { Route } from "./+types/root"
-import { lightThemeClass } from "./design-system/theme.css"
+import { darkThemeClass, lightThemeClass } from "./design-system/theme.css"
 import "./design-system/global.css"
 
 import { ProgressBarComponent } from "./components/progress-bar"
@@ -47,10 +47,21 @@ export async function loader({ request }: Route.LoaderArgs) {
 export function Layout({ children }: { children: React.ReactNode }) {
   const rootData = useRouteLoaderData<typeof loader>("root")
   const nonce = useNonce()
+  const themeScript = `(function(){try{var p=localStorage.getItem("app-theme")||"light";var d=p==="dark"||(p==="system"&&matchMedia("(prefers-color-scheme: dark)").matches);document.documentElement.classList.remove(${JSON.stringify(lightThemeClass)},${JSON.stringify(darkThemeClass)});document.documentElement.classList.add(d?${JSON.stringify(darkThemeClass)}:${JSON.stringify(lightThemeClass)});}catch(e){}})();`
 
   return (
-    <html className={lightThemeClass} dir="ltr" lang="en">
+    <html
+      className={lightThemeClass}
+      dir="ltr"
+      lang="en"
+      suppressHydrationWarning
+    >
       <head>
+        <script
+          // biome-ignore lint/security/noDangerouslySetInnerHtml: Applies the saved local theme before first paint.
+          dangerouslySetInnerHTML={{ __html: themeScript }}
+          nonce={nonce}
+        />
         <ClientHintCheck nonce={nonce} />
         <meta charSet="utf-8" />
         <meta content="width=device-width, initial-scale=1" name="viewport" />

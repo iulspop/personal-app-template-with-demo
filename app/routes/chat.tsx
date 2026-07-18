@@ -1,6 +1,7 @@
 import { redirect } from "react-router"
 
 import type { Route } from "./+types/chat"
+import { AppShell } from "~/components/app-shell/app-shell"
 import { requireUserId } from "~/features/auth/application/auth-session.server"
 import {
   formatPresence,
@@ -21,9 +22,17 @@ import { retrieveUserFromDatabaseById } from "~/features/users/infrastructure/us
 export async function loader({ request }: Route.LoaderArgs) {
   const userId = await requireUserId(request)
   if (await retrieveOwnerStatusForUser(userId)) throw redirect("/owner/chats")
-  const ownerClaim = await retrieveOwnerClaim()
+  const [ownerClaim, user] = await Promise.all([
+    retrieveOwnerClaim(),
+    retrieveUserFromDatabaseById(userId),
+  ])
+  if (!user) throw redirect("/auth/signin")
   if (!ownerClaim)
-    return { ownerAvailable: false as const, pageTitle: "Chat with owner" }
+    return {
+      ownerAvailable: false as const,
+      pageTitle: "Chat with founder",
+      userEmail: user.email,
+    }
 
   const conversation = await retrieveOrCreateConversation({
     ownerId: ownerClaim.userId,
@@ -43,7 +52,8 @@ export async function loader({ request }: Route.LoaderArgs) {
     ownerAvailable: true as const,
     ownerEmail: ownerClaim.user.email,
     ownerPresence: formatPresence(ownerClaim.user.lastSeenAt),
-    pageTitle: "Chat with owner",
+    pageTitle: "Chat with founder",
+    userEmail: user.email,
   }
 }
 
@@ -78,18 +88,22 @@ export async function action({ request }: Route.ActionArgs) {
 export default function ChatRoute({ loaderData }: Route.ComponentProps) {
   if (!loaderData.ownerAvailable)
     return (
-      <main>
-        <h1>Chat with owner</h1>
-        <p>The owner has not enabled chat yet.</p>
-      </main>
+      <AppShell userEmail={loaderData.userEmail}>
+        <section>
+          <h1>Chat with founder</h1>
+          <p>The founder has not enabled chat yet.</p>
+        </section>
+      </AppShell>
     )
   return (
-    <ChatThread
-      backTo="/"
-      messages={loaderData.messages}
-      participant={loaderData.ownerEmail}
-      presence={loaderData.ownerPresence}
-      title="Chat with owner"
-    />
+    <AppShell userEmail={loaderData.userEmail}>
+      <ChatThread
+        backTo="/"
+        messages={loaderData.messages}
+        participant={loaderData.ownerEmail}
+        presence={loaderData.ownerPresence}
+        title="Chat with founder"
+      />
+    </AppShell>
   )
 }

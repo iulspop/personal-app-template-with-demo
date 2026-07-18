@@ -57,7 +57,7 @@ Create these secrets/config values in Infisical:
 | `SESSION_SECRET` | Cookie signing secret | Generate a long random value |
 | `RESEND_API_KEY` | [Resend](https://resend.com/) API key for emails | `re_...` |
 | `EMAIL_FROM` | Sender address for emails | `noreply@example.com` |
-| `APP_URL` | Public application URL for magic links | `http://localhost:5173` or Fly URL |
+| `APP_URL` | Public application URL for magic links | `http://localhost:5250` or Fly URL |
 | `ALLOW_INDEXING` | Allow search engine indexing (`true`/`false`) | `false` for staging |
 | `POSTHOG_API_KEY` | Optional PostHog project key | `phc_...` |
 | `POSTHOG_API_HOST` | Optional PostHog API host | `https://us.i.posthog.com` |
@@ -88,7 +88,7 @@ pnpm secrets:dev pnpm db:seed
 pnpm dev:secrets
 ```
 
-Your application will be available at `http://localhost:5173`.
+Your application will be available at `http://localhost:5250`.
 
 ### Demo Accounts
 

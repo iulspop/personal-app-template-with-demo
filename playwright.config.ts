@@ -32,7 +32,7 @@ export default defineConfig({
   use: {
     baseURL:
       process.env.APP_URL ??
-      (process.env.CI ? "http://localhost:3000" : "http://localhost:5173"),
+      (process.env.CI ? "http://localhost:3000" : "http://localhost:5250"),
     trace: process.env.CI ? "on-first-retry" : "retain-on-failure",
   },
 
@@ -40,7 +40,7 @@ export default defineConfig({
   webServer: {
     command: process.env.CI ? "pnpm start" : "pnpm dev",
     env: { NODE_ENV: "test" },
-    port: process.env.CI ? 3000 : 5173,
+    port: process.env.CI ? 3000 : 5250,
     reuseExistingServer: !process.env.CI,
   },
   /* Opt out of parallel tests. */
