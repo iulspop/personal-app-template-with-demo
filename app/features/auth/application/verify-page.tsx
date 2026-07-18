@@ -31,54 +31,64 @@ export function VerifyPageComponent({
 }) {
   return (
     <main className={pageStyles.page}>
-      <img
-        alt=""
-        className={pageStyles.logo}
-        height={48}
-        src="/images/logo.png"
-        width={48}
-      />
-      <h1 className={pageStyles.heading}>Check your email</h1>
-      <p className={pageStyles.subcopy}>
-        We sent a 6-character code to {target}. Enter it below to continue.
-      </p>
-
-      <Form className={pageStyles.form} method="post">
-        <input name="type" type="hidden" value={type} />
-        <input name="target" type="hidden" value={target} />
-        <Input
-          aria-label="Verification code"
-          autoCapitalize="characters"
-          autoComplete="one-time-code"
-          className={pageStyles.codeInput}
-          inputMode="text"
-          maxLength={6}
-          name="code"
-          placeholder="ABC123"
-          type="text"
-        />
-        <Button
-          className={pageStyles.fullWidth}
-          name="intent"
-          type="submit"
-          value={VERIFY_CODE_INTENT}
-        >
-          <IconMailCheck aria-hidden="true" className={pageStyles.icon} />
-          Verify code
-        </Button>
-        {actionData?.success === false && (
-          <FieldError>
-            {validationMessages[actionData.error] ?? actionData.error}
-          </FieldError>
-        )}
-      </Form>
-
-      <p className={pageStyles.footer}>
-        Used the wrong email?{" "}
-        <Link className={pageStyles.footerLink} to="/auth/signin">
-          Go back
+      <section className={pageStyles.panel}>
+        <Link className={pageStyles.brand} to="/">
+          <img
+            alt=""
+            className={pageStyles.logo}
+            height={28}
+            src="/images/logo.png"
+            width={28}
+          />
+          Todo
         </Link>
-      </p>
+        <h1 className={pageStyles.heading}>Check your email</h1>
+        <p className={pageStyles.subcopy}>
+          We sent a 6-character code to {target}. Enter it below to continue.
+        </p>
+
+        <Form className={pageStyles.form} method="post">
+          <input name="type" type="hidden" value={type} />
+          <input name="target" type="hidden" value={target} />
+          <div className={pageStyles.field}>
+            <label className={pageStyles.label} htmlFor="verification-code">
+              Verification code
+            </label>
+            <Input
+              autoCapitalize="characters"
+              autoComplete="one-time-code"
+              className={pageStyles.codeInput}
+              id="verification-code"
+              inputMode="text"
+              maxLength={6}
+              name="code"
+              placeholder="ABC123"
+              type="text"
+            />
+          </div>
+          <Button
+            className={pageStyles.fullWidth}
+            name="intent"
+            type="submit"
+            value={VERIFY_CODE_INTENT}
+          >
+            <IconMailCheck aria-hidden="true" className={pageStyles.icon} />
+            Verify code
+          </Button>
+          {actionData?.success === false && (
+            <FieldError>
+              {validationMessages[actionData.error] ?? actionData.error}
+            </FieldError>
+          )}
+        </Form>
+
+        <p className={pageStyles.footer}>
+          Used the wrong email?{" "}
+          <Link className={pageStyles.footerLink} to="/auth/signin">
+            Go back
+          </Link>
+        </p>
+      </section>
     </main>
   )
 }

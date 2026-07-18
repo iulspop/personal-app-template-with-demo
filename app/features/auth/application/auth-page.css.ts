@@ -3,37 +3,68 @@ import { style } from "@vanilla-extract/css"
 import { theme } from "~/design-system/theme.css"
 
 export const page = style({
-  marginInline: "auto",
+  alignItems: "center",
+  display: "flex",
+  justifyContent: "center",
+  minHeight: "100dvh",
+  padding: theme.layout.pagePadding,
+})
+
+export const panel = style({
+  "@media": {
+    "(max-width: 40rem)": {
+      borderInline: 0,
+      borderRadius: 0,
+      boxShadow: "none",
+      padding: `${theme.space[8]} ${theme.space[4]}`,
+    },
+  },
+  background: theme.color.background.card,
+  border: `1px solid ${theme.color.border.default}`,
+  borderRadius: theme.radius.lg,
+  boxShadow: theme.shadow.sm,
   maxWidth: theme.layout.authWidth,
-  padding: `${theme.space[16]} ${theme.space[4]}`,
+  padding: theme.space[8],
+  width: "100%",
+})
+
+export const brand = style({
+  alignItems: "center",
+  color: theme.color.text.primary,
+  display: "inline-flex",
+  fontSize: theme.font.role.supporting,
+  fontWeight: theme.font.weight.semibold,
+  gap: theme.space[2],
+  marginBottom: theme.space[8],
+  textDecoration: "none",
 })
 
 export const logo = style({
-  borderRadius: theme.radius.lg,
-  height: "3rem",
-  margin: `0 auto ${theme.space[8]}`,
-  width: "3rem",
+  borderRadius: theme.radius.sm,
+  height: "1.75rem",
+  width: "1.75rem",
 })
 
 export const heading = style({
   color: theme.color.text.primary,
-  fontSize: theme.font.size["4xl"],
-  fontWeight: theme.font.weight.bold,
+  fontSize: theme.font.role.pageTitle,
+  fontWeight: theme.font.weight.semibold,
+  letterSpacing: theme.font.letterSpacing.tight,
   lineHeight: theme.font.lineHeight.tight,
   marginBottom: theme.space[2],
-  textAlign: "center",
 })
 
 export const subcopy = style({
-  color: theme.color.text.muted,
-  marginBottom: theme.space[8],
-  textAlign: "center",
+  color: theme.color.text.secondary,
+  fontSize: theme.font.role.supporting,
+  lineHeight: theme.font.lineHeight.normal,
+  marginBottom: theme.space[6],
 })
 
 export const stack = style({
   display: "flex",
   flexDirection: "column",
-  gap: theme.space[4],
+  gap: theme.space[3],
 })
 
 export const form = style({
@@ -42,58 +73,63 @@ export const form = style({
   gap: theme.space[3],
 })
 
+export const field = style({
+  display: "grid",
+  gap: theme.space[2],
+})
+
+export const label = style({
+  color: theme.color.text.secondary,
+  fontSize: theme.font.role.supporting,
+  fontWeight: theme.font.weight.medium,
+})
+
 export const codeInput = style({
-  fontSize: theme.font.size.xl,
+  fontFamily: theme.font.family.mono,
+  fontSize: theme.font.size.lg,
   fontWeight: theme.font.weight.semibold,
-  letterSpacing: "0.35em",
+  letterSpacing: "0.22em",
   textAlign: "center",
+  textTransform: "uppercase",
 })
 
-export const fullWidth = style({
-  width: "100%",
-})
-
-export const icon = style({
-  height: "1.25rem",
-  width: "1.25rem",
-})
+export const fullWidth = style({ width: "100%" })
+export const icon = style({ height: "1rem", width: "1rem" })
 
 export const divider = style({
   alignItems: "center",
   color: theme.color.text.muted,
   display: "flex",
-  fontSize: theme.font.size.sm,
+  fontSize: theme.font.role.metadata,
   gap: theme.space[3],
   paddingBlock: theme.space[2],
 })
 
 export const dividerLine = style({
-  background: theme.color.border.default,
+  background: theme.color.border.subtle,
   flex: 1,
   height: "1px",
 })
 
 export const textAction = style({
   background: "transparent",
-  color: theme.color.text.muted,
+  color: theme.color.text.secondary,
   marginInline: "auto",
   selectors: {
-    "&:hover": {
-      background: "transparent",
-      color: theme.color.text.primary,
-    },
+    "&:hover": { background: "transparent", color: theme.color.text.primary },
   },
   width: "fit-content",
 })
 
 export const footer = style({
+  borderTop: `1px solid ${theme.color.border.subtle}`,
   color: theme.color.text.muted,
-  fontSize: theme.font.size.sm,
-  marginTop: theme.space[8],
-  textAlign: "center",
+  fontSize: theme.font.role.supporting,
+  marginTop: theme.space[6],
+  paddingTop: theme.space[5],
 })
 
 export const footerLink = style({
-  color: theme.color.text.link,
+  color: theme.color.text.primary,
   fontWeight: theme.font.weight.medium,
 })

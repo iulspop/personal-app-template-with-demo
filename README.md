@@ -117,6 +117,17 @@ app/features/<name>/
 
 The `app/features/todos/` directory is a complete reference implementation of this pattern.
 
+## Product UI system
+
+The interface uses a light-first, density-conscious product system built with Vanilla Extract.
+
+- Use the semantic tokens in `app/design-system/tokens/`; do not introduce page-local color or typography scales.
+- Keep typography to the page title, section title, body/control, supporting, and metadata roles. Monospace is reserved for technical values.
+- Prefer flat rows, dividers, and whitespace over nested cards. Controls use compact desktop sizing and mobile-friendly targets.
+- Use Tabler outline icons at 16px in controls and 18px in primary navigation. Decorative icons must be hidden from assistive technology.
+- Use the shared light/dark themes, short motion tokens, visible focus states, and reduced-motion behavior.
+- Authenticated pages belong in `AppShell`; mobile navigation uses the single top menu rather than a second fixed navigation bar.
+
 ## Development
 
 ### Scripts

@@ -1,4 +1,10 @@
 import { startRegistration } from "@simplewebauthn/browser"
+import {
+  IconBell,
+  IconKey,
+  IconMessageCircle,
+  IconUser,
+} from "@tabler/icons-react"
 import { useState } from "react"
 import { Form, Link } from "react-router"
 
@@ -13,10 +19,7 @@ type SettingsActionData =
   | { error: string; success: false }
   | undefined
 
-type PasskeySummary = {
-  createdAt: string
-  id: string
-}
+type PasskeySummary = { createdAt: string; id: string }
 
 export function SettingsPageComponent({
   actionData,
@@ -40,23 +43,19 @@ export function SettingsPageComponent({
 
   const setupPasskey = async () => {
     setPasskeySetupState("saving")
-
     try {
       const optionsResponse = await fetch("/auth/passkey/register")
       const optionsJSON = await optionsResponse.json()
-
       if (!optionsResponse.ok) {
         setPasskeySetupState("error")
         return
       }
-
       const credential = await startRegistration({ optionsJSON })
       const result = await fetch("/auth/passkey/register", {
         body: JSON.stringify(credential),
         headers: { "Content-Type": "application/json" },
         method: "post",
       }).then((res) => res.json())
-
       setPasskeySetupState(result.verified ? "saved" : "error")
     } catch {
       setPasskeySetupState("error")
@@ -65,105 +64,182 @@ export function SettingsPageComponent({
 
   return (
     <section className={s.page}>
-      <div className={s.header}>
-        <h1 className={s.title}>Settings</h1>
+      <header className={s.header}>
+        <div>
+          <h1 className={s.title}>Settings</h1>
+          <p className={s.subtitle}>
+            Manage your account and workspace preferences.
+          </p>
+        </div>
         <Link className={s.backLink} to="/">
           Back to todos
         </Link>
-      </div>
+      </header>
 
-      <section className={s.card}>
-        <div className={s.cardHeader}>
-          <h2 className={s.cardTitle}>Appearance</h2>
-          <p className={s.cardBody}>
-            Light mode is the default. Your preference is saved on this device.
-          </p>
-        </div>
-        <AppearanceControl />
-      </section>
+      <div className={s.layout}>
+        <nav aria-label="Settings sections" className={s.sectionNav}>
+          <a href="#appearance">Appearance</a>
+          <a href="#account">Account</a>
+          <a href="#passkeys">Passkeys</a>
+          <a href="#chat">Founder chat</a>
+        </nav>
 
-      <section className={s.card}>
-        <div className={s.cardHeader}>
-          <h2 className={s.cardTitle}>Chat role</h2>
-          <p className={s.cardBody}>
-            Status: {isOwner ? "Owner" : "Regular user"}
-          </p>
-          {isOwner && (
-            <>
-              <p className={s.cardBody}>
-                Email notifications:{" "}
-                {chatEmailConfigured ? "Configured" : "Not configured"}
-              </p>
-              <p className={s.cardBody}>
-                SMS notifications:{" "}
-                {chatSmsConfigured ? "Configured" : "Not configured"}
-              </p>
-              <Link className={s.backLink} to="/owner/chats">
-                Open chat dashboard
-              </Link>
-            </>
-          )}
-        </div>
-      </section>
-
-      <section className={s.card}>
-        <div className={s.cardHeader}>
-          <h2 className={s.cardTitle}>Passkeys</h2>
-          <p className={s.cardBody}>
-            Add a passkey to {userEmail} so you can sign in with your device
-            unlock instead of an email link.
-          </p>
-        </div>
-
-        <p className={s.cardBody}>
-          Status: {hasActivePasskey ? "Passkey enabled" : "Email sign-in only"}
-        </p>
-
-        {passkeys.length > 0 && (
-          <ul className={s.passkeyList}>
-            {passkeys.map((passkey) => (
-              <li className={s.passkeyItem} key={passkey.id}>
-                <span>
-                  Passkey added{" "}
-                  {new Date(passkey.createdAt).toLocaleDateString()}
+        <div className={s.sections}>
+          <section className={s.section} id="appearance">
+            <div className={s.sectionHeading}>
+              <h2>Appearance</h2>
+              <p>Choose how Todo looks on this device.</p>
+            </div>
+            <div className={s.settingRow}>
+              <div className={s.settingCopy}>
+                <span className={s.settingTitle}>Theme</span>
+                <span className={s.settingDescription}>
+                  Light mode is the default. Your preference is saved on this
+                  device.
                 </span>
-                <Form method="post">
-                  <input name="passkeyId" type="hidden" value={passkey.id} />
-                  <Button
-                    name="intent"
-                    size="sm"
-                    type="submit"
-                    value="deletePasskey"
-                    variant="destructive"
-                  >
-                    Delete
-                  </Button>
-                </Form>
-              </li>
-            ))}
-          </ul>
-        )}
+              </div>
+              <AppearanceControl />
+            </div>
+          </section>
 
-        <Button
-          className={s.action}
-          disabled={passkeySetupState === "saving"}
-          onClick={setupPasskey}
-          type="button"
-          variant={hasActivePasskey ? "outline" : "default"}
-        >
-          {passkeySetupState === "saving" ? "Adding passkey…" : "Add passkey"}
-        </Button>
+          <section className={s.section} id="account">
+            <div className={s.sectionHeading}>
+              <h2>Account</h2>
+              <p>Your current identity and access level.</p>
+            </div>
+            <div className={s.settingRow}>
+              <IconUser aria-hidden="true" className={s.rowIcon} size={17} />
+              <div className={s.settingCopy}>
+                <span className={s.settingTitle}>{userEmail}</span>
+                <span className={s.settingDescription}>Signed-in email</span>
+              </div>
+              <span className={s.badge}>{isOwner ? "Owner" : "Member"}</span>
+            </div>
+          </section>
 
-        {passkeySetupState === "saved" && (
-          <p className={cx(s.status, s.success)}>Passkey added.</p>
-        )}
-        {passkeySetupState === "error" && (
-          <FieldError className={s.status}>Passkey setup failed.</FieldError>
-        )}
-        {actionData?.success === false && (
-          <FieldError className={s.status}>{actionData.error}</FieldError>
-        )}
-      </section>
+          <section className={s.section} id="passkeys">
+            <div className={s.sectionHeading}>
+              <h2>Passkeys</h2>
+              <p>
+                Use your device unlock instead of waiting for an email link.
+              </p>
+            </div>
+            <div className={s.settingRow}>
+              <IconKey aria-hidden="true" className={s.rowIcon} size={17} />
+              <div className={s.settingCopy}>
+                <span className={s.settingTitle}>Sign-in method</span>
+                <span className={s.settingDescription}>
+                  Status:{" "}
+                  {hasActivePasskey ? "Passkey enabled" : "Email sign-in only"}
+                </span>
+              </div>
+              <Button
+                disabled={passkeySetupState === "saving"}
+                onClick={setupPasskey}
+                size="sm"
+                type="button"
+                variant={hasActivePasskey ? "outline" : "default"}
+              >
+                {passkeySetupState === "saving"
+                  ? "Adding passkey…"
+                  : "Add passkey"}
+              </Button>
+            </div>
+            {passkeys.length > 0 && (
+              <ul className={s.passkeyList}>
+                {passkeys.map((passkey) => (
+                  <li className={s.passkeyItem} key={passkey.id}>
+                    <span>
+                      Passkey added{" "}
+                      {new Date(passkey.createdAt).toLocaleDateString()}
+                    </span>
+                    <Form method="post">
+                      <input
+                        name="passkeyId"
+                        type="hidden"
+                        value={passkey.id}
+                      />
+                      <Button
+                        name="intent"
+                        size="xs"
+                        type="submit"
+                        value="deletePasskey"
+                        variant="destructive"
+                      >
+                        Delete
+                      </Button>
+                    </Form>
+                  </li>
+                ))}
+              </ul>
+            )}
+            {passkeySetupState === "saved" && (
+              <p className={cx(s.status, s.success)}>Passkey added.</p>
+            )}
+            {passkeySetupState === "error" && (
+              <FieldError className={s.status}>
+                Passkey setup failed.
+              </FieldError>
+            )}
+            {actionData?.success === false && (
+              <FieldError className={s.status}>{actionData.error}</FieldError>
+            )}
+          </section>
+
+          <section className={s.section} id="chat">
+            <div className={s.sectionHeading}>
+              <h2>Founder chat</h2>
+              <p>Role and notification delivery for private conversations.</p>
+            </div>
+            <div className={s.settingRow}>
+              <IconMessageCircle
+                aria-hidden="true"
+                className={s.rowIcon}
+                size={17}
+              />
+              <div className={s.settingCopy}>
+                <span className={s.settingTitle}>Chat role</span>
+                <span className={s.settingDescription}>
+                  Status: {isOwner ? "Owner" : "Regular user"}
+                </span>
+              </div>
+              {isOwner && (
+                <Link className={s.rowLink} to="/owner/chats">
+                  Open chat dashboard
+                </Link>
+              )}
+            </div>
+            {isOwner && (
+              <div className={s.notificationRows}>
+                <div className={s.settingRow}>
+                  <IconBell
+                    aria-hidden="true"
+                    className={s.rowIcon}
+                    size={17}
+                  />
+                  <span className={s.settingTitle}>
+                    Email notifications:{" "}
+                    {chatEmailConfigured ? "Configured" : "Not configured"}
+                  </span>
+                  <span className={s.badge}>
+                    {chatEmailConfigured ? "On" : "Off"}
+                  </span>
+                </div>
+                <div className={s.settingRow}>
+                  <span aria-hidden="true" className={s.rowIconPlaceholder} />
+                  <span className={s.settingTitle}>
+                    SMS notifications:{" "}
+                    {chatSmsConfigured ? "Configured" : "Not configured"}
+                  </span>
+                  <span className={s.badge}>
+                    {chatSmsConfigured ? "On" : "Off"}
+                  </span>
+                </div>
+              </div>
+            )}
+          </section>
+        </div>
+      </div>
     </section>
   )
 }

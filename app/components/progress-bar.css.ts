@@ -12,8 +12,8 @@ const spin = keyframes({
 })
 
 export const root = style({
-  animation: `${pulse} 2s cubic-bezier(0.4, 0, 0.6, 1) infinite`,
-  height: "0.2rem",
+  animation: `${pulse} 1.6s ${theme.easing.standard} infinite`,
+  height: "0.125rem",
   insetInline: 0,
   position: "fixed",
   top: 0,
@@ -21,11 +21,11 @@ export const root = style({
 })
 
 export const bar = style({
-  background: theme.color.text.primary,
+  background: theme.color.intent.primary.background,
   height: "100%",
-  transitionDuration: "500ms",
-  transitionProperty: "all",
-  transitionTimingFunction: "ease-in-out",
+  transitionDuration: theme.duration.slow,
+  transitionProperty: "opacity, width",
+  transitionTimingFunction: theme.easing.standard,
   width: 0,
 })
 
