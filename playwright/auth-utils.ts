@@ -6,7 +6,7 @@ import { PrismaClient } from "../generated/prisma/client"
 
 const createPrisma = () => {
   const adapter = new PrismaBetterSqlite3({
-    url: process.env.DATABASE_URL ?? "file:./prisma/dev.db",
+    url: process.env.DATABASE_URL ?? "file:./prisma/e2e.db",
   })
   return new PrismaClient({ adapter })
 }

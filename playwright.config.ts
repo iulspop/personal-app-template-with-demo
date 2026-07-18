@@ -4,6 +4,12 @@ import { defineConfig, devices } from "@playwright/test"
 // and the dev server (webServer.env.TZ).
 process.env.TZ = "UTC"
 
+const isCI = Boolean(process.env.CI)
+const isIsolatedRun = process.env.E2E_ISOLATED === "true"
+const useBuiltServer = isCI && !isIsolatedRun
+const localPort = 5251
+const databaseUrl = process.env.DATABASE_URL ?? "file:./prisma/e2e.db"
+
 /**
  * See https://playwright.dev/docs/test-configuration.
  */
@@ -32,16 +38,20 @@ export default defineConfig({
   use: {
     baseURL:
       process.env.APP_URL ??
-      (process.env.CI ? "http://localhost:3000" : "http://localhost:5250"),
-    trace: process.env.CI ? "on-first-retry" : "retain-on-failure",
+      (useBuiltServer
+        ? "http://localhost:3000"
+        : `http://localhost:${localPort}`),
+    trace: isCI ? "on-first-retry" : "retain-on-failure",
   },
 
   /* Run your local dev server before starting the tests */
   webServer: {
-    command: process.env.CI ? "pnpm start" : "pnpm dev",
-    env: { NODE_ENV: "test" },
-    port: process.env.CI ? 3000 : 5250,
-    reuseExistingServer: !process.env.CI,
+    command: useBuiltServer
+      ? "pnpm start"
+      : `pnpm exec react-router dev --port ${localPort}`,
+    env: { DATABASE_URL: databaseUrl, NODE_ENV: "test", TZ: "UTC" },
+    port: useBuiltServer ? 3000 : localPort,
+    reuseExistingServer: false,
   },
   /* Opt out of parallel tests. */
   workers: 1,

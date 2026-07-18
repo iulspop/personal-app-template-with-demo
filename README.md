@@ -192,6 +192,8 @@ Tests are organized in three tiers:
 3. **Integration tests** (`*.spec.ts`) -- database facade tests against real SQLite
 4. **E2E tests** (`playwright/e2e/*.e2e.ts`) -- full browser tests with Playwright
 
+Vitest recreates `prisma/test.db`, while Playwright recreates `prisma/e2e.db` and starts its own server on port `5251`. Neither suite reads or modifies the development database at `prisma/dev.db`.
+
 Test names follow: `given: <precondition>, should: <expected behavior>`.
 
 Run the full suite locally with Infisical:
