@@ -1,10 +1,10 @@
 import {
   IconChecklist,
   IconLogout,
+  IconMenu2,
   IconMessageCircle,
   IconSettings,
   IconSquareCheck,
-  IconUserCircle,
 } from "@tabler/icons-react"
 import type { ReactNode } from "react"
 import { Form, NavLink } from "react-router"
@@ -83,14 +83,18 @@ function AppShell({
           </Form>
         </div>
         <details className={s.mobileAccount}>
-          <summary aria-label="Open account menu">
-            <IconUserCircle aria-hidden="true" />
-            <span>Account</span>
+          <summary aria-label="Open navigation menu">
+            <IconMenu2 aria-hidden="true" />
           </summary>
           <div className={s.mobileAccountMenu}>
             <span className={s.mobileAccountEmail} title={userEmail}>
               {userEmail}
             </span>
+            <PrimaryNavigation
+              chatUnreadCount={chatUnreadCount}
+              isOwner={isOwner}
+            />
+            <div className={s.mobileMenuSeparator} />
             <NavLink className={s.accountLink} to="/settings">
               <IconSettings aria-hidden="true" />
               <span>Settings</span>

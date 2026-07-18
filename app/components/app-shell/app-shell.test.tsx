@@ -19,12 +19,12 @@ describe("AppShell", () => {
 
     render(<RoutesStub initialEntries={["/"]} />)
 
-    expect(screen.getByRole("link", { name: "Todos" })).toBeInTheDocument()
+    expect(screen.getAllByRole("link", { name: "Todos" })).toHaveLength(2)
     expect(
-      screen.getByRole("link", { name: "Chat with founder 3" }),
-    ).toBeInTheDocument()
+      screen.getAllByRole("link", { name: "Chat with founder 3" }),
+    ).toHaveLength(2)
     expect(screen.getAllByText("user@example.com")).toHaveLength(2)
-    expect(screen.getByLabelText("Open account menu")).toBeInTheDocument()
+    expect(screen.getByLabelText("Open navigation menu")).toBeInTheDocument()
     expect(
       screen.getByRole("heading", { name: "Workspace" }),
     ).toBeInTheDocument()
@@ -44,9 +44,11 @@ describe("AppShell", () => {
 
     render(<RoutesStub initialEntries={["/"]} />)
 
-    expect(
-      screen.getByRole("link", { name: "Chat dashboard" }),
-    ).toHaveAttribute("href", "/owner/chats")
+    for (const link of screen.getAllByRole("link", {
+      name: "Chat dashboard",
+    })) {
+      expect(link).toHaveAttribute("href", "/owner/chats")
+    }
     expect(
       screen.getByRole("link", { name: "Set up owner access" }),
     ).toHaveAttribute("href", "/owner/claim")

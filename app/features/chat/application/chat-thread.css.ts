@@ -7,8 +7,8 @@ export const page = style({
     "(max-width: 40rem)": {
       borderInline: 0,
       borderRadius: 0,
-      height: "calc(100dvh - 6.75rem - env(safe-area-inset-bottom))",
-      minHeight: "26rem",
+      height: `calc(100dvh - ${theme.layout.shellHeaderHeight} - ${theme.space[8]} - env(safe-area-inset-bottom))`,
+      minHeight: 0,
     },
     "(min-width: 64.01rem)": {
       height: "min(46rem, calc(100dvh - 4rem))",
@@ -23,6 +23,7 @@ export const page = style({
   height: "calc(100dvh - 7rem - env(safe-area-inset-bottom))",
   marginInline: "auto",
   minHeight: "34rem",
+  minWidth: 0,
   overflow: "hidden",
   width: "100%",
 })
@@ -117,7 +118,8 @@ const message = {
   display: "flex",
   flexDirection: "column" as const,
   marginTop: theme.space[2],
-  maxWidth: "min(76%, 30rem)",
+  maxWidth: "min(84%, 30rem)",
+  minWidth: 0,
 }
 
 export const mine = style({
@@ -200,12 +202,21 @@ globalStyle(`${empty} strong`, {
 })
 
 export const composer = style({
+  "@media": {
+    "(max-width: 40rem)": {
+      gap: theme.space[1],
+      gridTemplateColumns: "2.75rem minmax(0, 1fr) 2.75rem",
+      padding: theme.space[2],
+      paddingBottom: `calc(${theme.space[2]} + env(safe-area-inset-bottom))`,
+    },
+  },
   alignItems: "center",
   background: theme.color.background.card,
   borderTop: `1px solid ${theme.color.border.subtle}`,
   display: "grid",
   gap: theme.space[2],
   gridTemplateColumns: "2.5rem minmax(0, 1fr) 2.5rem",
+  minWidth: 0,
   padding: theme.space[3],
   position: "relative",
 })
@@ -230,7 +241,7 @@ export const selectedFile = style({
   paddingInline: theme.space[2],
 })
 export const selectedFileName = style({
-  maxWidth: "18rem",
+  maxWidth: "min(18rem, calc(100vw - 8rem))",
   overflow: "hidden",
   textOverflow: "ellipsis",
   whiteSpace: "nowrap",

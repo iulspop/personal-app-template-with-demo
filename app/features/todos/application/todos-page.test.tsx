@@ -62,9 +62,11 @@ describe("TodosPageComponent", () => {
       },
     ])
     render(<RouterStub initialEntries={["/"]} />)
-    expect(
-      screen.getByRole("link", { name: /chat with founder 2/i }),
-    ).toHaveAttribute("href", "/chat")
+    for (const link of screen.getAllByRole("link", {
+      name: /chat with founder 2/i,
+    })) {
+      expect(link).toHaveAttribute("href", "/chat")
+    }
   })
 
   test("given: the owner, should: link to the owner dashboard", () => {
@@ -82,9 +84,11 @@ describe("TodosPageComponent", () => {
       },
     ])
     render(<RouterStub initialEntries={["/"]} />)
-    expect(
-      screen.getByRole("link", { name: /chat dashboard/i }),
-    ).toHaveAttribute("href", "/owner/chats")
+    for (const link of screen.getAllByRole("link", {
+      name: /chat dashboard/i,
+    })) {
+      expect(link).toHaveAttribute("href", "/owner/chats")
+    }
   })
 
   test("given: an eligible user, should: link to owner onboarding", () => {
