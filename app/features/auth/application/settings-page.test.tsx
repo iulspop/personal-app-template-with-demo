@@ -1,5 +1,5 @@
 import { startRegistration } from "@simplewebauthn/browser"
-import { createRoutesStub } from "react-router"
+import { createRoutesStub, MemoryRouter } from "react-router"
 import { afterEach, describe, expect, test, vi } from "vitest"
 
 import { SettingsPageComponent } from "./settings-page"
@@ -14,6 +14,39 @@ afterEach(() => {
 })
 
 describe("SettingsPageComponent", () => {
+  test.each([false, true])(
+    "given: claim eligibility %s, should: show founder settings only when claimable",
+    (canClaimOwner) => {
+      render(
+        <MemoryRouter>
+          <SettingsPageComponent
+            canClaimOwner={canClaimOwner}
+            passkeys={[]}
+            userEmail="user@example.com"
+          />
+        </MemoryRouter>,
+      )
+      const actual = Boolean(
+        screen.queryByRole("heading", { name: "Founder chat" }),
+      )
+      const expected = canClaimOwner
+      expect(actual).toEqual(expected)
+      expect(
+        Boolean(screen.queryByRole("link", { name: "Founder chat" })),
+      ).toEqual(expected)
+      expect(screen.queryByText(/regular user/i)).not.toBeInTheDocument()
+      expect(screen.queryByText(/email notifications/i)).not.toBeInTheDocument()
+      if (canClaimOwner)
+        expect(
+          screen.getByRole("link", { name: /claim owner access/i }),
+        ).toHaveAttribute("href", "/owner/claim")
+      else
+        expect(
+          screen.queryByRole("link", { name: /claim owner access/i }),
+        ).not.toBeInTheDocument()
+    },
+  )
+
   test("given: an email-only user, should: show passkey setup", () => {
     const path = "/settings"
     const RouterStub = createRoutesStub([

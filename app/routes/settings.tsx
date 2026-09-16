@@ -9,22 +9,38 @@ import {
   deletePasskeyFromDatabaseByIdAndUserId,
   retrievePasskeysFromDatabaseByUserId,
 } from "~/features/auth/infrastructure/passkeys-model.server"
-import { retrieveOwnerStatusForUser } from "~/features/chat/infrastructure/chat-model.server"
+import {
+  isOwnerEmailAllowed,
+  parseOwnerEmailAllowlist,
+} from "~/features/chat/domain/chat-domain"
+import {
+  retrieveOwnerClaim,
+  retrieveOwnerStatusForUser,
+} from "~/features/chat/infrastructure/chat-model.server"
 import { isOwnerChatSmsConfigured } from "~/features/chat/infrastructure/chat-sms.server"
 import { retrieveUserFromDatabaseById } from "~/features/users/infrastructure/users-model.server"
 
 export async function loader({ request }: Route.LoaderArgs) {
   const env = getServerEnv()
   const userId = await requireUserId(request)
-  const [ownerStatus, passkeys, user] = await Promise.all([
+  const [ownerStatus, passkeys, user, ownerClaim] = await Promise.all([
     retrieveOwnerStatusForUser(userId),
     retrievePasskeysFromDatabaseByUserId(userId),
     retrieveUserFromDatabaseById(userId),
+    retrieveOwnerClaim(),
   ])
 
   if (!user) throw redirect("/auth/signin")
 
   return {
+    canClaimOwner:
+      !ownerClaim &&
+      !ownerStatus &&
+      Boolean(user.emailVerifiedAt) &&
+      isOwnerEmailAllowed(
+        user.email,
+        parseOwnerEmailAllowlist(env.OWNER_EMAIL_ALLOWLIST),
+      ),
     chatEmailConfigured: Boolean(env.RESEND_API_KEY && env.EMAIL_FROM),
     chatSmsConfigured: isOwnerChatSmsConfigured(env.OWNER_PHONE_NUMBER),
     isOwner: Boolean(ownerStatus),
@@ -70,9 +86,14 @@ export default function SettingsRoute({
   loaderData,
 }: Route.ComponentProps) {
   return (
-    <AppShell isOwner={loaderData.isOwner} userEmail={loaderData.userEmail}>
+    <AppShell
+      canClaimOwner={loaderData.canClaimOwner}
+      isOwner={loaderData.isOwner}
+      userEmail={loaderData.userEmail}
+    >
       <SettingsPageComponent
         actionData={actionData}
+        canClaimOwner={loaderData.canClaimOwner}
         chatEmailConfigured={loaderData.chatEmailConfigured}
         chatSmsConfigured={loaderData.chatSmsConfigured}
         isOwner={loaderData.isOwner}

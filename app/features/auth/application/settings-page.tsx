@@ -23,12 +23,14 @@ type PasskeySummary = { createdAt: string; id: string }
 
 export function SettingsPageComponent({
   actionData,
+  canClaimOwner = false,
   chatEmailConfigured = false,
   chatSmsConfigured = false,
   isOwner = false,
   passkeys,
   userEmail,
 }: {
+  canClaimOwner?: boolean
   actionData?: SettingsActionData
   chatEmailConfigured?: boolean
   chatSmsConfigured?: boolean
@@ -81,7 +83,7 @@ export function SettingsPageComponent({
           <a href="#appearance">Appearance</a>
           <a href="#account">Account</a>
           <a href="#passkeys">Passkeys</a>
-          <a href="#chat">Founder chat</a>
+          {(isOwner || canClaimOwner) && <a href="#chat">Founder chat</a>}
         </nav>
 
         <div className={s.sections}>
@@ -186,58 +188,67 @@ export function SettingsPageComponent({
             )}
           </section>
 
-          <section className={s.section} id="chat">
-            <div className={s.sectionHeading}>
-              <h2>Founder chat</h2>
-              <p>Role and notification delivery for private conversations.</p>
-            </div>
-            <div className={s.settingRow}>
-              <IconMessageCircle
-                aria-hidden="true"
-                className={s.rowIcon}
-                size={17}
-              />
-              <div className={s.settingCopy}>
-                <span className={s.settingTitle}>Chat role</span>
-                <span className={s.settingDescription}>
-                  Status: {isOwner ? "Owner" : "Regular user"}
-                </span>
+          {(isOwner || canClaimOwner) && (
+            <section className={s.section} id="chat">
+              <div className={s.sectionHeading}>
+                <h2>Founder chat</h2>
+                <p>Role and notification delivery for private conversations.</p>
+              </div>
+              <div className={s.settingRow}>
+                <IconMessageCircle
+                  aria-hidden="true"
+                  className={s.rowIcon}
+                  size={17}
+                />
+                <div className={s.settingCopy}>
+                  <span className={s.settingTitle}>Chat role</span>
+                  <span className={s.settingDescription}>
+                    {isOwner
+                      ? "Status: Owner"
+                      : "Owner access is available for your account."}
+                  </span>
+                </div>
+                {canClaimOwner && !isOwner && (
+                  <Link className={s.rowLink} to="/owner/claim">
+                    Claim owner access
+                  </Link>
+                )}
+                {isOwner && (
+                  <Link className={s.rowLink} to="/owner/chats">
+                    Open chat dashboard
+                  </Link>
+                )}
               </div>
               {isOwner && (
-                <Link className={s.rowLink} to="/owner/chats">
-                  Open chat dashboard
-                </Link>
+                <div className={s.notificationRows}>
+                  <div className={s.settingRow}>
+                    <IconBell
+                      aria-hidden="true"
+                      className={s.rowIcon}
+                      size={17}
+                    />
+                    <span className={s.settingTitle}>
+                      Email notifications:{" "}
+                      {chatEmailConfigured ? "Configured" : "Not configured"}
+                    </span>
+                    <span className={s.badge}>
+                      {chatEmailConfigured ? "On" : "Off"}
+                    </span>
+                  </div>
+                  <div className={s.settingRow}>
+                    <span aria-hidden="true" className={s.rowIconPlaceholder} />
+                    <span className={s.settingTitle}>
+                      SMS notifications:{" "}
+                      {chatSmsConfigured ? "Configured" : "Not configured"}
+                    </span>
+                    <span className={s.badge}>
+                      {chatSmsConfigured ? "On" : "Off"}
+                    </span>
+                  </div>
+                </div>
               )}
-            </div>
-            {isOwner && (
-              <div className={s.notificationRows}>
-                <div className={s.settingRow}>
-                  <IconBell
-                    aria-hidden="true"
-                    className={s.rowIcon}
-                    size={17}
-                  />
-                  <span className={s.settingTitle}>
-                    Email notifications:{" "}
-                    {chatEmailConfigured ? "Configured" : "Not configured"}
-                  </span>
-                  <span className={s.badge}>
-                    {chatEmailConfigured ? "On" : "Off"}
-                  </span>
-                </div>
-                <div className={s.settingRow}>
-                  <span aria-hidden="true" className={s.rowIconPlaceholder} />
-                  <span className={s.settingTitle}>
-                    SMS notifications:{" "}
-                    {chatSmsConfigured ? "Configured" : "Not configured"}
-                  </span>
-                  <span className={s.badge}>
-                    {chatSmsConfigured ? "On" : "Off"}
-                  </span>
-                </div>
-              </div>
-            )}
-          </section>
+            </section>
+          )}
         </div>
       </div>
     </section>

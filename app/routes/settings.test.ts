@@ -1,6 +1,7 @@
 import { describe, expect, test, vi } from "vitest"
 
 import { action, loader } from "./settings"
+import { getServerEnv } from "~/config/server-env.server"
 import { requireUserId } from "~/features/auth/application/auth-session.server"
 import {
   deletePasskeyFromDatabaseByIdAndUserId,
@@ -19,6 +20,7 @@ vi.mock("~/features/auth/infrastructure/passkeys-model.server", () => ({
 }))
 
 vi.mock("~/features/chat/infrastructure/chat-model.server", () => ({
+  retrieveOwnerClaim: vi.fn(() => null),
   retrieveOwnerStatusForUser: vi.fn(() => null),
 }))
 
@@ -47,6 +49,23 @@ const createFormRequest = (body: URLSearchParams) =>
   })
 
 describe("settings loader", () => {
+  test.each(["USER@example.com", "other@example.com", ""])(
+    "given: owner allowlist %s, should: expose matching eligibility",
+    async (allowlist) => {
+      const env = getServerEnv()
+      vi.spyOn(
+        await import("~/config/server-env.server"),
+        "getServerEnv",
+      ).mockReturnValueOnce({ ...env, OWNER_EMAIL_ALLOWLIST: allowlist })
+      const actual = (
+        await loader(
+          createRouteArgs(new Request("https://example.com/settings")),
+        )
+      ).canClaimOwner
+      const expected = allowlist === "USER@example.com"
+      expect(actual).toEqual(expected)
+    },
+  )
   test("given: an authenticated email-only user, should: return settings data", async () => {
     const request = new Request("https://example.com/settings")
 
@@ -56,6 +75,7 @@ describe("settings loader", () => {
     expect(retrievePasskeysFromDatabaseByUserId).toHaveBeenCalledWith("user-id")
     expect(retrieveOwnerStatusForUser).toHaveBeenCalledWith("user-id")
     expect(loaderData).toEqual({
+      canClaimOwner: false,
       chatEmailConfigured: true,
       chatSmsConfigured: false,
       isOwner: false,
